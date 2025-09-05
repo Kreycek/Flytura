@@ -27,7 +27,7 @@
 
             "styles": [
               
-              "src/styles.css",
+              "src/styles.css",            
               "src/assets/vendors/feather/feather.css",
               "src/assets/vendors/ti-icons/css/themify-icons.css",
               "src/assets/vendors/css/vendor.bundle.base.css",

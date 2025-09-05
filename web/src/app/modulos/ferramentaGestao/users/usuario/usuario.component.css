@@ -1,0 +1,8 @@
+ table.table-bordered th.fmtTableBorder {
+    border-width: 1px; border-bottom-color: #CED4DA;
+  }
+  
+ table.table-bordered td {
+   
+    font-size: 12px;
+}

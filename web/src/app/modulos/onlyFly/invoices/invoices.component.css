@@ -12,3 +12,16 @@
   input[type="file"] {
     display: none;
   }
+
+  
+  table.table-bordered th.fmtTableBorder {
+    border-width: 1px; 
+    border-bottom-color: #CED4DA;
+    font-size: 13px;
+}
+
+ table.table-bordered td {
+   
+    font-size: 12px;
+}
+
