@@ -1,0 +1,21 @@
+1) Para start o container
+  1.1) docker run -d  --name clarion -p 27017:27017 -v clarionMongoDB:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=secret mongo:latest
+  1.2) caso o comando acima indique que ele já exista pode rodar o comando -> docker start clarion
+
+2) Cuidado com o caminho clarionMongoDB:/data/db, procure não trocar ou retirar a parte /data/db pois esse que o docker usa para gravar os dados do container
+
+3) Se quiser entrar diretamente no mongo DB via linha de comando digitar docker exec -it nomeContainer mongosh -u usuario -p senha
+
+4) Retirar um campo da estrutura mongoDB -> db.uscompanyer.updateMany({},{$unset: { "workNow": false } })
+
+5) Adicionar um campo da estrutura mongoDB -> db.company.updateMany({},{$set:{"workNow":false}})
+
+6) atualizar dados -> db.usuarios.updateOne({ "username": "kreycek" },  { $unset: { "user": "" } })
+
+7) Inserir item db.user.insertOne({name:'João', lastName:'Mendes', email:'jmendes@gmail.com', user:'joao',passportNumber:'1234FVG', password:'$2a$10$.3BNGTrYkITOuIf7fKor0u1mUgskkHhOSEhz1EmAVv6hZ.Fq9W76S',perfil:[1,2,3]})   
+
+8) Inserir vários registros ao mesmo tempo -> db.perfil.insertMany([{name:'Administrador',shortName:'Adm'},{name:'Super Administrador',shortName:'SAdm'}, {name:'Utilizador',shortName:'U'}])
+
+9) Trazer numero de registros -> db.users.countDocuments({}) 
+
+10) Apagar todos os registros de uma coleção -> db.movement.deleteMany({})

@@ -1,0 +1,35 @@
+.perfis-container {
+    display: flex;
+    gap: 10px; /* Espaço entre os itens */
+    flex-wrap: wrap; /* Permite quebrar linha se necessário */
+  }
+  
+  .perfil-item {
+    display: flex;
+    align-items: center; /* Alinha o checkbox e o texto */
+  }
+  
+  .espacoLabel{
+    gap: 10px;
+  }
+  
+  .descricao-container {
+    border-bottom: 2px solid #ccc; /* Linha de separação */
+    padding-bottom: 10px; /* Espaço abaixo da linha de separação */
+    width: 100%; /* Garante que o bloco ocupe toda a largura disponível */
+    margin-bottom: 15px; /* Espaço abaixo da descrição */
+  }
+  
+  .required {
+    color: red;
+    margin-left: 5px;
+  }
+  
+  .is-invalid {
+    border: 1px solid red;
+  }
+  
+  .invalid-feedback {
+    color: red;
+    font-size: 0.9rem;
+  }

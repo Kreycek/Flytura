@@ -1,0 +1,22 @@
+<div class="calendar">
+    <button (click)="changeMonth(-1)">Anterior</button>
+    <span>{{ currentMonth + 1 }}/{{ currentYear }}</span>
+    <button (click)="changeMonth(1)">Próximo</button>
+  
+    <table>
+      <thead>
+        <tr>
+          <th *ngFor="let day of daysOfWeek">{{ day }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td *ngFor="let i of [].constructor(firstDayOfMonth)"></td>
+          <td *ngFor="let day of daysInMonth">
+            {{ day }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

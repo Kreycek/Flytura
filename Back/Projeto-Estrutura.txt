@@ -1,0 +1,33 @@
+/meu-projeto
+│
+├── /cmd
+│   └── /app
+│       └── main.go            # Arquivo principal para rodar o servidor
+│
+├── /internal
+│   ├── /auth
+│   │   ├── auth.go            # Lógica de autenticação (login, JWT, etc)
+│   │   ├── handler.go         # Handlers de autenticação (login, logout)
+│   │   └── service.go         # Serviços de autenticação (validação, login)
+│   │
+│   ├── /empresa
+│   │   ├── empresa.go         # Lógica de negócios relacionada a "Empresa"
+│   │   ├── handler.go         # Handlers para as rotas da empresa
+│   │   ├── service.go         # Serviços da empresa (interação com o banco de dados)
+│   │   └── contabilidade.go   # Lógica de negócios para "Contabilidade"
+│   │
+│   └── /db
+│       └── mongo.go           # Conexão com o banco de dados MongoDB
+│
+├── /pkg
+│   └── /middleware
+│       └── auth_middleware.go # Middleware de autenticação (verificar JWT, etc)
+│
+├── /web
+│   └── /static                # Arquivos estáticos (HTML, CSS, JS)
+│       └── index.html         # Página de login
+│       └── menu.html          # Menu de navegação com "Empresa" e "Contabilidade"
+│
+├── /go.mod
+├── /go.sum
+└── /README.md

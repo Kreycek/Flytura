@@ -1,0 +1,354 @@
+package onlyFly
+
+import (
+	"Flytura/internal/db"
+	"Flytura/internal/models"
+	"context"
+	"fmt"
+	"log"
+	"path/filepath"
+	"strings"
+
+	"time"
+
+	"github.com/extrame/xls"
+	"github.com/xuri/excelize/v2"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 03/09/2025 22:20
+Data Final da criação : 04/09/2025 18:50
+*/
+func ProcessExcel(filePath, fileName string, client *mongo.Client, dbName, collectionName string) error {
+
+	extensao := strings.ToLower(filepath.Ext(filePath))
+	var sheetList []string
+	var rows [][]string
+
+	// fmt.Println("Extensão ", extensao)
+
+	if extensao == ".xls" {
+		excelXls, err := xls.Open(filePath, "utf-8")
+
+		if err != nil {
+			return err
+		}
+
+		// fmt.Println("XLS ")
+
+		sheet := excelXls.GetSheet(0)
+		if sheet == nil {
+			return fmt.Errorf("nenhuma aba encontrada no .xls")
+		}
+
+		for i := 0; i <= int(sheet.MaxRow); i++ {
+			row := sheet.Row(i)
+			if row == nil {
+				continue
+			}
+			linha := []string{row.Col(0), row.Col(1), row.Col(2)}
+			rows = append(rows, linha)
+		}
+
+	} else if extensao == ".xlsx" {
+		// fmt.Println("XLSX")
+		excelXlsx, err := excelize.OpenFile(filePath)
+		if err != nil {
+			return err
+		}
+		sheetList = excelXlsx.GetSheetList()
+		if len(sheetList) == 0 {
+			log.Fatal("Nenhuma aba encontrada")
+		}
+
+		sheetName := sheetList[0]
+		// fmt.Println("sheetName ", sheetName)
+		rows, err = excelXlsx.GetRows(sheetName)
+		if err != nil {
+			return fmt.Errorf("erro ao ler linhas da aba %s: %v", sheetName, err)
+		}
+
+	}
+
+	collection := client.Database(dbName).Collection(collectionName)
+
+	// Criar um contexto para a operação de inserção
+	ctx := context.Background()
+
+	for i, row := range rows {
+		if i == 0 {
+			continue // cabeçalho
+		}
+
+		obj := models.OnlyFlyExcel{
+
+			Key:       "",
+			Name:      "",
+			LastName:  "",
+			FileName:  "",
+			Status:    "Ativo",
+			Active:    true,
+			CreatedAt: time.Now(),
+		}
+
+		// fmt.Println(row[0])
+		obj.Key = row[0]
+		obj.Name = row[1]
+		obj.LastName = row[2]
+		obj.FileName = fileName
+
+		// preco, _ := strconv.ParseFloat(row[1], 64)
+		// produto := bson.M{
+		// 	"nome":  row[0],
+		// 	"preco": preco,
+		// }
+
+		_, err := collection.InsertOne(ctx, obj)
+		if err != nil {
+			log.Println("Erro ao inserir:", err)
+		}
+	}
+
+	return nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 04/09/2025 21:20
+Data Final da criação : 04/09/2025 21:31
+*/
+// Função para obter todos os diários para carregar o drop de buscar
+func GetExcelData(client *mongo.Client, dbName, collectionName string) ([]any, error) {
+	collection := db.GetCollection(client, dbName, collectionName)
+
+	// Consultar todos os documentos
+	cursor, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		return nil, fmt.Errorf("erro ao buscar usuários: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var dadosBanco []any
+	for cursor.Next(context.Background()) {
+		var cc models.OnlyFlyExcel
+		if err := cursor.Decode(&cc); err != nil {
+			return nil, fmt.Errorf("erro ao decodificar ,centro de custo: %v", err)
+		}
+
+		// Converter o _id do MongoDB para string para retorno
+		Id := cc.ID
+		// Preenche o usuário com o ID convertido em string
+		dadosBanco = append(dadosBanco, map[string]any{
+			"ID":           Id, // Agora o campo ID é uma string
+			"key":          cc.Key,
+			"name":         cc.Name,
+			"lastName":     cc.LastName,
+			"FileName":     cc.FileName,
+			"DtImportacao": cc.CreatedAt,
+			"Active":       cc.Active,
+		})
+
+	}
+
+	// Verifica se houve algum erro durante a iteração do cursor
+	if err := cursor.Err(); err != nil {
+		return nil, fmt.Errorf("erro ao iterar no cursor: %v", err)
+	}
+
+	// Retorna os usuários
+	return dadosBanco, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 04/09/2025 21:31
+Data Final da criação : 04/09/2025 21:35
+*/
+func SearchExcelData(
+	client *mongo.Client,
+	dbName, collectionName string,
+	key *string,
+	name *string,
+	lastName *string,
+	page,
+	limit int64) ([]any, int64, error) {
+
+	collection := client.Database(dbName).Collection(collectionName)
+
+	// Criando o filtro dinâmico
+	filter := bson.M{}
+	if name != nil && *name != "" {
+		filter["name"] = bson.M{"$regex": *name, "$options": "i"}
+	}
+	if key != nil && *key != "" {
+		filter["key"] = bson.M{"$regex": *key, "$options": "i"}
+	}
+
+	if lastName != nil && *lastName != "" {
+		filter["lastName"] = bson.M{"$regex": *lastName, "$options": "i"}
+	}
+
+	// Contar total de usuários antes da paginação
+	total, err := collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Executa a consulta com paginação
+	cursor, err := collection.Find(
+		context.Background(),
+		filter,
+		options.Find().SetSkip(int64((page-1)*limit)).SetLimit(int64(limit)),
+	)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(context.Background())
+
+	// Processa os resultados
+	var excelData []any
+	for cursor.Next(context.Background()) {
+		var data models.OnlyFlyExcel
+		if err := cursor.Decode(&data); err != nil {
+			return nil, 0, fmt.Errorf("erro ao decodificar usuário: %v", err)
+		}
+
+		excelData = append(excelData, map[string]any{
+			"ID":           data.ID.Hex(), // Convertendo para string
+			"Key":          data.Key,
+			"Name":         data.Name,
+			"LastName":     data.LastName,
+			"FileName":     data.FileName,
+			"DtImportacao": data.CreatedAt,
+			"Active":       data.Active,
+		})
+	}
+
+	// Retorna usuários e total de registros
+	return excelData, total, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 04/09/2025 21:36
+Data Final da criação : 04/09/2025 21:36
+*/
+// Função para inserir um usuário na coleção "user"
+func InsertExcelData(client *mongo.Client, dbName, collectionName string, data models.OnlyFlyExcel) error {
+	collection := client.Database(dbName).Collection(collectionName)
+
+	// Criar um contexto para a operação de inserção
+	ctx := context.Background()
+
+	// Inserir o documento
+	_, err := collection.InsertOne(ctx, data)
+	if err != nil {
+		return fmt.Errorf("erro ao inserir dados do excel: %v", err)
+	}
+
+	return nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 04/09/2025 21:37
+Data Final da criação : 04/09/2025 21:38
+*/
+func GetExcelDataByID(client *mongo.Client, dbName, collectionName, excelId string) (map[string]any, error) {
+
+	collection := client.Database(dbName).Collection(collectionName)
+
+	objectID, erroId := primitive.ObjectIDFromHex(excelId)
+	if erroId != nil {
+		log.Fatalf("Erro ao converter string para ObjectID: %v", erroId)
+	}
+
+	filter := bson.M{"_id": objectID}
+
+	// Variável para armazenar o usuário retornado
+	var excelData models.OnlyFlyExcel
+
+	// Usar FindOne para pegar apenas um único registro
+	err := collection.FindOne(context.Background(), filter).Decode(&excelData)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("plano de contas não encontrado")
+		}
+		return nil, fmt.Errorf("erro ao buscar plano de contas: %v", err)
+	}
+
+	// Converter o _id para string
+
+	// Retornar o usuário como um mapa
+	excelDatas := map[string]any{
+		"ID":           excelData.ID.Hex(), // Agora o campo ID é uma string
+		"Key":          excelData.Key,
+		"Name":         excelData.Name,
+		"LastName":     excelData.LastName,
+		"FileName":     excelData.FileName,
+		"DtImportacao": excelData.CreatedAt,
+		"Active":       excelData.Active,
+	}
+
+	return excelDatas, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 04/09/2025 21:39
+Data Final da criação : 04/09/2025 21:40
+*/
+func GetAllExcelData(client *mongo.Client, dbName, collectionName string, page, limit int) ([]any, int, error) {
+	collection := db.GetCollection(client, dbName, collectionName)
+
+	// Criar o filtro (por enquanto vazio, pode ser expandido)
+	filter := bson.M{}
+
+	// Obter a contagem total de usuários antes da paginação
+	total, err := collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return nil, 0, fmt.Errorf("erro ao contar documentos: %v", err)
+	}
+
+	// Definir opções de busca com paginação
+	options := options.Find()
+	options.SetLimit(int64(limit))
+	options.SetSkip(int64((page - 1) * limit))
+
+	// Buscar usuários com paginação
+	cursor, err := collection.Find(context.Background(), filter, options)
+	if err != nil {
+		return nil, 0, fmt.Errorf("erro ao buscar usuários: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var ccs []any
+	for cursor.Next(context.Background()) {
+		var cc models.OnlyFlyExcel
+		if err := cursor.Decode(&cc); err != nil {
+			return nil, 0, fmt.Errorf("erro ao decodificar centro de custo: %v", err)
+		}
+
+		// Adiciona os usuários formatados
+		ccs = append(ccs, map[string]any{
+			"ID":           cc.ID.Hex(), // Agora o campo ID é uma string
+			"Key":          cc.Key,
+			"Name":         cc.Name,
+			"LastName":     cc.LastName,
+			"FileName":     cc.FileName,
+			"DtImportacao": cc.CreatedAt,
+			"Active":       cc.Active,
+		})
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, 0, fmt.Errorf("erro ao iterar no cursor: %v", err)
+	}
+
+	return ccs, int(total), nil
+}

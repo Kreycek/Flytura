@@ -1,0 +1,80 @@
+<app-modal-ok
+ 
+
+  ></app-modal-ok>
+  
+<form [formGroup]="formulario" *ngIf="formulario">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">{{id ? 'Editar' : 'Novo'}} Fatura</h4>
+        <p class="card-description" style="display: none;"> Basic form elements </p>
+        
+        <br>
+          <div class="form-group">
+            <label for="nome">Ativo? <span class="required">*</span></label>
+            <input  type="checkbox"  formControlName="active" class="form-check-input">
+            
+          </div>          
+
+          <div class="form-group">
+            <label for="nome">Key <span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="key"
+              id="key"
+              (keydown.space)="$event.preventDefault()"
+              placeholder="Digite a key"
+              [ngClass]="{'is-invalid': formulario.get('key')?.invalid && formulario.get('key')?.touched}"
+            />
+            <div class="invalid-feedback" *ngIf="formulario.get('key')?.invalid && formulario.get('key')?.touched">
+             O campo key é obrigatórioo
+            </div>
+          </div>
+  
+          <div class="form-group">
+            <label for="name">Nombre<span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              id="name"
+              placeholder="Digite o nombre"   
+              [ngClass]="{'is-invalid': formulario.get('name')?.invalid && formulario.get('name')?.touched}"          
+            />
+            <div class="invalid-feedback" *ngIf="formulario.get('name')?.invalid && formulario.get('name')?.touched">
+               O campo nombre é obrigatório
+              </div>
+          </div>
+
+            <div class="form-group">
+            <label for="lastName">Apelido<span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="lastName"
+              id="lastName"
+              placeholder="Digite o nombre"   
+              [ngClass]="{'is-invalid': formulario.get('lastName')?.invalid && formulario.get('lastName')?.touched}"          
+            />
+            <div class="invalid-feedback" *ngIf="formulario.get('lastName')?.invalid && formulario.get('lastName')?.touched">
+               O campo apelido é obrigatório
+              </div>
+          </div>
+            
+      </div>
+    </div>
+  </div>
+
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <div style="float: none;">
+            <button type="submit" class="btn btn-primary me-2" (click)="gravar()">Gravar</button>
+            <button class="btn btn-light" (click)="cancel()">Cancelar</button>
+          </div> 
+        </div>
+      </div>
+    </div>
+</form>

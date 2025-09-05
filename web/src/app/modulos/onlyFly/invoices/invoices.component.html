@@ -1,0 +1,96 @@
+
+
+<app-modal-ok
+ 
+
+  ></app-modal-ok>
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Faturas</h4>
+        <p class="card-description" style="display: none;"> Add class <code>.table-striped</code>
+        </p>
+
+         <div class="search-container" style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+          <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+              <div class="form-group">
+                <label for="searchKey">Key:</label>
+                <input type="text" id="key" [(ngModel)]="searchKey" class="form-control" placeholder="Digite a key">
+              </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-5 col-sm-6 col-12">
+              <div class="form-group">
+                <label for="searchName">Nombre:</label>
+                <input type="text" id="searchName" [(ngModel)]="searchName" class="form-control" placeholder="Digite o nombre">
+              </div>
+              </div>
+            <div class="col-lg-3 col-md-5 col-sm-6 col-12">
+              <div class="form-group">
+                <label for="searchLasName">Apelido:</label>
+                <input type="text" id="searchLastName" [(ngModel)]="searchLastName" class="form-control" placeholder="Digite o apelido">
+              </div>
+              </div>
+
+               <div class="col-lg-3 col-md-12 text-md-right text-center" style="margin-top: 30px;">
+              <button class="btn btn-primary"(click)="searchOnlyFlyExcelData(1)">Pesquisar</button>
+            </div>
+            </div>           
+          </div>
+        </div>      
+
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>   
+                 <tr>
+                     <th colspan="6" style="text-align: right;">
+                    
+                    
+                    <label class="custom-file-upload">
+                    Selecionar Planila excel
+                    <input type="file" (change)="onFileSelected($event)" accept=".xlsx,.xls,.csv" />
+                    </label>
+
+                    </th>
+              </tr>               
+              <tr>
+                <th colspan="6" style="text-align: right;" >                   
+                    <i class="mdi mdi-plus-circle" (click)="addInvoicesOnlyFlyExcel()" title="Adicionar fatura" style="font-size: 24px; cursor: pointer;"></i>                   
+               </th>                         
+              </tr>              
+              <tr>
+                <th> Key </th>              
+                <th> Nombre </th>            
+                <th> Apelido</th>    
+                <th> Dt. Importação</th>                                 
+                <th> Status </th>   
+                <th>  </th> 
+                
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of dados">              
+                <td> {{item.Key}} </td>
+                <td> {{item.Name}} </td>
+                <td> {{item.LastName}} </td>
+                 <td> {{item.DtImportacao | date:'dd/MM/YYYY HH:MM:SS'}} </td>
+                <td> {{item.Active ? "Ativo" : "Inativo"}}</td>   
+                <td style="text-align: right;">                                        
+                  <i (click)="updateInvoicesOnlyFlyExcel(item.ID)" style="font-size: 20px; cursor: pointer; " 
+                  title="Editar centro de custo" 
+                  class="mdi mdi-table-edit"></i>
+                
+             </td>               
+              </tr>             
+            </tbody>
+          </table>
+          <app-paginator
+          [totalPages]="totalPages"
+          [currentPage]="currentPage"          
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
+        </div>
+      </div>
+    </div>
+  

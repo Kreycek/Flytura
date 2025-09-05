@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <base href="/">
+    <title>Flytura</title>
+ 
+  </head>
+  <body>
+    <div class="container-scroller">      
+    <app-navbar></app-navbar>
+      <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <app-menu></app-menu>
+      <!-- partial -->
+          <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="row">
+            <router-outlet></router-outlet>
+                </div>
+            </div>
+            <!-- <app-center></app-center> -->
+            <!-- partial:partials/_footer.html -->
+            <app-footer></app-footer>
+          </div>
+      <!-- main-panel ends -->
+    </div>
+  <!-- page-body-wrapper ends -->
+</div>
+<!-- container-scroller -->
+<!-- plugins:js -->
+<!-- endinject -->
+<!-- Plugin js for this page -->
+<!-- End custom js for this page-->
+</body>
+</html>

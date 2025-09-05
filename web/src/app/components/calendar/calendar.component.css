@@ -1,0 +1,21 @@
+.calendar {
+    text-align: center;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+  
+  button {
+    margin: 5px;
+    padding: 5px 10px;
+  }
+  
