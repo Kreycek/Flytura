@@ -6,30 +6,66 @@
           <p class="card-description" style="display: none;"> Add class <code>.table-striped</code>
           </p>
 
-          <div class="search-container" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+          <div class="search-container" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px; ;;">
             <div class="row">
-              <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+              <div class="col-lg-2 col-md-4 col-sm-6 col-12">
                 <div class="form-group">
-                  <label for="searchKey">Key:</label>
-                  <input type="text" id="key" [(ngModel)]="searchKey" class="form-control" placeholder="Digite a key">
+                  <label for="searchKey" style="font-size: 12px">Key:</label>
+                  <input type="text" id="key" style="font-size: 12px" [(ngModel)]="searchKey" class="form-control" placeholder="Digite a key">
                 </div>
               </div>
             
-            <div class="col-lg-3 col-md-5 col-sm-6 col-12">
+            <div class="col-lg-4 col-md-5 col-sm-6 col-12" >
               <div class="form-group">
-                <label for="searchName">Nombre:</label>
-                <input type="text" id="searchName" [(ngModel)]="searchName" class="form-control" placeholder="Digite o nombre">
+                <label for="searchName" style="font-size: 12px">Nombre:</label>
+                <input type="text" style="font-size: 12px" id="searchName" [(ngModel)]="searchName" class="form-control" placeholder="Digite o nombre">
               </div>
               </div>
-            <div class="col-lg-3 col-md-5 col-sm-6 col-12">
-              <div class="form-group">
-                <label for="searchLasName">Apelido:</label>
-                <input type="text" id="searchLastName" [(ngModel)]="searchLastName" class="form-control" placeholder="Digite o apelido">
-              </div>
-              </div>
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                  <label for="searchLasName" style="font-size: 12px">Apelido:</label>
+                  <input type="text" id="searchLastName" style="font-size: 12px" [(ngModel)]="searchLastName" class="form-control" placeholder="Digite o apelido">
+                </div>
+            </div>
+               <div class="col-lg-3 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                 
+                   <label for="searchRole">Compania aérea:</label>
+                <select id="searchRole" [(ngModel)]="searchAirlineCode" class="form-select">
+                  <option value="">Todos</option>
+                  airLInes
+                  <option *ngFor="let data of airLInes" [value]="data.code">{{data.name}}</option>
+                </select>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                     <label for="searchRole">Dt. Inicio:</label>
+                        <input 
+                              matInput [matDatepicker]="picker1" 
+                              placeholder="Escolha uma data"
+                               class="form-control w-100"
+                               [(ngModel)]="searchAirlineDtInicio"
+                              (click)="picker1.open()">                        
+                              <mat-datepicker #picker1></mat-datepicker>
 
-               <div class="col-lg-3 col-md-12 text-md-right" style="margin-top: 30px;">
-              <button class="btn btn-primary"(click)="searchOnlyFlyExcelData(1)">Pesquisar</button>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                     <label for="searchRole">Dt. Fim:</label>
+                        <input 
+                              matInput [matDatepicker]="picker2" 
+                              placeholder="Escolha uma data"
+                               class="form-control w-100"
+                                  [(ngModel)]="searchAirlineDtFim"
+                              (click)="picker2.open()">                        
+                              <mat-datepicker #picker2></mat-datepicker>
+
+                </div>
+            </div>
+               <div class="col-lg-2 col-md-12 text-md-right" style="text-align: left; margin-top: 25px;;">
+              <button style="font-size: 12px" class="btn btn-primary"(click)="searchOnlyFlyExcelData(1)">Pesquisar</button>
             </div>
             </div>           
           </div>
@@ -41,18 +77,37 @@
               <tr>
                 <th colspan="6" style="text-align: right;" >                   
                      
-                    
+                    <div style="
+                      display: inline-block; 
+                      width: 50%; 
+                      text-align: left;
+                      
+                      ">
                     <label class="custom-file-upload">
                     Selecionar Planila excel
                     <input type="file" (change)="onFileSelected($event)" accept=".xlsx,.xls,.csv" />
-                    </label>
-                    <i class="mdi mdi-plus-circle" (click)="addInvoicesOnlyFlyExcel()" title="Adicionar fatura" style="font-size: 24px; cursor: pointer;"></i>                   
+                     </label>
+                    </div>
+                    <div style="display: inline-block; width: 50%; text-align: right;">
+         
+                    <span (click)="addInvoicesOnlyFlyExcel()" style="
+                        font-size: 14px; 
+                        cursor: pointer; 
+                        background-color: #276E6E;
+                        color: #FFFFFF;
+                        font-size: 14px;
+                        border-radius: 15px;
+                      ">                  
+                     &nbsp; &nbsp; Inserir registro manual &nbsp; &nbsp; 
+                    </span>
+                    </div>
                </th>                         
               </tr>              
               <tr>
                 <th class="fmtTableBorder"> Key </th>              
                 <th class="fmtTableBorder"> Nombre </th>            
-                <th class="fmtTableBorder"> Apelido</th>    
+                <th class="fmtTableBorder"> Apelido</th>   
+                 <th class="fmtTableBorder"> Compania</th>     
                 <th class="fmtTableBorder"> Dt. Importação</th>                                 
                 <th class="fmtTableBorder"> Status </th>   
                 <th class="fmtTableBorder">  </th> 
@@ -64,8 +119,9 @@
                 <td> {{item.Key}} </td>
                 <td> {{item.Name}} </td>
                 <td> {{item.LastName}} </td>
+                   <td> {{item.CompanyName}} </td>
                  <td> {{item.DtImportacao | date:'dd/MM/YYYY HH:MM:SS'}} </td>
-                <td> {{item.Active ? "Ativo" : "Inativo"}}</td>   
+                <td> {{item.Active ? "Fila" : "Processado"}}</td>   
                 <td style="text-align: right;">                                        
                   <i (click)="updateInvoicesOnlyFlyExcel(item.ID)" style="font-size: 20px; cursor: pointer; " 
                   title="Editar centro de custo" 

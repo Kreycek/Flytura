@@ -2,6 +2,7 @@ package onlyFly
 
 import (
 	flytura "Flytura"
+	"Flytura/internal/airLine"
 	"Flytura/internal/db"
 	"Flytura/internal/models"
 	"context"
@@ -43,10 +44,48 @@ func UploadOnlyFlyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
+	client, errConnectDB1 := db.ConnectMongoDB(flytura.ConectionString)
+	if errConnectDB1 != nil {
+		log.Println("Erro ao obter nome do arquivo:", err)
+		return
+	}
+	defer db.CloseMongoDB(client)
+
+	nameWithoutExt := strings.TrimSuffix(fileHeader.Filename, filepath.Ext(fileHeader.Filename))
+
+	parts := strings.Split(nameWithoutExt, "-")
+
+	fmt.Println("Nome do arquivo sem extensão:", parts[1])
+	codeFile := ""
+	if len(parts) > 1 {
+		codeFile = parts[1]
+	} else {
+		codeFile = "error"
+		log.Println("Nome do arquivo inválido:", err)
+		return
+	}
+
+	airLineData, err := airLine.GetAirLineFileName(client, flytura.DBName, "airline", codeFile)
+	if err != nil {
+		log.Println("Erro ao obter nome do arquivo:", err)
+		return
+	}
+
+	fmt.Println("ddd", airLineData["FileName"])
+
+	companyName := airLineData["Name"].(string)
+	companyCode := airLineData["Code"].(string)
+
+	// fileName, ok := rr["fileName"]
+	// if !ok {
+	// 	log.Println("Chave 'fileName' não encontrada")
+	// 	return
+	// }
+
 	extensao := strings.ToLower(filepath.Ext(fileHeader.Filename))
 
-	tempFile, err := os.CreateTemp("", criarArquivoTemporario(extensao))
-	if err != nil {
+	tempFile, errTempFile := os.CreateTemp("", criarArquivoTemporario(extensao))
+	if errTempFile != nil {
 		http.Error(w, "Erro ao salvar arquivo", http.StatusInternalServerError)
 		return
 	}
@@ -55,14 +94,14 @@ func UploadOnlyFlyHandler(w http.ResponseWriter, r *http.Request) {
 
 	io.Copy(tempFile, file)
 
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
+	clients, err2 := db.ConnectMongoDB(flytura.ConectionString)
+	if err2 != nil {
 		http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
 		return
 	}
-	defer db.CloseMongoDB(client)
+	defer db.CloseMongoDB(clients)
 
-	err = ProcessExcel(tempFile.Name(), fileHeader.Filename, client, flytura.DBName, "onlyFlyExcel")
+	err = ProcessExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, clients, flytura.DBName, "onlyFlyExcel")
 	if err != nil {
 		http.Error(w, "Erro ao processar planilha", http.StatusInternalServerError)
 		return
@@ -449,11 +488,14 @@ func SearchExcelsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Definir estrutura para receber os parâmetros
 	var request struct {
-		Key      *string `json:"key"`
-		Name     *string `json:"name"`
-		LastName *string `json:"lastName"`
-		Page     int64   `json:"page"`
-		Limit    int64   `json:"limit"`
+		Key         *string    `json:"key"`
+		Name        *string    `json:"name"`
+		LastName    *string    `json:"lastName"`
+		CompanyCode *string    `json:"companyCode"`
+		StartDate   *time.Time `json:"startDate"`
+		EndDate     *time.Time `json:"endDate"`
+		Page        int64      `json:"page"`
+		Limit       int64      `json:"limit"`
 	}
 
 	// Decodificar o corpo da requisição JSON
@@ -462,6 +504,8 @@ func SearchExcelsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("StartDate", request.StartDate)
+	fmt.Println("EndDate", request.EndDate)
 	// Definir valores padrão para paginação
 	if request.Page < 1 {
 		request.Page = 1
@@ -471,7 +515,19 @@ func SearchExcelsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar usuários com paginação
-	costCenters, total, err := SearchExcelData(client, flytura.DBName, "onlyFlyExcel", request.Key, request.Name, request.LastName, request.Page, request.Limit)
+	costCenters, total, err := SearchExcelData(
+		client,
+		flytura.DBName,
+		"onlyFlyExcel",
+		request.Key,
+		request.Name,
+		request.LastName,
+		request.CompanyCode,
+		request.StartDate,
+		request.EndDate,
+		request.Page,
+		request.Limit)
+
 	if err != nil {
 		http.Error(w, "Erro ao buscar faturas", http.StatusInternalServerError)
 		return

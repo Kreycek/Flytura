@@ -64,6 +64,7 @@ func FormataRetornoHTTP(w http.ResponseWriter, mensagem any, codHttp int) error 
 	w.WriteHeader(codHttp) // Código 200 OK
 	return json.NewEncoder(w).Encode(map[string]any{"message": mensagem})
 }
+
 func FormataRetornoHTTPGeneric(w http.ResponseWriter, bodyName string, body any, codHttp int) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(codHttp) // Código 200 OK

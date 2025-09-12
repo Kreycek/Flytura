@@ -24,7 +24,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 03/09/2025 22:20
 Data Final da criação : 04/09/2025 18:50
 */
-func ProcessExcel(filePath, fileName string, client *mongo.Client, dbName, collectionName string) error {
+func ProcessExcel(filePath, fileName, companyName, companyCode string, client *mongo.Client, dbName, collectionName string) error {
 
 	extensao := strings.ToLower(filepath.Ext(filePath))
 	var sheetList []string
@@ -101,6 +101,8 @@ func ProcessExcel(filePath, fileName string, client *mongo.Client, dbName, colle
 		obj.Name = row[1]
 		obj.LastName = row[2]
 		obj.FileName = fileName
+		obj.CompanyCode = companyCode
+		obj.CompanyName = companyName
 
 		// preco, _ := strconv.ParseFloat(row[1], 64)
 		// produto := bson.M{
@@ -149,6 +151,8 @@ func GetExcelData(client *mongo.Client, dbName, collectionName string) ([]any, e
 			"name":         cc.Name,
 			"lastName":     cc.LastName,
 			"FileName":     cc.FileName,
+			"CompanyCode":  cc.CompanyCode,
+			"CompanyName":  cc.CompanyName,
 			"DtImportacao": cc.CreatedAt,
 			"Active":       cc.Active,
 		})
@@ -175,6 +179,10 @@ func SearchExcelData(
 	key *string,
 	name *string,
 	lastName *string,
+	companyCode *string,
+	startDate *time.Time,
+	endDate *time.Time,
+
 	page,
 	limit int64) ([]any, int64, error) {
 
@@ -191,6 +199,29 @@ func SearchExcelData(
 
 	if lastName != nil && *lastName != "" {
 		filter["lastName"] = bson.M{"$regex": *lastName, "$options": "i"}
+	}
+
+	if companyCode != nil && *companyCode != "" {
+		filter["companyCode"] = *companyCode
+	}
+	fmt.Println("startDate", startDate)
+	fmt.Println("endDate", endDate)
+	if startDate != nil || endDate != nil {
+		dateFilter := bson.M{}
+
+		if startDate != nil {
+			// Zera a hora de startDate (00:00:00)
+			start := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
+			dateFilter["$gte"] = start
+		}
+
+		if endDate != nil {
+			// Ajusta endDate para o final do dia (23:59:59.999999999)
+			end := time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, int(time.Second-time.Nanosecond), endDate.Location())
+			dateFilter["$lte"] = end
+		}
+
+		filter["createdAt"] = dateFilter
 	}
 
 	// Contar total de usuários antes da paginação
@@ -224,6 +255,8 @@ func SearchExcelData(
 			"Name":         data.Name,
 			"LastName":     data.LastName,
 			"FileName":     data.FileName,
+			"CompanyCode":  data.CompanyCode,
+			"CompanyName":  data.CompanyName,
 			"DtImportacao": data.CreatedAt,
 			"Active":       data.Active,
 		})
@@ -291,6 +324,8 @@ func GetExcelDataByID(client *mongo.Client, dbName, collectionName, excelId stri
 		"Name":         excelData.Name,
 		"LastName":     excelData.LastName,
 		"FileName":     excelData.FileName,
+		"CompanyCode":  excelData.CompanyCode,
+		"CompanyName":  excelData.CompanyName,
 		"DtImportacao": excelData.CreatedAt,
 		"Active":       excelData.Active,
 	}
@@ -341,6 +376,8 @@ func GetAllExcelData(client *mongo.Client, dbName, collectionName string, page, 
 			"Name":         cc.Name,
 			"LastName":     cc.LastName,
 			"FileName":     cc.FileName,
+			"CompanyCode":  cc.CompanyCode,
+			"CompanyName":  cc.CompanyName,
 			"DtImportacao": cc.CreatedAt,
 			"Active":       cc.Active,
 		})

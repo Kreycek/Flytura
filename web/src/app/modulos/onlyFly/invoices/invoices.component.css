@@ -1,27 +1,51 @@
-
 .custom-file-upload {
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
-    background-color: #007bff;
-    color: blue;
+    background-color: #276E6E;   
     color: white;
     border-radius: 4px;
-  }
+}
 
-  input[type="file"] {
+input[type="file"] {
     display: none;
-  }
-
+}
   
-  table.table-bordered th.fmtTableBorder {
+table.table-bordered th.fmtTableBorder {
     border-width: 1px; 
     border-bottom-color: #CED4DA;
     font-size: 13px;
 }
 
- table.table-bordered td {
-   
+table.table-bordered td {   
     font-size: 12px;
 }
 
+
+/* Estilo do mat-datepicker quando aberto */
+::ng-deep .mat-datepicker-content {
+  background-color: #ffffff !important;  /* Fundo branco */
+  border-radius: 4px !important;  /* Bordas arredondadas */
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1) !important;  /* Sombra suave */
+  border: 1px solid #ccc !important;  /* Borda leve */
+}
+
+/* Estilo das opções do mat-datepicker */
+::ng-deep .mat-calendar-body-cell {
+  color: #333 !important;  /* Cor das células */
+  padding: 10px !important;  /* Preenchimento das células */
+}
+
+/* Estilo para as células selecionadas do mat-datepicker */
+::ng-deep .mat-calendar-body-selected {
+  background-color: #007bff !important;  /* Fundo azul para a data selecionada */
+  color: #fff !important;  /* Cor do texto da data selecionada */
+  border-radius: 50% !important;  /* Bordas arredondadas */
+}
+
+
+mat-tab-group * {
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
+}

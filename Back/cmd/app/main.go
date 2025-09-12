@@ -4,6 +4,7 @@ import (
 	flytura "Flytura"
 	"Flytura/internal/auth"
 
+	airLine "Flytura/internal/airLine"
 	"Flytura/internal/onlyFly"
 	"Flytura/internal/perfil"
 	"Flytura/internal/users"
@@ -52,7 +53,7 @@ func main() {
 	/*
 		Configuração criada por Ricardo Silva Ferreira
 		Inicio da criação 05/09/2025 14:06
-		Data Final da criação : 05/09/2025 14:10
+		Data Final da criação : 09/09/2025 14:10
 	*/
 	http.HandleFunc("/uploadOnlyFlyExcelData", onlyFly.UploadOnlyFlyHandler)
 	// Não permite pesquisar por parametro apenas traz todos os registro para paginação inicialmente a primeira página
@@ -64,6 +65,14 @@ func main() {
 	http.HandleFunc("/UpdateOnlyFlyExcelData", onlyFly.UpdateExcelDataHandler)
 	http.HandleFunc("/VerifyExistOnlyFlyExcelData", onlyFly.VerifyExistExcelDataHandler)
 	http.HandleFunc("/SearchOnlyFlyExcelData", onlyFly.SearchExcelsHandler)
+
+	//AIRLINE
+	/*
+		Configuração criada por Ricardo Silva Ferreira
+		Inicio da criação 09/09/2025 22:39
+		Data Final da criação : 09/09/2025 22:39
+	*/
+	http.HandleFunc("/GetAllAirline", airLine.GetAllAirLineHandler)
 
 	//TESTE
 	http.HandleFunc("/teste", loginHandler)
