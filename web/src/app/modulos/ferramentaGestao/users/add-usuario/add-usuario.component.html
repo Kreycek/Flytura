@@ -1,8 +1,4 @@
-<app-modal-ok
-
-  
-
-  ></app-modal-ok>
+<app-modal-ok></app-modal-ok>
 <form [formGroup]="formulario" *ngIf="formulario">
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
@@ -13,8 +9,7 @@
         <br>
           <div class="form-group">
             <label for="nome">Ativar usuário? <span class="required">*</span></label>
-            <input  type="checkbox"  formControlName="active" class="form-check-input">&nbsp;<label class="espacoLabel">Ativo</label> 
-            
+            <input  type="checkbox"  formControlName="active" class="form-check-input">&nbsp;<label class="espacoLabel">Ativo</label>             
           </div>          
 
           <div class="form-group">
@@ -31,8 +26,7 @@
             <div class="invalid-feedback" *ngIf="formulario.get('nome')?.invalid && formulario.get('nome')?.touched">
               O nome é obrigatório.
             </div>
-          </div>
-  
+          </div>  
           <div class="form-group">
             <label for="sobrenome">Último Nome </label>
             <input
@@ -40,59 +34,52 @@
               class="form-control"
               formControlName="sobrenome"
               id="sobrenome"
-              placeholder="Digite o último nome"
-             
-            />
-        
-          </div>
-  
+              placeholder="Digite o último nome"             
+            />        
+          </div>  
           <div class="form-group">
             <label for="email">Email <span class="required">*</span></label>
             <input
               type="text"
               class="form-control"
               formControlName="email"
+              autocomplete="off" 
               id="email"
               (keydown.space)="$event.preventDefault()"
               placeholder="Digite o email"
               [ngClass]="{'is-invalid': formulario.get('email')?.invalid && formulario.get('email')?.touched}"
-              
-  
             />
             <div class="invalid-feedback" *ngIf="formulario.get('email')?.invalid && formulario.get('email')?.touched">
               Digite um email válido.
             </div>
           </div>
-
-
           <div class="form-group">
-            <label for="email">Senha <span class="required">*</span></label>
+            <label for="password">Senha <span class="required">*</span></label>
             <input
               type="password"
               class="form-control"
+              autocomplete="new-password"
               formControlName="password"
-              id="email"
+              id="password"
               (keydown.space)="$event.preventDefault()"
               placeholder="Digite a senha"
-              [ngClass]="{'is-invalid': formulario.get('password')?.invalid && formulario.get('password')?.touched}"
-  
+              [ngClass]="{'is-invalid': formulario.get('password')?.invalid && formulario.get('password')?.touched}"  
             />
             <small *ngIf="formulario.get('password')?.invalid && formulario.get('password')?.touched" class="text-danger">
               Senha deve ter pelo menos 6 caracteres.
             </small>
           </div>
-
           <div class="form-group">
-            <label for="email">Confirme a senha <span class="required">*</span></label>
+            <label for="passwordConfirm">Confirme a senha <span class="required">*</span></label>
             <input
               type="password"
               class="form-control"
+              autocomplete="new-password"
               formControlName="passwordConfirm"
-              id="email"
+              id="passwordConfirm"
               (keydown.space)="$event.preventDefault()"
               placeholder="Confirme a senha"
-              [ngClass]="{'is-invalid': formulario.get('passwordConfirm')?.invalid && formulario.get('passwordConfirm')?.touched}"
-  
+              [ngClass]="{'is-invalid': formulario.get('passwordConfirm')?.invalid && formulario.get('passwordConfirm')?.touched}"  
             />
             <div class="invalid-feedback" *ngIf="formulario.get('passwordConfirm')?.invalid && formulario.get('passwordConfirm')?.touched">
              Confirme a senha
@@ -109,34 +96,19 @@
               class="form-control"
               formControlName="passaporte"
               id="passaporte"
-              placeholder="Digite o passaporte"
-            
-            />
+              placeholder="Digite o passaporte" />
            
           </div>
           <div class="form-group">
-            <label for="passaporte">Telemóvel</label>
+            <label for="telemovel">Telemóvel</label>
             <input
               type="text"
               class="form-control"
               formControlName="mobile"
-              id="passaporte"
-              placeholder="Digite o telemóvel"
-            
-            />
-           
-          </div>
-  
-          
-          <div class="form-group" style="display: none;float: none;">
-            <label for="documento">Documento</label>
-            <select class="form-select">
-              <option></option>
-              <option>211 - Caixa AKZ - Pagamentos</option>
-              <option>212 - Recebimento</option>
-            </select>
-          </div>
-        
+              id="telemovel"
+              placeholder="Digite o telemóvel"            
+            />           
+          </div> 
         </form>
       </div>
     </div>

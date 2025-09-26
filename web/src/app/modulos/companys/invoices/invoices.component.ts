@@ -131,8 +131,8 @@ export class InvoicesOnlyFlyComponent {
           name: string;   
           lastName: string;    
           companyCode:string;  
-          startDate:string;
-          endDate:string;
+          startDate?:string | null;
+          endDate?:string | null;
           page:number;
           limit:number;
       }
@@ -178,8 +178,8 @@ export class InvoicesOnlyFlyComponent {
         name: this.searchName, 
         lastName: this.searchLastName, 
         companyCode:this.searchAirlineCode,
-        startDate:this.searchAirlineDtInicio ? moment(new Date(this.searchAirlineDtInicio)).format('YYYY-MM-DDT00:00:00Z') : '',
-        endDate:this.searchAirlineDtFim ? moment(new Date(this.searchAirlineDtFim)).format('YYYY-MM-DDT23:59:59Z') : '',
+        startDate:this.searchAirlineDtInicio ? moment(new Date(this.searchAirlineDtInicio)).format('YYYY-MM-DDT00:00:00Z') : null,
+        endDate:this.searchAirlineDtFim ? moment(new Date(this.searchAirlineDtFim)).format('YYYY-MM-DDT23:59:59Z') :null,
         page:currentPage,
         limit:this.limit
       };

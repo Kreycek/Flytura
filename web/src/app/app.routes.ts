@@ -8,8 +8,8 @@ import { UsuarioComponent } from './modulos/ferramentaGestao/users/usuario/usuar
 import { AddUsuarioComponent } from './modulos/ferramentaGestao/users/add-usuario/add-usuario.component';
 
 
-import { InvoicesOnlyFlyComponent } from './modulos/onlyFly/invoices/invoices.component';
-import { AddInvoicesComponent } from './modulos/onlyFly/add-invoices/add-invoices.component';
+import { InvoicesOnlyFlyComponent } from './modulos/companys/invoices/invoices.component';
+import { AddInvoicesComponent } from './modulos/companys/add-invoices/add-invoices.component';
 
 export const routes: Routes = [
 
