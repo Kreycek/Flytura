@@ -182,7 +182,7 @@ func SearchExcelData(
 	companyCode *string,
 	startDate *time.Time,
 	endDate *time.Time,
-
+	status *string,
 	page,
 	limit int64) ([]any, int64, error) {
 
@@ -204,6 +204,11 @@ func SearchExcelData(
 	if companyCode != nil && *companyCode != "" {
 		filter["companyCode"] = *companyCode
 	}
+
+	if status != nil && *status != "" {
+		filter["status"] = *status
+	}
+
 	fmt.Println("startDate", startDate)
 	fmt.Println("endDate", endDate)
 	if startDate != nil || endDate != nil {
@@ -388,4 +393,47 @@ func GetAllExcelData(client *mongo.Client, dbName, collectionName string, page, 
 	}
 
 	return ccs, int(total), nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 30/09/2025 17:07
+Data Final da criação :  30/09/2025 17:10
+*/
+// Função para obter todos os diários para carregar o drop de buscar
+func GetImportStatus(client *mongo.Client, dbName, collectionName string) ([]any, error) {
+	collection := db.GetCollection(client, dbName, collectionName)
+
+	// Consultar todos os documentos
+	cursor, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		return nil, fmt.Errorf("erro ao buscar usuários: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var dadosBanco []any
+	for cursor.Next(context.Background()) {
+		var cc models.StatusImport
+		if err := cursor.Decode(&cc); err != nil {
+			return nil, fmt.Errorf("erro ao decodificar ,status de importação: %v", err)
+		}
+
+		// Converter o _id do MongoDB para string para retorno
+		Id := cc.ID
+		// Preenche o usuário com o ID convertido em string
+		dadosBanco = append(dadosBanco, map[string]any{
+			"ID":   Id, // Agora o campo ID é uma string
+			"name": cc.Name,
+			"code": cc.Code,
+		})
+
+	}
+
+	// Verifica se houve algum erro durante a iteração do cursor
+	if err := cursor.Err(); err != nil {
+		return nil, fmt.Errorf("erro ao iterar no cursor: %v", err)
+	}
+
+	// Retorna os usuários
+	return dadosBanco, nil
 }

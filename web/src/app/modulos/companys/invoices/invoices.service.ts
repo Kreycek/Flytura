@@ -79,6 +79,13 @@ export class InvoicesService {
   }
 
 
-  
+  //Carregar todos os status de importação
+    getAllStatusImportData(): Observable<any> {
+      return this.http.get(this.configService.apiUrl + "/GetAllImportStatus" , {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+        }),
+      });
+    }
 
 }

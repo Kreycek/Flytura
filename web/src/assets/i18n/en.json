@@ -1,0 +1,44 @@
+{
+
+
+  "Ecra":{
+    "UsuarioList":{
+        "name":"Name",
+        "email":"Email",
+        "lastName":"Last Name",
+        "status":"Status",
+        "userType":"User Type",
+        "all":"All",
+        "search":"Search",
+        "users":"Users",
+        "putName":"Fill name",
+        "user":"User",
+        "putEmail":"Fill Mail",
+        "password":"Password",
+        "passwordConfirm":"Password confirm",
+        "passport":"Passport",
+        "edit":"Edit",
+        "mobile":"Mobile",
+        "new":"New",
+        "passwordNotEqual":"Passwords are not equal",
+        "profiles":"Profile",
+        "save":"Save",
+        "cancel":"Cancel",
+        "nameRequired":"Name is required",
+        "emailValid":"Fill valid email.",
+        "passwordSixChar":"Password confirm required 6 characters."
+    },
+      "menu":{
+        "register":{
+            "register":"Register",
+            "import":"Import",
+            "download":"Download"
+        }
+    },
+    "users":"Users",
+     "Management":"Management",
+    "DashBoard":"Dashboard",
+    "next":"Next",
+    "before":"Before"
+  }
+}

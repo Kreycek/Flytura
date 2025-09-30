@@ -7,7 +7,7 @@ import { catchError, tap, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ModalOkComponent } from "../../../../modal/modal-ok/modal-ok.component";
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { TranslateService,TranslateModule } from '@ngx-translate/core';
 
 export function passwordMatchValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -23,7 +23,7 @@ export function passwordMatchValidator(): ValidatorFn {
 @Component({
   selector: 'app-add-usuario',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalOkComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalOkComponent,TranslateModule],
   templateUrl: './add-usuario.component.html',
   styleUrl: './add-usuario.component.css'
 })

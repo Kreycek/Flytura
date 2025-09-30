@@ -27,20 +27,20 @@
                   <input type="text" id="searchLastName" style="font-size: 12px" [(ngModel)]="searchLastName" class="form-control" placeholder="Digite o apelido">
                 </div>
             </div>
-               <div class="col-lg-3 col-md-5 col-sm-6 col-12">
+            <div class="col-lg-3 col-md-5 col-sm-6 col-12">
                 <div class="form-group">
                  
-                   <label for="searchRole">Compania aérea:</label>
+                   <label for="searchRole" style="font-size: 12px">Compania aérea:</label>
                 <select id="searchRole" [(ngModel)]="searchAirlineCode" class="form-select">
-                  <option value="">Todos</option>
+                  <option value="" style="font-size: 12px">Todos</option>
                   airLInes
-                  <option *ngFor="let data of airLInes" [value]="data.code">{{data.name}}</option>
+                  <option *ngFor="let data of airLInes" [value]="data.code" style="font-size: 12px">{{data.name}}</option>
                 </select>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-5 col-sm-6 col-12">
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
                 <div class="form-group">
-                     <label for="searchRole">Dt. Inicio:</label>
+                     <label for="searchRole" style="font-size: 12px">Dt. Inicio:</label>
                         <input 
                               matInput [matDatepicker]="picker1" 
                               placeholder="Escolha uma data"
@@ -51,9 +51,9 @@
 
                 </div>
             </div>
-            <div class="col-lg-4 col-md-5 col-sm-6 col-12">
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
                 <div class="form-group">
-                     <label for="searchRole">Dt. Fim:</label>
+                     <label for="searchRole" style="font-size: 12px">Dt. Fim:</label>
                         <input 
                               matInput [matDatepicker]="picker2" 
                               placeholder="Escolha uma data"
@@ -64,7 +64,19 @@
 
                 </div>
             </div>
-               <div class="col-lg-2 col-md-12 text-md-right" style="text-align: left; margin-top: 25px;;">
+
+            <div class="col-lg-3 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                 
+                   <label for="searchRole" style="font-size: 12px">Status:</label>
+                <select id="searchRole" [(ngModel)]="searchStatus" class="form-select">
+                  <option value="" style="font-size: 12px">Todos</option>
+                  airLInes
+                  <option *ngFor="let data of statusImportData" [value]="data.name" style="font-size: 12px">{{data.name}}</option>
+                </select>
+                </div>
+            </div>
+               <div class="col-lg-2 col-md-12 text-md-right" style="text-align: left; margin-top: 27px;;">
               <button style="font-size: 12px" class="btn btn-primary"(click)="searchOnlyFlyExcelData(1)">Pesquisar</button>
             </div>
             </div>           

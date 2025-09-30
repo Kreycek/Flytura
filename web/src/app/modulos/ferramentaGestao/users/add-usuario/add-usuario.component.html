@@ -3,7 +3,15 @@
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-        <h4 class="card-title">{{idUser ? 'Editar' : 'Novo'}} Usuário</h4>
+        <h4 class="card-title">
+          
+          @if(idUser) {
+            {{ 'Ecra.UsuarioList.edit' | translate }} {{ 'Ecra.UsuarioList.user' | translate }}
+          } @else {
+               {{ 'Ecra.UsuarioList.new' | translate }}  {{ 'Ecra.UsuarioList.user' | translate }}
+          }
+          
+        </h4>
         <p class="card-description" style="display: none;"> Basic form elements </p>
         <form class="forms-sample">
         <br>
@@ -13,7 +21,7 @@
           </div>          
 
           <div class="form-group">
-            <label for="nome">Nome <span class="required">*</span></label>
+            <label for="nome"> {{ 'Ecra.UsuarioList.name' | translate }} <span class="required">*</span></label>
             <input
               type="text"
               class="form-control"
@@ -24,11 +32,11 @@
               [ngClass]="{'is-invalid': formulario.get('nome')?.invalid && formulario.get('nome')?.touched}"
             />
             <div class="invalid-feedback" *ngIf="formulario.get('nome')?.invalid && formulario.get('nome')?.touched">
-              O nome é obrigatório.
+            {{ 'Ecra.UsuarioList.nameRequired' | translate }} 
             </div>
           </div>  
           <div class="form-group">
-            <label for="sobrenome">Último Nome </label>
+            <label for="sobrenome"> {{ 'Ecra.UsuarioList.lastName' | translate }}  </label>
             <input
               type="text"
               class="form-control"
@@ -38,7 +46,7 @@
             />        
           </div>  
           <div class="form-group">
-            <label for="email">Email <span class="required">*</span></label>
+            <label for="email">{{ 'Ecra.UsuarioList.email' | translate }} <span class="required">*</span></label>
             <input
               type="text"
               class="form-control"
@@ -50,11 +58,12 @@
               [ngClass]="{'is-invalid': formulario.get('email')?.invalid && formulario.get('email')?.touched}"
             />
             <div class="invalid-feedback" *ngIf="formulario.get('email')?.invalid && formulario.get('email')?.touched">
-              Digite um email válido.
+               {{ 'Ecra.UsuarioList.emailValid' | translate }} 
+           
             </div>
           </div>
           <div class="form-group">
-            <label for="password">Senha <span class="required">*</span></label>
+            <label for="password">{{ 'Ecra.UsuarioList.password' | translate }} <span class="required">*</span></label>
             <input
               type="password"
               class="form-control"
@@ -66,11 +75,12 @@
               [ngClass]="{'is-invalid': formulario.get('password')?.invalid && formulario.get('password')?.touched}"  
             />
             <small *ngIf="formulario.get('password')?.invalid && formulario.get('password')?.touched" class="text-danger">
-              Senha deve ter pelo menos 6 caracteres.
+                {{ 'Ecra.UsuarioList.passwordSixChar' | translate }} 
+           
             </small>
           </div>
           <div class="form-group">
-            <label for="passwordConfirm">Confirme a senha <span class="required">*</span></label>
+            <label for="passwordConfirm">{{ 'Ecra.UsuarioList.passwordConfirm' | translate }}  <span class="required">*</span></label>
             <input
               type="password"
               class="form-control"
@@ -82,15 +92,16 @@
               [ngClass]="{'is-invalid': formulario.get('passwordConfirm')?.invalid && formulario.get('passwordConfirm')?.touched}"  
             />
             <div class="invalid-feedback" *ngIf="formulario.get('passwordConfirm')?.invalid && formulario.get('passwordConfirm')?.touched">
-             Confirme a senha
+             {{ 'Ecra.UsuarioList.passwordConfirm' | translate }} 
             </div>
             <small *ngIf="formulario.get('passwordConfirm')?.hasError('passwordsMismatch')" class="text-danger">
-              As senhas não coincidem.
+              {{ 'Ecra.UsuarioList.passwordNotEqual' | translate }}
+            
             </small>
           </div>
   
           <div class="form-group">
-            <label for="passaporte">Passaporte</label>
+            <label for="passaporte">{{ 'Ecra.UsuarioList.passport' | translate }}</label>
             <input
               type="text"
               class="form-control"
@@ -100,7 +111,7 @@
            
           </div>
           <div class="form-group">
-            <label for="telemovel">Telemóvel</label>
+            <label for="telemovel">{{ 'Ecra.UsuarioList.mobile' | translate }}</label>
             <input
               type="text"
               class="form-control"
@@ -119,7 +130,7 @@
     <div class="col-md-12 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title">Perfis <span class="required">*</span></h4>                    
+          <h4 class="card-title">{{ 'Ecra.UsuarioList.profiles' | translate }} <span class="required">*</span></h4>                    
 
           <ngContainer formArrayName="perfis">                     
             <div class="form-group perfis-container">            
@@ -180,8 +191,8 @@
       <div class="card">
         <div class="card-body">
           <div style="float: none;">
-            <button type="submit" class="btn btn-primary me-2" [disabled]="formulario.invalid" (click)="gravar()">Gravar</button>
-            <button class="btn btn-light" (click)="cancel()">Cancelar</button>
+            <button type="submit" class="btn btn-primary me-2" [disabled]="formulario.invalid" (click)="gravar()">{{ 'Ecra.UsuarioList.save' | translate }}</button>
+            <button class="btn btn-light" (click)="cancel()">{{ 'Ecra.UsuarioList.cancel' | translate }}</button>
           </div> 
         </div>
       </div>

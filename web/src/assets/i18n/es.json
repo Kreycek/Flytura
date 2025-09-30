@@ -1,0 +1,45 @@
+{
+
+
+  "Ecra":{
+    "UsuarioList":{
+        "name":"Nombre",
+        "email":"Correo electrónico",
+        "lastName":"Apellido",
+        "status":"Status",
+        "userType":"Tipo de usuário",
+        "all":"Todos",
+        "search":"Buscar",
+        "users":"Usuarios",
+        "putName":"Digite o nombre",
+        "user":"Usuário",
+        "putEmail":"Digite o correo electrónico",
+        "password":"Contraseña",
+        "passwordConfirm":"Confirmar Contraseña",
+        "passport":"Pasaporte",
+        "edit":"Cambiar",
+        "mobile":"Teléfono móvil",
+        "new":"NUevo",
+        "passwordNotEqual":"Las contraseñas no son las mismas",
+        "profiles":"Perfiles",
+        "save":"Grabar",
+        "cancel":"Cancelar",
+        "nameRequired":"El nombre es obligatorio.",
+        "emailValid":"Introduzca un correo electrónico válido.",
+        "passwordSixChar":"La contraseña debe tener al menos 6 caracteres."
+    },
+    "menu":{
+        "register":{
+            "register":"Registro",
+            "import":"Importar",
+            "download":"Descargar"
+        }
+    },
+    "users":"Usuarios",
+     "Management":"Gestión",
+    "DashBoard":"Panel",
+    "next":"Próximo",
+    "before":"Anterior" 
+   
+  }
+}

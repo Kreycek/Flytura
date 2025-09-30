@@ -1,5 +1,6 @@
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UsuarioService } from '../usuario.service';
 import { CommonModule } from '@angular/common';
@@ -9,25 +10,40 @@ import { PerfilService } from '../../perfil/perfil.service';
 
 import { FormsModule } from '@angular/forms';
 import { PaginatorComponent } from '../../../../paginator/paginator.component';
-import { ModalOkComponent } from '../../../../modal/modal-ok/modal-ok.component';
+import { TranslateService,TranslateModule } from '@ngx-translate/core';
 import { ConfigService } from '../../../../services/config.service';
 
 
 @Component({
   selector: 'app-usuario',
   standalone: true,
-  imports: [CommonModule,ModalConfirmationComponent,FormsModule,PaginatorComponent ],
+  imports: [
+        CommonModule,
+        ModalConfirmationComponent,
+        FormsModule,
+        PaginatorComponent,
+     TranslateModule
+      ],
   templateUrl: './usuario.component.html',
   styleUrl: './usuario.component.css'
 })
 export class UsuarioComponent {
 
   constructor(
+    private translate: TranslateService,
     private router: Router, 
     private usuarioService: UsuarioService,
     private perfilService: PerfilService,
-    private configService: ConfigService
-  ) {}
+    private configService: ConfigService,
+
+  ) {
+
+      // this.translate.use('en'); // ou 'en', 'es', etc.
+
+  }
+
+  
+  
 
    @ViewChild(ModalConfirmationComponent) modal!: ModalConfirmationComponent;
   searchName: string = '';
@@ -42,8 +58,14 @@ export class UsuarioComponent {
   dados:any
   perfis:any
   
-  
+ 
   ngOnInit() {
+
+    
+ 
+  
+
+
     this.perfilService.gePerfil().subscribe((response:any)=>{
       this.perfis=response;
       

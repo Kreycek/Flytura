@@ -31,12 +31,14 @@ export class InvoicesOnlyFlyComponent {
     searchAirlineCode:string='';
     searchAirlineDtInicio:string='';
     searchAirlineDtFim :string='';
+     searchStatus:string='';
     totalRegistros: number = 0;
     totalPages: number = 1;
     currentPage: number = 1;
     limit: number = 0;  
     currentYear: number = new Date().getFullYear();
     dados:any
+     statusImportData:any[]=[]
     costCenterSubModalList:any[]=[]
     costCenters:any[]=[]    
     costCentersSub:any[]=[]
@@ -94,7 +96,12 @@ export class InvoicesOnlyFlyComponent {
         this.airLineService.getAllAirLine().subscribe((response)=>{
           this.airLInes=response;
           console.log('teste',response);
-        })
+        });
+
+this.invoiceService.getAllStatusImportData().subscribe((response:any)=>{     
+        this.statusImportData=response
+
+          });
      }
   
     
@@ -133,6 +140,7 @@ export class InvoicesOnlyFlyComponent {
           companyCode:string;  
           startDate?:string | null;
           endDate?:string | null;
+          status?:string | null;
           page:number;
           limit:number;
       }
@@ -180,6 +188,7 @@ export class InvoicesOnlyFlyComponent {
         companyCode:this.searchAirlineCode,
         startDate:this.searchAirlineDtInicio ? moment(new Date(this.searchAirlineDtInicio)).format('YYYY-MM-DDT00:00:00Z') : null,
         endDate:this.searchAirlineDtFim ? moment(new Date(this.searchAirlineDtFim)).format('YYYY-MM-DDT23:59:59Z') :null,
+        status:this.searchStatus,
         page:currentPage,
         limit:this.limit
       };

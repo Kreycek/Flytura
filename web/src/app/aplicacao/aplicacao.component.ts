@@ -5,6 +5,7 @@ import { MenuComponent } from '../menu/menu.component';
 import { CenterComponent } from '../center/center.component';
 import { FooterComponent } from '../footer/footer.component';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-aplicacao',
@@ -14,5 +15,19 @@ import { NavbarComponent } from '../navbar/navbar.component';
   styleUrl: './aplicacao.component.css'
 })
 export class AplicacaoComponent {
+  constructor( private translate: TranslateService) {
 
+  }
+
+  ngOnInit() {
+
+    let language:string | null = localStorage.getItem('language');
+    if(language) {  
+       this.translate.use(language); // ou 'en', 'es', etc.
+       }
+       else {
+        localStorage.setItem('language', 'es');
+        this.translate.use('es'); 
+       }
+  }
 }

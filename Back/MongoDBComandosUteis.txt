@@ -10,7 +10,7 @@
 
 5) Adicionar um campo da estrutura mongoDB -> db.company.updateMany({},{$set:{"workNow":false}})
 
-6) atualizar dados -> db.usuarios.updateOne({ "username": "kreycek" },  { $unset: { "user": "" } })
+6) apaga o campo user quando o username for 'kreycek' -> db.usuarios.updateOne({ "username": "kreycek" },  { $unset: { "user": "" } })
 
 7) Inserir item db.user.insertOne({name:'João', lastName:'Mendes', email:'jmendes@gmail.com', user:'joao',passportNumber:'1234FVG', password:'$2a$10$.3BNGTrYkITOuIf7fKor0u1mUgskkHhOSEhz1EmAVv6hZ.Fq9W76S',perfil:[1,2,3]})   
 
@@ -20,12 +20,18 @@
 
 10) Apagar todos os registros de uma coleção -> db.movement.deleteMany({})
 
+11) atualiza um campo especifico conforme uma condição  -> db.usuarios.updateOne({ "name": "Aero México" },{ $set: { "name": "AeroMéxico" } })
 
-11) Inserir compania aérea item 
-                  db.airline.insertOne({name:'Aero México', code:'0001',fileName:'Aero-Mexico-0001' }) 
+12) Inserir compania aérea item 
+                  db.airline.insertOne({name:'Aeroméxico', code:'0001',fileName:'Aero-Mexico-0001' }) 
                   db.airline.insertOne({name:'Volaris', code:'0002',fileName:'Volaris-0002' }) 
                   db.airline.insertOne({name:'Viva Aerobus', code:'0003',fileName:'Volaris-0003' }) 
                   db.airline.insertOne({name:'American Airline', code:'0004',fileName:'American-Airline-0004' }) 
                   db.airline.insertOne({name:'Air Canada', code:'0005',fileName:'American-Canada-0005' }) 
                   db.airline.insertOne({name:'Delta Airline', code:'0006',fileName:'Delta-Airline-0006' }) 
+
+13) Inserir import status
+                  db.statusImport.insertOne({name:'Fila', code:'0001' }) 
+                  db.statusImport.insertOne({name:'Erro', code:'0002' }) 
+                  db.statusImport.insertOne({name:'Concluído', code:'0003' }) 
 

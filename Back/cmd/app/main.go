@@ -66,6 +66,9 @@ func main() {
 	http.HandleFunc("/VerifyExistOnlyFlyExcelData", onlyFly.VerifyExistExcelDataHandler)
 	http.HandleFunc("/SearchOnlyFlyExcelData", onlyFly.SearchExcelsHandler)
 
+	//Inicio da criação 30/11/2025 17:13
+	http.HandleFunc("/GetAllImportStatus", onlyFly.GetAllImportStatussHandler)
+
 	//AIRLINE
 	/*
 		Configuração criada por Ricardo Silva Ferreira

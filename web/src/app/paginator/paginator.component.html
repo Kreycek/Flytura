@@ -1,6 +1,6 @@
 <div class="pagination">
   <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
-    « Anterior
+    <<  {{ 'Ecra.before' | translate }} 
   </button>
 
   <button *ngFor="let page of pagesToShow"
@@ -11,6 +11,6 @@
   </button>
 
   <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
-    Próximo »
+   {{ 'Ecra.next' | translate }} >>
   </button>
 </div>
