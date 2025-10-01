@@ -1,7 +1,7 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
       <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="javascript:void(0)" (click)="navigateToPages('/aplicacao/center')">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">{{ 'Ecra.DashBoard' | translate }}</span>
         </a>
@@ -21,7 +21,7 @@
         </a>
         <div class="collapse" id="UI5">
           <ul class="nav flex-column sub-menu">
-            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)">{{ 'Ecra.menu.register.download' | translate }}</a></li>            
+            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" (click)="navigateToPages('/aplicacao/sheetModels')">{{ 'Ecra.menu.register.download' | translate }}</a></li>            
             <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" (click)="navigateToPages('/aplicacao/invoicesOnlyFlyExcel')">{{ 'Ecra.menu.register.import' | translate }}</a></li>
           </ul>
         </div>

@@ -88,4 +88,15 @@ export class InvoicesService {
       });
     }
 
+
+    
+  //Carregar todos os status de importação
+    GroupByCompanyName(): Observable<any> {
+      return this.http.get(this.configService.apiUrl + "/GroupByCompanyName" , {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+        }),
+      });
+    }
+
 }

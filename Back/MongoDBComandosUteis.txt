@@ -25,7 +25,7 @@
 12) Inserir compania aérea item 
                   db.airline.insertOne({name:'Aeroméxico', code:'0001',fileName:'Aero-Mexico-0001' }) 
                   db.airline.insertOne({name:'Volaris', code:'0002',fileName:'Volaris-0002' }) 
-                  db.airline.insertOne({name:'Viva Aerobus', code:'0003',fileName:'Volaris-0003' }) 
+                  db.airline.insertOne({name:'Viva Aerobus', code:'0003',fileName:'VivaAerobus-0003' }) 
                   db.airline.insertOne({name:'American Airline', code:'0004',fileName:'American-Airline-0004' }) 
                   db.airline.insertOne({name:'Air Canada', code:'0005',fileName:'American-Canada-0005' }) 
                   db.airline.insertOne({name:'Delta Airline', code:'0006',fileName:'Delta-Airline-0006' }) 
@@ -35,3 +35,4 @@
                   db.statusImport.insertOne({name:'Erro', code:'0002' }) 
                   db.statusImport.insertOne({name:'Concluído', code:'0003' }) 
 
+14) Apagar uma tabela do mongo db db.nomeDaColecao.drop();

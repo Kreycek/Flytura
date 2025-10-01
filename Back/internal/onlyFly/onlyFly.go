@@ -262,6 +262,7 @@ func SearchExcelData(
 			"FileName":     data.FileName,
 			"CompanyCode":  data.CompanyCode,
 			"CompanyName":  data.CompanyName,
+			"Status":       data.Status,
 			"DtImportacao": data.CreatedAt,
 			"Active":       data.Active,
 		})
@@ -376,15 +377,17 @@ func GetAllExcelData(client *mongo.Client, dbName, collectionName string, page, 
 
 		// Adiciona os usuários formatados
 		ccs = append(ccs, map[string]any{
-			"ID":           cc.ID.Hex(), // Agora o campo ID é uma string
-			"Key":          cc.Key,
-			"Name":         cc.Name,
-			"LastName":     cc.LastName,
-			"FileName":     cc.FileName,
-			"CompanyCode":  cc.CompanyCode,
-			"CompanyName":  cc.CompanyName,
-			"DtImportacao": cc.CreatedAt,
-			"Active":       cc.Active,
+			"ID":            cc.ID.Hex(), // Agora o campo ID é uma string
+			"Key":           cc.Key,
+			"Name":          cc.Name,
+			"LastName":      cc.LastName,
+			"FileName":      cc.FileName,
+			"CompanyCode":   cc.CompanyCode,
+			"Status":        cc.Status,
+			"CompanyName":   cc.CompanyName,
+			"MessageReturn": cc.MessageReturn,
+			"DtImportacao":  cc.CreatedAt,
+			"Active":        cc.Active,
 		})
 	}
 
@@ -436,4 +439,29 @@ func GetImportStatus(client *mongo.Client, dbName, collectionName string) ([]any
 
 	// Retorna os usuários
 	return dadosBanco, nil
+}
+
+func GroupByCompanyName(client *mongo.Client, dbName, collectionName string) ([]bson.M, error) {
+	collection := db.GetCollection(client, dbName, collectionName)
+
+	pipeline := mongo.Pipeline{
+		{{Key: "$group", Value: bson.D{
+			{Key: "_id", Value: "$companyName"},
+			{Key: "total", Value: bson.D{{Key: "$sum", Value: 1}}},
+			{Key: "documentos", Value: bson.D{{Key: "$push", Value: "$$ROOT"}}},
+		}}},
+	}
+
+	cursor, err := collection.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao agrupar por companyName: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var resultados []bson.M
+	if err := cursor.All(context.Background(), &resultados); err != nil {
+		return nil, fmt.Errorf("erro ao decodificar resultados: %v", err)
+	}
+
+	return resultados, nil
 }

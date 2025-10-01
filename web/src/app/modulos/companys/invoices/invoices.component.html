@@ -84,17 +84,13 @@
           
         <div class="table-responsive">
           <table class="table table-bordered">
-            <thead>   
-                          
+            <thead>                          
               <tr>
-                <th colspan="7" style="text-align: right;" >                   
-                     
+                <th colspan="7" style="text-align: right;" >                     
                     <div style="
                       display: inline-block; 
                       width: 50%; 
-                      text-align: left;
-                      
-                      ">
+                      text-align: left;">
                     <label class="custom-file-upload">
                     Selecionar Planila excel
                     <input type="file" (change)="onFileSelected($event)" accept=".xlsx,.xls,.csv" />
@@ -131,15 +127,43 @@
                 <td> {{item.Key}} </td>
                 <td> {{item.Name}} </td>
                 <td> {{item.LastName}} </td>
-                   <td> {{item.CompanyName}} </td>
-                 <td> {{item.DtImportacao | date:'dd/MM/YYYY HH:MM:SS'}} </td>
-                <td> {{item.Active ? "Fila" : "Processado"}}</td>   
+                <td> {{item.CompanyName}} </td>
+                <td> {{item.DtImportacao | date:'dd/MM/YYYY HH:MM'}} </td>
+              
+<td style="position: relative; z-index: 100;" 
+      (mousemove)="mousemoveHandler($event, item, item.Status=='Erro', item.MessageReturn)" 
+      (mouseleave)="hideCustomTooltip()">    
+      <span [ngStyle]="{'color': item.Status=='Erro' ? 'red': '',  'cursor': item.Status=='Erro' ? 'pointer' : '' }">{{item.Status}}</span>
+
+<!-- Tooltip global -->
+<div *ngIf="tooltip.visible"
+     [ngStyle]="{
+       position: 'fixed',
+       top: tooltip.top + 'px',
+       left: tooltip.left + 'px',
+       backgroundColor: '#333',
+       color: '#fff',
+       padding: '5px 10px',
+       borderRadius: '5px',
+       fontSize: '12px',
+       whiteSpace: 'normal',
+       maxWidth: tooltip.maxWidth,
+       zIndex: 9999,
+       boxShadow: '0px 2px 6px rgba(0,0,0,0.3)'
+     }">
+  {{tooltip.text}}
+</div>
+
+
+
+
+</td>
+
                 <td style="text-align: right;">                                        
                   <i (click)="updateInvoicesOnlyFlyExcel(item.ID)" style="font-size: 20px; cursor: pointer; " 
                   title="Editar centro de custo" 
-                  class="mdi mdi-table-edit"></i>
-                
-             </td>               
+                  class="mdi mdi-table-edit"></i>                
+                </td>               
               </tr>             
             </tbody>
           </table>

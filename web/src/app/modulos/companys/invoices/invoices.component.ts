@@ -81,7 +81,7 @@ export class InvoicesOnlyFlyComponent {
   
     }
   
-  
+   
       ngOnInit() {
    
         this.limit=this.configService.limitPaginator;
@@ -89,6 +89,7 @@ export class InvoicesOnlyFlyComponent {
         this.invoiceService.getAllOnlyFlyExcelDataPagination(this.currentPage,this.limit).subscribe((response:any)=>{     
   
             this.dados=response.onlyFlyData;  
+            console.log('this.dados ',this.dados);
             this.totalRegistros = response.total;
             this.totalPages = response.pages;
         });
@@ -213,5 +214,42 @@ this.invoiceService.getAllStatusImportData().subscribe((response:any)=>{
      } 
     
   
+  
+tooltip = {
+    visible: false,
+    text: '',
+    top: 0,
+    left: 0,
+    maxWidth: 'auto'
+  };
+
+  mousemoveHandler(event: MouseEvent, item: any, show:boolean=true, textMessage:string) {
+    const offsetX = 15;
+    const offsetY = 15;
+    const tooltipWidth = 200;
+    const screenWidth = window.innerWidth;
+
+    let left = event.clientX + offsetX;
+    let top = event.clientY + offsetY;
+    let maxWidth = 'auto';
+
+    if (left + tooltipWidth > screenWidth) {
+      left = screenWidth - tooltipWidth - offsetX;
+      maxWidth = '180px';
+    }
+
+    this.tooltip = {
+      visible: show,
+      text:textMessage,
+      top,
+      left,
+      maxWidth
+    };
+  }
+
+  hideCustomTooltip() {
+    this.tooltip.visible = false;
+  }
+
 
 }

@@ -69,6 +69,9 @@ func main() {
 	//Inicio da criação 30/11/2025 17:13
 	http.HandleFunc("/GetAllImportStatus", onlyFly.GetAllImportStatussHandler)
 
+	//Inicio da criação 01/10/2025 16:59
+	http.HandleFunc("/GroupByCompanyName", onlyFly.GroupByCompanyNameHandler)
+
 	//AIRLINE
 	/*
 		Configuração criada por Ricardo Silva Ferreira

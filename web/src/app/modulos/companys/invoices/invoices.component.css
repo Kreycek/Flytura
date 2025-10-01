@@ -49,3 +49,10 @@ mat-tab-group * {
   max-width: 100%;
   overflow-x: hidden;
 }
+
+
+.table-responsive {
+  position: relative;
+  z-index: 1; /* ou maior, se necessário */
+  overflow: visible; /* importante para permitir que a div flutue */
+}

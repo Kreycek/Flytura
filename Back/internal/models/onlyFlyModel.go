@@ -7,15 +7,16 @@ import (
 )
 
 type OnlyFlyExcel struct {
-	ID          primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Key         string             `json:"key" bson:"key,omitempty"`
-	Name        string             `json:"name" bson:"name,omitempty"`
-	LastName    string             `json:"lastName" bson:"lastName,omitempty"`
-	Status      string             `json:"status" bson:"status,omitempty"`
-	FileName    string             `json:"fileName" bson:"fileName,omitempty"`
-	CompanyName string             `json:"companyName" bson:"companyName,omitempty"`
-	CompanyCode string             `json:"companyCode" bson:"companyCode,omitempty"`
-	Value       string             `json:"value" bson:"value,omitempty"`
+	ID            primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	Key           string             `json:"key" bson:"key,omitempty"`
+	Name          string             `json:"name" bson:"name,omitempty"`
+	LastName      string             `json:"lastName" bson:"lastName,omitempty"`
+	Status        string             `json:"status" bson:"status,omitempty"`
+	FileName      string             `json:"fileName" bson:"fileName,omitempty"`
+	CompanyName   string             `json:"companyName" bson:"companyName,omitempty"`
+	MessageReturn string             `json:"messageReturn" bson:"messageReturn,omitempty"`
+	CompanyCode   string             `json:"companyCode" bson:"companyCode,omitempty"`
+	Value         string             `json:"value" bson:"value,omitempty"`
 	// CostCenterSecondary []CostCenterSecondary `json:"costCenterSecondary" bson:"costCenterSecondary,omitempty"`
 	Active        bool      `json:"active" bson:"active,omitempty"`
 	CreatedAt     time.Time `json:"createdAt" bson:"createdAt,omitempty"`

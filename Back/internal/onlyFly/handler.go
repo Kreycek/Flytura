@@ -488,15 +488,16 @@ func SearchExcelsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Definir estrutura para receber os parâmetros
 	var request struct {
-		Key         *string    `json:"key"`
-		Name        *string    `json:"name"`
-		LastName    *string    `json:"lastName"`
-		CompanyCode *string    `json:"companyCode"`
-		StartDate   *time.Time `json:"startDate"`
-		EndDate     *time.Time `json:"endDate"`
-		Status      *string    `json:"status"`
-		Page        int64      `json:"page"`
-		Limit       int64      `json:"limit"`
+		Key           *string    `json:"key"`
+		Name          *string    `json:"name"`
+		LastName      *string    `json:"lastName"`
+		CompanyCode   *string    `json:"companyCode"`
+		MessageReturn *string    `json:"messageReturn"`
+		StartDate     *time.Time `json:"startDate"`
+		EndDate       *time.Time `json:"endDate"`
+		Status        *string    `json:"status"`
+		Page          int64      `json:"page"`
+		Limit         int64      `json:"limit"`
 	}
 
 	// Decodificar o corpo da requisição JSON
@@ -577,6 +578,44 @@ func GetAllImportStatussHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Obter todos os usuários
 	onlyFlyData, err := GetExcelData(client, flytura.DBName, "statusImport")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Retornar a resposta com os dados dos usuários
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(onlyFlyData); err != nil {
+		log.Printf("erro ao codificar resposta JSON: %v", err)
+	}
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 01/10/2025 17:00
+Data Final da criação : 01/10/2025 17:01
+*/
+// Obtem todos sem paginação
+func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
+
+	status, msg := flytura.TokenValido(w, r)
+
+	if !status {
+		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", msg), http.StatusUnauthorized)
+		return
+	}
+
+	// Conectar ao MongoDB
+	client, err := db.ConnectMongoDB(flytura.ConectionString)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
+		return
+	}
+	defer db.CloseMongoDB(client)
+
+	// Obter todos os usuários
+	onlyFlyData, err := GroupByCompanyName(client, flytura.DBName, "onlyFlyExcel")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
