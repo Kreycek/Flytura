@@ -593,14 +593,12 @@ func GetAllImportStatussHandler(w http.ResponseWriter, r *http.Request) {
 
 /*
 Função criada por Ricardo Silva Ferreira
-Inicio da criação 01/10/2025 17:00
-Data Final da criação : 01/10/2025 17:01
+Início da criação: 01/10/2025 17:00
+Data final da criação: 01/10/2025 17:01
 */
-// Obtem todos sem paginação
 func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 
 	status, msg := flytura.TokenValido(w, r)
-
 	if !status {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", msg), http.StatusUnauthorized)
 		return
@@ -614,14 +612,32 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.CloseMongoDB(client)
 
-	// Obter todos os usuários
-	onlyFlyData, err := GroupByCompanyName(client, flytura.DBName, "onlyFlyExcel")
+	// Obter parâmetros da query string
+	query := r.URL.Query()
+	statusParam := query.Get("status")
+	companyNameParam := query.Get("companyName")
+	startDateStr := query.Get("startDate")
+	endDateStr := query.Get("endDate")
+
+	// Parse das datas, se fornecidas
+	var startDate, endDate *time.Time
+	if startDateStr != "" && endDateStr != "" {
+		start, errStart := time.Parse(time.RFC3339, startDateStr)
+		end, errEnd := time.Parse(time.RFC3339, endDateStr)
+		if errStart == nil && errEnd == nil {
+			startDate = &start
+			endDate = &end
+		}
+	}
+
+	// Chamada da função com filtros
+	onlyFlyData, err := GroupByCompanyNameFiltered(client, flytura.DBName, "onlyFlyExcel", startDate, endDate, statusParam, companyNameParam)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Retornar a resposta com os dados dos usuários
+	// Retornar a resposta com os dados
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(onlyFlyData); err != nil {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../../../services/config.service';
 
@@ -91,12 +91,34 @@ export class InvoicesService {
 
     
   //Carregar todos os status de importação
-    GroupByCompanyName(): Observable<any> {
-      return this.http.get(this.configService.apiUrl + "/GroupByCompanyName" , {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-        }),
-      });
-    }
+   
+GroupByCompanyName(
+  status?: string | null,
+  companyName?: string| null,
+  startDate?: string| null,
+  endDate?: string| null
+): Observable<any> {
+  let params = new HttpParams();
+
+  if (status) {
+    params = params.set('status', status);
+  }
+  if (companyName) {
+    params = params.set('companyName', companyName);
+  }
+  if (startDate) {
+    params = params.set('startDate', startDate);
+  }
+  if (endDate) {
+    params = params.set('endDate', endDate);
+  }
+
+  return this.http.get(this.configService.apiUrl + '/GroupByCompanyName', {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+    }),
+    params: params
+  });
+}
 
 }

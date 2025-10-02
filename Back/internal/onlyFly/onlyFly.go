@@ -441,20 +441,50 @@ func GetImportStatus(client *mongo.Client, dbName, collectionName string) ([]any
 	return dadosBanco, nil
 }
 
-func GroupByCompanyName(client *mongo.Client, dbName, collectionName string) ([]bson.M, error) {
+func GroupByCompanyNameFiltered(client *mongo.Client, dbName, collectionName string, startDate, endDate *time.Time, status, companyCode string) ([]bson.M, error) {
 	collection := db.GetCollection(client, dbName, collectionName)
 
-	pipeline := mongo.Pipeline{
-		{{Key: "$group", Value: bson.D{
+	// Construir filtro dinamicamente
+	matchConditions := bson.D{}
+
+	if startDate != nil && endDate != nil {
+		matchConditions = append(matchConditions, bson.E{
+			Key: "createdAt", Value: bson.D{
+				{Key: "$gte", Value: *startDate},
+				{Key: "$lte", Value: *endDate},
+			},
+		})
+	}
+
+	if status != "" {
+		matchConditions = append(matchConditions, bson.E{Key: "status", Value: status})
+	}
+
+	if companyCode != "" {
+		matchConditions = append(matchConditions, bson.E{Key: "companyCode", Value: companyCode})
+	}
+
+	pipeline := mongo.Pipeline{}
+
+	// Adiciona $match se houver condições
+	if len(matchConditions) > 0 {
+		pipeline = append(pipeline, bson.D{{Key: "$match", Value: matchConditions}})
+	}
+
+	// Etapa de agrupamento
+	groupStage := bson.D{
+		{Key: "$group", Value: bson.D{
 			{Key: "_id", Value: "$companyName"},
 			{Key: "total", Value: bson.D{{Key: "$sum", Value: 1}}},
 			{Key: "documentos", Value: bson.D{{Key: "$push", Value: "$$ROOT"}}},
-		}}},
+		}},
 	}
+
+	pipeline = append(pipeline, groupStage)
 
 	cursor, err := collection.Aggregate(context.Background(), pipeline)
 	if err != nil {
-		return nil, fmt.Errorf("erro ao agrupar por companyName: %v", err)
+		return nil, fmt.Errorf("erro ao agrupar por companyName com filtros: %v", err)
 	}
 	defer cursor.Close(context.Background())
 
@@ -465,3 +495,28 @@ func GroupByCompanyName(client *mongo.Client, dbName, collectionName string) ([]
 
 	return resultados, nil
 }
+
+// func GroupByCompanyName(client *mongo.Client, dbName, collectionName string) ([]bson.M, error) {
+// 	collection := db.GetCollection(client, dbName, collectionName)
+
+// 	pipeline := mongo.Pipeline{
+// 		{{Key: "$group", Value: bson.D{
+// 			{Key: "_id", Value: "$companyName"},
+// 			{Key: "total", Value: bson.D{{Key: "$sum", Value: 1}}},
+// 			{Key: "documentos", Value: bson.D{{Key: "$push", Value: "$$ROOT"}}},
+// 		}}},
+// 	}
+
+// 	cursor, err := collection.Aggregate(context.Background(), pipeline)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("erro ao agrupar por companyName: %v", err)
+// 	}
+// 	defer cursor.Close(context.Background())
+
+// 	var resultados []bson.M
+// 	if err := cursor.All(context.Background(), &resultados); err != nil {
+// 		return nil, fmt.Errorf("erro ao decodificar resultados: %v", err)
+// 	}
+
+// 	return resultados, nil
+// }
