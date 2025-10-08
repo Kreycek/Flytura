@@ -15,7 +15,7 @@ import { ModalOkComponent } from '../modal/modal-ok/modal-ok.component';
 @Component({
   selector: 'app-center',
   standalone: true,
-  imports: [CommonModule,FormsModule,MatDatepickerModule,ModalOkComponent],
+  imports: [CommonModule,FormsModule,MatDatepickerModule],
   
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'pt-BR' }],
   templateUrl: './center.component.html',

@@ -24,7 +24,11 @@
               "src/favicon.ico",
               "src/assets"
             ],
-
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/assets/scss"
+              ]
+            },
             "styles": [
               
               "src/styles.css",            
@@ -37,13 +41,11 @@
               "src/assets/js/select.dataTables.min.css",
               "src/assets/css/style.css",
               "src/assets/vendors/select2/select2.min.css",              
-              "src/assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css",
-              "src/assets/css/maps/_checkbox-radio.scss"
-       
-             
-
+              "src/assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css"                         
+           
             ],
             "scripts": [
+              
               "src/assets/vendors/js/vendor.bundle.base.js",
               "src/assets/vendors/chart.js/chart.umd.js",
               "src/assets/js/off-canvas.js",
@@ -51,9 +53,16 @@
               "src/assets/js/settings.js",
               "src/assets/js/todolist.js",
               "src/assets/js/jquery.cookie.js"
+             
+            ],
 
+            "optimization": {
+              "styles": {
+                "minify": true,
+                "inlineCritical": false
+              }
+            }
 
-            ]
           },
           "configurations": {
             "production": {
@@ -61,12 +70,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "12MB"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumError": "100kB"
                 }
               ],
               "outputHashing": "all"

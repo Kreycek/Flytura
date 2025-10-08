@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -10,10 +10,10 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+  @Output() am = new EventEmitter<boolean>
+  private isActive = true;
 
-  /**
-   *
-   */
+
   constructor(private translate: TranslateService) {
  
     
@@ -24,5 +24,10 @@ export class NavbarComponent {
     localStorage.setItem('language', language);
      this.translate.use(language);
         
+  }
+
+  activeMenu() {
+      this.isActive = !this.isActive;
+    this.am.emit(this.isActive);
   }
 }

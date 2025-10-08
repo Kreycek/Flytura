@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,10 +13,13 @@ import { TranslateModule } from '@ngx-translate/core';
 export class MenuComponent {
   i=false;
 
+  @Input() activeMenu: boolean = false;
+
   constructor(
     private router: Router,
   ) {}
   ngOnInit() {
+    console.log('activeMenu',this.activeMenu);
     setTimeout(() => {
       this.i=true;
     }, 1000);

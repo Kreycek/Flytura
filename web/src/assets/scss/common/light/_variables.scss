@@ -11,12 +11,15 @@ $yellow:            #f6e84e;
 $green:             #46c35f;
 $teal:              #58d8a3;
 $cyan:              #57c7d4;
-$black:             #000;
+$black:             #000000;
 $white:             #ffffff;
 $white-smoke:       #f2f7f8;
 $violet:            #41478a;
 $darkslategray :    #2e383e;
 $dodger-blue :      #3498db;
+
+$line-height-base:50px;
+$border-width:100px;
 
 
 $colors: (
@@ -111,6 +114,9 @@ $default-font-size: .875rem; // 14px as base font size
 $text-muted: #737F8B;
 $body-color: #1F1F1F;
 $color-light-blue: #52C4FF;
+$gray-600: #f8f9fa;
+$gray-700: #f8f9fa;
+
 
 
 ////////// FONT VARIABLES //////////
@@ -118,7 +124,7 @@ $color-light-blue: #52C4FF;
 ///////// FOOTER ////////
 $footer-height: 75px;
 $footer-bg: $content-bg;
-$footer-color: color(dark);
+$footer-color: colors(dark);
 ///////// FOOTER ////////
 
 ///////// BUTTONS ////////
@@ -165,7 +171,7 @@ $tooltip-border-radius: .375rem;
 
 /////////  FORMS /////////
 
-$input-bg:                color(white);
+$input-bg:                colors(white);
 $input-border-radius:     2px;
 $input-placeholder-color: #c9c8c8;
 $input-font-size: .875rem;
@@ -206,7 +212,7 @@ $table-cell-padding: 0.500rem 1.375rem;
 $table-border-color: $border-color;
 
 $table-inverse-bg: #2a2b32;
-$table-inverse-color: color(white);
+$table-inverse-color: colors(white);
 $expanded-table-cell-color:#0B0F32;
 $alpha-orange:#FE5C83;
 

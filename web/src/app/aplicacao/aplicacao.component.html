@@ -8,13 +8,13 @@
     <title>Flytura</title>
  
   </head>
-  <body>
+  <body class="{{!this.am ?  'sidebar-icon-only' : ''}}">
     <div class="container-scroller">      
-    <app-navbar></app-navbar>
+    <app-navbar (am)="activeMenu($event)"></app-navbar>
       <!-- partial -->
     <div class="container-fluid page-body-wrapper">
         <!-- partial:partials/_sidebar.html -->
-        <app-menu></app-menu>
+        <app-menu [activeMenu]="this.am"></app-menu>
       <!-- partial -->
           <div class="main-panel">
             <div class="content-wrapper">

@@ -117,75 +117,9 @@
 
 /*-------------------------------------------------------------------*/
 /* === Import Bootstrap functions and variables === */
-@import "../../../../../node_modules/bootstrap/scss/functions";
-@import "../../../../../node_modules/bootstrap/scss/variables";
+// @import "../../../../../node_modules/bootstrap/functions";
+// @import "../../../../../node_modules/bootstrap/scss/variables";
 
 /*-------------------------------------------------------------------*/
 /* === Import template variables === */
 @import "variables";
-
-/*-------------------------------------------------------------------*/
-/* === SCSS Compass Functions === */
-@import "../../../../../node_modules/compass-mixins/lib/compass";
-@import "../../../../../node_modules/compass-mixins/lib/animate";
-
-/*-------------------------------------------------------------------*/
-/* === Boostrap Main SCSS === */
-@import "../../../../../node_modules/bootstrap/scss/bootstrap";
-
-/*-------------------------------------------------------------------*/
-/* === Template mixins === */
-@import "mixins/misc";
-@import "mixins/animation";
-@import "mixins/badges";
-@import "mixins/blockqoute";
-@import "mixins/buttons";
-@import "mixins/breadcrumbs";
-@import "mixins/cards";
-@import "mixins/no-ui-slider";
-@import "mixins/pagination";
-@import "mixins/popovers";
-@import "mixins/tooltips";
-
-/*-------------------------------------------------------------------*/
-/* === Core Styles === */
-@import "reset";
-@import "fonts";
-@import "functions";
-@import "background";
-@import "typography";
-@import "misc";
-@import "footer";
-@import "utilities";
-@import "demo";
-@import "dashboard";
-
-/*-------------------------------------------------------------------*/
-/* === Components === */
-
-@import "components/badges";
-@import "components/buttons";
-@import "components/cards";
-@import "components/checkbox-radio";
-@import "components/dropdown";
-@import "components/forms";
-@import "components/icons";
-@import "components/lists";
-@import "components/preview";
-@import "components/tables";
-@import "components/todo-list";
-
-
-
-/*-------------------------------------------------------------------*/
-/* === Plugin overrides === */
-
-@import "components/plugin-overrides/codemirror";
-@import "components/plugin-overrides/data-tables";
-@import "components/plugin-overrides/pws-tabs";
-@import "components/plugin-overrides/select2";
-@import "components/plugin-overrides/typeahead";
-
-/*-------------------------------------------------------------------*/
-/* === Landing screens === */
-@import "landing-screens/auth";

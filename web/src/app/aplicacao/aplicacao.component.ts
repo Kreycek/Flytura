@@ -19,8 +19,9 @@ export class AplicacaoComponent {
 
   }
 
+  am:boolean=true
   ngOnInit() {
-
+console.log('am',this.am);
     let language:string | null = localStorage.getItem('language');
     if(language) {  
        this.translate.use(language); // ou 'en', 'es', etc.
@@ -29,5 +30,10 @@ export class AplicacaoComponent {
         localStorage.setItem('language', 'es');
         this.translate.use('es'); 
        }
+  }
+
+  activeMenu(value:boolean) {
+    this.am=value;
+    console.log('click ',this.am);
   }
 }
