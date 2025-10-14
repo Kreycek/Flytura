@@ -14,7 +14,7 @@ import { ModelsComponent } from './modulos/companys/models/models/models.compone
 
 export const routes: Routes = [
 
-    { path: '', redirectTo: '/aplicacao', pathMatch: 'full' },   // Redireciona para login por padrão    
+    { path: '', redirectTo: '/login', pathMatch: 'full' },   // Redireciona para login por padrão    
     { 
         path:'aplicacao',
         component:AplicacaoComponent,

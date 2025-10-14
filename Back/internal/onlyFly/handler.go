@@ -127,7 +127,7 @@ func GetAllOnlyExcelDatasHandler(w http.ResponseWriter, r *http.Request) {
 	status, msg := flytura.TokenValido(w, r)
 
 	if !status {
-		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", msg), http.StatusUnauthorized)
+		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
 		return
 	}
 
@@ -164,7 +164,7 @@ Data Final da criação : 05/09/2025 11:00
 func GetAllExcelDatasHandler(w http.ResponseWriter, r *http.Request) {
 	status, msg := flytura.TokenValido(w, r)
 	if !status {
-		http.Error(w, fmt.Sprintf("erro ao buscar perfis: %v", msg), http.StatusUnauthorized)
+		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
 		return
 	}
 
@@ -467,7 +467,7 @@ Data Final da criação : 05/09/2025 14:03
 func SearchExcelsHandler(w http.ResponseWriter, r *http.Request) {
 	// Verificar se a requisição é do tipo POST
 	if r.Method != http.MethodPost {
-		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		http.Error(w, "Método não permitido dever ser um post", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -564,7 +564,7 @@ func GetAllImportStatussHandler(w http.ResponseWriter, r *http.Request) {
 	status, msg := flytura.TokenValido(w, r)
 
 	if !status {
-		http.Error(w, fmt.Sprintf("erro ao buscar status de importação: %v", msg), http.StatusUnauthorized)
+		http.Error(w, fmt.Sprintf("Token inválido: %v", msg), http.StatusUnauthorized)
 		return
 	}
 
@@ -600,7 +600,7 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 
 	status, msg := flytura.TokenValido(w, r)
 	if !status {
-		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", msg), http.StatusUnauthorized)
+		http.Error(w, fmt.Sprintf("token inválido handler onlyfly: %v", msg), http.StatusUnauthorized)
 		return
 	}
 
@@ -643,4 +643,107 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(onlyFlyData); err != nil {
 		log.Printf("erro ao codificar resposta JSON: %v", err)
 	}
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 14/10/2025 22:01
+Data Final da criação :  14/10/2025 22:12
+*/
+func GetDataExcelByStatusHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Conectar ao MongoDB
+	client, err := db.ConnectMongoDB(flytura.ConectionString)
+	if err != nil {
+		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+		return
+	}
+	defer client.Disconnect(context.Background())
+
+	// Extrair o ID da URL
+	companyCode := r.URL.Query().Get("companyCode")
+	if companyCode == "" {
+		http.Error(w, "Codigo da compania não fornecido", http.StatusBadRequest)
+		return
+	}
+
+	status := r.URL.Query().Get("status")
+	if status == "" {
+		http.Error(w, "status não fornecido", http.StatusBadRequest)
+		return
+	}
+
+	token := r.URL.Query().Get("token")
+	if token == "" {
+		http.Error(w, "token não fornecido", http.StatusBadRequest)
+		return
+	}
+
+	var error error
+	_, error = VerifyAccessValidTokenListSheet(client, flytura.DBName, "tokenAccess", token)
+	if error != nil {
+		http.Error(w, "Token inválido", http.StatusBadRequest)
+		log.Println("Token inválido", err)
+		return
+	}
+
+	// Buscar o usuário no banco de dados pelo ID
+	dataExcel, err := GetDataExcelByStatus(client, flytura.DBName, "onlyFlyExcel", companyCode, status)
+	if err != nil {
+		http.Error(w, "Erro ao dados da planilha", http.StatusInternalServerError)
+		return
+	}
+
+	// Configurar o cabeçalho da resposta como JSON
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Enviar o usuário como resposta JSON
+	if err := json.NewEncoder(w).Encode(dataExcel); err != nil {
+		log.Printf("erro ao codificar resposta JSON: %v", err)
+		http.Error(w, "Erro ao codificar resposta", http.StatusInternalServerError)
+	}
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 14/10/2025 22:24
+Data Final da criação :  14/10/2025 22:32
+*/
+func VerifyAccessValidTokenListSheet(client *mongo.Client, dbName, collectionName, token string) (map[string]any, error) {
+
+	collection := client.Database(dbName).Collection(collectionName)
+
+	// objectID, erroId := primitive.ObjectIDFromHex(excelId)
+	// if erroId != nil {
+	// 	log.Fatalf("Erro ao converter string para ObjectID: %v", erroId)
+	// }
+
+	filter := bson.M{
+		"token":  token,
+		"active": true,
+	}
+
+	// Variável para armazenar o usuário retornado
+	var tokenAccessSheet models.TokenAccessSheet
+
+	// Usar FindOne para pegar apenas um único registro
+	err := collection.FindOne(context.Background(), filter).Decode(&tokenAccessSheet)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("plano de contas não encontrado")
+		}
+		return nil, fmt.Errorf("erro ao buscar plano de contas: %v", err)
+	}
+
+	// Converter o _id para string
+
+	// Retornar o usuário como um mapa
+	_return := map[string]any{
+		"ID":   tokenAccessSheet.ID.Hex(), // Agora o campo ID é uma string
+		"Name": tokenAccessSheet.Name,
+		"Code": tokenAccessSheet.Token,
+	}
+
+	return _return, nil
 }

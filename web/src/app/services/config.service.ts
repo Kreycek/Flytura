@@ -8,7 +8,20 @@ import { Injectable } from '@angular/core';
 })
 export class ConfigService {
 
-    public apiUrl = 'http://localhost:8080'; 
+    // public apiUrl = 'http://localhost:8080'; 
+    public apiUrl = ''; 
+
+    constructor() {
+      
+    const hostname = window.location.hostname;
+
+    if (hostname.includes('54.156.244.197')) {
+      this.apiUrl = 'http://54.156.244.197:8080';
+    } else {
+      this.apiUrl = 'http://localhost:8080';
+    }
+
+    }
 
     public  types=['R','I','M']
 

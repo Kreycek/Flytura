@@ -15,7 +15,7 @@ func GetAllPerfilsHandler(w http.ResponseWriter, r *http.Request) {
 	status, msg := flytura.TokenValido(w, r)
 
 	if !status {
-		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", msg), http.StatusUnauthorized)
+		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
 		return
 	}
 

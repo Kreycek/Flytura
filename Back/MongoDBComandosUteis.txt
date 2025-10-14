@@ -12,9 +12,9 @@
 
 6) apaga o campo user quando o username for 'kreycek' -> db.usuarios.updateOne({ "username": "kreycek" },  { $unset: { "user": "" } })
 
-7) Inserir item db.user.insertOne({name:'João', lastName:'Mendes', email:'jmendes@gmail.com', user:'joao',passportNumber:'1234FVG', password:'$2a$10$.3BNGTrYkITOuIf7fKor0u1mUgskkHhOSEhz1EmAVv6hZ.Fq9W76S',perfil:[1,2,3]})   
+7) Inserir item db.user.insertOne({name:'Ricardo', lastName:'Silva Ferreira', email:'kreycek@gmail.com', user:'kreycek',passportNumber:'1234FVG', password:'$2a$10$.3BNGTrYkITOuIf7fKor0u1mUgskkHhOSEhz1EmAVv6hZ.Fq9W76S',perfil:[1,2,3],active:true})   
 
-8) Inserir vários registros ao mesmo tempo -> db.perfil.insertMany([{name:'Administrador',shortName:'Adm'},{name:'Super Administrador',shortName:'SAdm'}, {name:'Utilizador',shortName:'U'}])
+8) Inserir vários registros ao mesmo tempo -> db.perfil.insertMany([{name:'Administrador',shortName:'Adm'},{name:'Usuário',shortName:'User'}, {name:'Contador',shortName:'Cont'}])
 
 9) Trazer numero de registros -> db.users.countDocuments({}) 
 
@@ -36,3 +36,13 @@
                   db.statusImport.insertOne({name:'Concluído', code:'0003' }) 
 
 14) Apagar uma tabela do mongo db db.nomeDaColecao.drop();
+
+15) Excutar docker container  'docker start clarion'
+
+16) Entrar no container docker exec -it clarion mongosh -u admin -p secret
+
+Inserir import status
+                  db.tokenAccess.insertOne({name:'Fila', token:'XC45678@3TG34', active:true }) 
+                
+
+

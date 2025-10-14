@@ -12,8 +12,14 @@ import (
 
 // Variável global que contém a chave secreta para JWT
 var SecretKey = []byte("my_secret_key")
-var UrlSite = "http://localhost:4200"
+
+var UrlSiteLocalHost = "http://localhost:4200"
+var UrlSiteProduction = "http://54.156.244.197"
+var UrlSiteProductionClear = "54.156.244.197"
+
 var ConectionString = "mongodb://admin:secret@localhost:27017"
+
+// var ConectionString = "mongodb://localhost:27017"
 var DBName = "flytura"
 
 func TokenValido(w http.ResponseWriter, r *http.Request) (bool, string) {

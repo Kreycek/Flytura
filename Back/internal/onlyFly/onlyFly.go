@@ -91,7 +91,7 @@ func ProcessExcel(filePath, fileName, companyName, companyCode string, client *m
 			Name:      "",
 			LastName:  "",
 			FileName:  "",
-			Status:    "Ativo",
+			Status:    "Fila",
 			Active:    true,
 			CreatedAt: time.Now(),
 		}
@@ -152,6 +152,7 @@ func GetExcelData(client *mongo.Client, dbName, collectionName string) ([]any, e
 			"lastName":     cc.LastName,
 			"FileName":     cc.FileName,
 			"CompanyCode":  cc.CompanyCode,
+			"Status":       cc.Status,
 			"CompanyName":  cc.CompanyName,
 			"DtImportacao": cc.CreatedAt,
 			"Active":       cc.Active,
@@ -209,8 +210,8 @@ func SearchExcelData(
 		filter["status"] = *status
 	}
 
-	fmt.Println("startDate", startDate)
-	fmt.Println("endDate", endDate)
+	// fmt.Println("startDate", startDate)
+	// fmt.Println("endDate", endDate)
 	if startDate != nil || endDate != nil {
 		dateFilter := bson.M{}
 
@@ -330,6 +331,7 @@ func GetExcelDataByID(client *mongo.Client, dbName, collectionName, excelId stri
 		"Name":         excelData.Name,
 		"LastName":     excelData.LastName,
 		"FileName":     excelData.FileName,
+		"Status":       excelData.Status,
 		"CompanyCode":  excelData.CompanyCode,
 		"CompanyName":  excelData.CompanyName,
 		"DtImportacao": excelData.CreatedAt,
@@ -494,6 +496,66 @@ func GroupByCompanyNameFiltered(client *mongo.Client, dbName, collectionName str
 	}
 
 	return resultados, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 14/10/2025 21:51
+Data Final da criação : 14/10/2025 21:59
+*/
+func GetDataExcelByStatus(client *mongo.Client, dbName, collectionName, companyCode, status string) ([]any, error) {
+
+	collection := client.Database(dbName).Collection(collectionName)
+
+	filter := bson.M{}
+
+	if companyCode != "" {
+		filter["companyCode"] = bson.M{"$regex": companyCode, "$options": "i"}
+	}
+	if status != "" {
+		filter["status"] = bson.M{"$regex": status, "$options": "i"}
+	}
+
+	// Consultar todos os documentos
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao buscar usuários: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var dadosBanco []any
+	for cursor.Next(context.Background()) {
+		var cc models.OnlyFlyExcel
+		if err := cursor.Decode(&cc); err != nil {
+			return nil, fmt.Errorf("erro ao decodificar ,centro de custo: %v", err)
+		}
+
+		// Converter o _id do MongoDB para string para retorno
+		Id := cc.ID
+		// Preenche o usuário com o ID convertido em string
+		dadosBanco = append(dadosBanco, map[string]any{
+			"ID":           Id, // Agora o campo ID é uma string
+			"key":          cc.Key,
+			"name":         cc.Name,
+			"lastName":     cc.LastName,
+			"FileName":     cc.FileName,
+			"CompanyCode":  cc.CompanyCode,
+			"Status":       cc.Status,
+			"CompanyName":  cc.CompanyName,
+			"DtImportacao": cc.CreatedAt,
+			"Active":       cc.Active,
+		})
+
+	}
+
+	// Verifica se houve algum erro durante a iteração do cursor
+	if err := cursor.Err(); err != nil {
+		return nil, fmt.Errorf("erro ao iterar no cursor: %v", err)
+	}
+
+	// Retorna os usuários
+	return dadosBanco, nil
+
 }
 
 // func GroupByCompanyName(client *mongo.Client, dbName, collectionName string) ([]bson.M, error) {

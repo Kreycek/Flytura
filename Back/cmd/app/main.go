@@ -3,6 +3,9 @@ package main
 import (
 	flytura "Flytura"
 	"Flytura/internal/auth"
+	"fmt"
+	"io"
+	"strings"
 
 	airLine "Flytura/internal/airLine"
 	"Flytura/internal/onlyFly"
@@ -29,10 +32,40 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+func getPublicIP() (string, error) {
+	resp, err := http.Get("https://api.ipify.org")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	ip, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(ip), nil
+}
+
 func main() {
 
+	publicIP, err := getPublicIP()
+	if err != nil {
+		fmt.Println("Erro ao obter IP público:", err)
+		publicIP = "localhost"
+	}
+
+	fmt.Println("Ip Publico", publicIP)
+
+	var allowedOrigin string
+	if strings.Contains(publicIP, flytura.UrlSiteProductionClear) {
+		allowedOrigin = flytura.UrlSiteProduction // domínio de produção
+	} else {
+		allowedOrigin = flytura.UrlSiteLocalHost // ou a porta que seu front usa
+	}
+
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{flytura.UrlSite}, // Permitindo o domínio de onde vem a requisição
+		AllowedOrigins: []string{allowedOrigin}, // Permitindo o domínio de onde vem a requisição
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
 	})
@@ -79,6 +112,9 @@ func main() {
 		Data Final da criação : 09/09/2025 22:39
 	*/
 	http.HandleFunc("/GetAllAirline", airLine.GetAllAirLineHandler)
+
+	//API'S PUBLICAS
+	http.HandleFunc("/GetDataExcelByStatus", onlyFly.GetDataExcelByStatusHandler)
 
 	//TESTE
 	http.HandleFunc("/teste", loginHandler)

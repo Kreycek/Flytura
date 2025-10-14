@@ -22,7 +22,7 @@ import (
 func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	status, msg := flytura.TokenValido(w, r)
 	if !status {
-		http.Error(w, fmt.Sprintf("erro ao buscar perfis: %v", msg), http.StatusUnauthorized)
+		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
 		return
 	}
 
@@ -71,7 +71,7 @@ func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 func SearchUsersHandler(w http.ResponseWriter, r *http.Request) {
 	// Verificar se a requisição é do tipo POST
 	if r.Method != http.MethodPost {
-		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		http.Error(w, "Método não permitido, deve ser post", http.StatusMethodNotAllowed)
 		return
 	}
 
