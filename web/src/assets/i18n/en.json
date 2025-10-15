@@ -13,6 +13,7 @@
         "users":"Users",
         "putName":"Fill name",
         "user":"User",
+        "userName":"Username",
         "putEmail":"Fill Mail",
         "password":"Password",
         "passwordConfirm":"Password confirm",

@@ -60,7 +60,7 @@ export class AddUsuarioComponent {
       if(id) {
         this.isEdit=true;
         this.usuarioService.getUserById(id??'0').subscribe((response)=>{
-          
+           console.log('dados retornados ',response);
           this.idUser=id;    
           this. createFormUser(response);
           this.loadPerfil(response.Perfil);
@@ -95,6 +95,7 @@ export class AddUsuarioComponent {
         nome: [obj.Name, Validators.required],
         sobrenome: [obj.LastName, Validators.required],
         email: [{value:obj.Email, disabled: this.isEdit}, [Validators.required, Validators.email]],
+        userName: [{value:obj.UserName, disabled: true}, [Validators.required]],
         password: [''],
         passwordConfirm: [''],
         passaporte: [obj.PassportNumber],
@@ -155,6 +156,8 @@ export class AddUsuarioComponent {
       return;
     }
     const formValues=this.formulario?.value;
+
+    console.log('obj gravar ',this.formulario);
     const objGravar: { 
       id?:string |null;
       name: string;
@@ -164,7 +167,8 @@ export class AddUsuarioComponent {
       active:boolean;
       perfil: number[]; // Definindo o tipo correto para o array 'perfil'     
       password:string;
-      mobile:string
+      mobile:string,
+      userName:string
     } ={
       id:null,
       name:formValues.nome,
@@ -174,7 +178,8 @@ export class AddUsuarioComponent {
       active:formValues.active,
       perfil:[],      
       password:formValues.password,
-      mobile:formValues.mobile
+      mobile:formValues.mobile,
+      userName:this.formulario?.controls["userName"].value
     }
     objGravar.perfil=[];
 
@@ -298,6 +303,13 @@ export class AddUsuarioComponent {
  
   cancel() {
     this.router.navigate(['/aplicacao/usuario']);
+  }
+
+  fillUserName(email?:string) {
+    const username = email?.split("@");
+
+    if(username)
+    this.formulario?.patchValue({ userName: username[0] });
   }
 
 }

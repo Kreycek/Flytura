@@ -14,7 +14,7 @@ type User struct {
 	PassportNumber string             `json:"passportNumber" bson:"passportNumber,omitempty"`
 	Password       string             `json:"password" bson:"password"`
 	Perfil         []int              `json:"perfil" bson:"perfil"`
-	Username       string             `json:"username" bson:"username,omitempty"`
+	Username       string             `json:"userName" bson:"userName,omitempty"`
 	Active         bool               `json:"active" bson:"active"`
 	CreatedAt      time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt      time.Time          `json:"updatedAt" bson:"updatedAt"`

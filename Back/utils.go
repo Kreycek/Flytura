@@ -13,7 +13,7 @@ import (
 // Variável global que contém a chave secreta para JWT
 var SecretKey = []byte("my_secret_key")
 
-var UrlSiteLocalHost = "http://localhost:4200"
+var UrlSiteLocalHost = "localhost:4200"
 var UrlSiteProduction = "54.156.244.197"
 var UrlSiteHomol = "18.210.18.180"
 

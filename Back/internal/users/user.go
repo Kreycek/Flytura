@@ -50,7 +50,7 @@ func GetUserByID(client *mongo.Client, dbName, collectionName, userID string) (m
 		"Email":          user.Email,
 		"PassportNumber": user.PassportNumber,
 		"Perfil":         user.Perfil,
-		"Username":       user.Username,
+		"UserName":       user.Username,
 		"Active":         user.Active,
 		"Mobile":         user.Mobile,
 	}
@@ -105,7 +105,7 @@ func SearchUsers(client *mongo.Client, dbName, collectionName string, name, emai
 			"Email":          user.Email,
 			"PassportNumber": user.PassportNumber,
 			"Perfil":         user.Perfil,
-			"Username":       user.Username,
+			"UserName":       user.Username,
 			"Active":         user.Active,
 			"Mobile":         user.Mobile,
 		})
@@ -155,7 +155,7 @@ func GetAllUsers(client *mongo.Client, dbName, collectionName string, page, limi
 			"Email":          user.Email,
 			"PassportNumber": user.PassportNumber,
 			"Perfil":         user.Perfil,
-			"Username":       user.Username,
+			"UserName":       user.Username,
 			"Active":         user.Active,
 			"Mobile":         user.Mobile,
 		})

@@ -41,7 +41,7 @@ func VerifyUser(w http.ResponseWriter, r *http.Request) {
 
 	filter := bson.D{
 		{Key: "$or", Value: bson.A{
-			bson.D{{Key: "username", Value: user.Username}},
+			bson.D{{Key: "userName", Value: user.Username}},
 			bson.D{{Key: "email", Value: user.Username}},
 		}},
 		{Key: "active", Value: true}, // Adicionando a condição para o campo active ser true

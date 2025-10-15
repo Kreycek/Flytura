@@ -262,7 +262,7 @@ func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.Active == false {
+	if !user.Active {
 		user.Active = true
 	}
 

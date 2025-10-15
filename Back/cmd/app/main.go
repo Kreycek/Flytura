@@ -59,7 +59,7 @@ func main() {
 
 	var allowedOrigin string
 	if strings.Contains(publicIP, flytura.UrlSiteProduction) {
-		allowedOrigin = flytura.UrlSiteProduction // domínio de produção
+		allowedOrigin = "http://" + flytura.UrlSiteProduction // domínio de produção
 	} else if strings.Contains(publicIP, flytura.UrlSiteHomol) {
 		allowedOrigin = "http://" + flytura.UrlSiteHomol // domínio de produção
 	} else {

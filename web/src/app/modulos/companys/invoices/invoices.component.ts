@@ -1,5 +1,5 @@
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfigService } from '../../../services/config.service';
 import { ModalConfirmationComponent } from '../../../modal/modal-confirmation/modal-confirmation.component';
@@ -52,7 +52,7 @@ export class InvoicesOnlyFlyComponent {
       
     ) {} 
       
-  
+  @ViewChild('fileInput') fileInput!: ElementRef;
       
    onFileSelected(event: any) {
       const file: File = event.target.files[0];
@@ -69,16 +69,16 @@ export class InvoicesOnlyFlyComponent {
                   this.totalPages = response.pages;
                     const resultado = await this.modalOk.openModal("Planilha importada com sucesso",true);             
                       if (resultado) {
+                        this.fileInput.nativeElement.value = '';
+                        
                     
                         // Insira aqui a lógica para continuar após a confirmação
                       } else {
                         
                       }
               });
-            })
-  
-          }
-  
+            })  
+          } 
     }
   
    

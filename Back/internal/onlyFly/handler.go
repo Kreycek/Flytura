@@ -58,7 +58,11 @@ func UploadOnlyFlyHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Nome do arquivo sem extensão:", parts[1])
 	codeFile := ""
 	if len(parts) > 1 {
-		codeFile = parts[1]
+
+		fmt.Println("Nome do arquivo limpo 1:", strings.Join(strings.Fields(parts[1]), ""))
+		codeFile = strings.Join(strings.Fields(parts[1]), "")[:4] //retira todos os espaços da string e pega apenas os 4 primeiros caracteres
+
+		fmt.Println("Nome do arquivo limpo:", codeFile)
 	} else {
 		codeFile = "error"
 		log.Println("Nome do arquivo inválido:", err)

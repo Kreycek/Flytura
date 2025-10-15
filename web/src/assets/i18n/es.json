@@ -13,6 +13,7 @@
         "users":"Usuarios",
         "putName":"Digite o nombre",
         "user":"Usuário",
+        "userName":"Nombre del Usuário",
         "putEmail":"Digite o correo electrónico",
         "password":"Contraseña",
         "passwordConfirm":"Confirmar Contraseña",
