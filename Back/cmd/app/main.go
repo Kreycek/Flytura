@@ -58,10 +58,12 @@ func main() {
 	fmt.Println("Ip Publico", publicIP)
 
 	var allowedOrigin string
-	if strings.Contains(publicIP, flytura.UrlSiteProductionClear) {
+	if strings.Contains(publicIP, flytura.UrlSiteProduction) {
 		allowedOrigin = flytura.UrlSiteProduction // domínio de produção
+	} else if strings.Contains(publicIP, flytura.UrlSiteHomol) {
+		allowedOrigin = "http://" + flytura.UrlSiteHomol // domínio de produção
 	} else {
-		allowedOrigin = flytura.UrlSiteLocalHost // ou a porta que seu front usa
+		allowedOrigin = "http://" + flytura.UrlSiteLocalHost // ou a porta que seu front usa
 	}
 
 	c := cors.New(cors.Options{

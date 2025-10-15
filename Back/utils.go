@@ -14,8 +14,8 @@ import (
 var SecretKey = []byte("my_secret_key")
 
 var UrlSiteLocalHost = "http://localhost:4200"
-var UrlSiteProduction = "http://54.156.244.197"
-var UrlSiteProductionClear = "54.156.244.197"
+var UrlSiteProduction = "54.156.244.197"
+var UrlSiteHomol = "18.210.18.180"
 
 var ConectionString = "mongodb://admin:secret@localhost:27017"
 

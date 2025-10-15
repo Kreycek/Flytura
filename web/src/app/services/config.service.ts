@@ -13,14 +13,16 @@ export class ConfigService {
 
     constructor() {
       
-    const hostname = window.location.hostname;
+        const hostname = window.location.hostname;
 
-    if (hostname.includes('54.156.244.197')) {
-      this.apiUrl = 'http://54.156.244.197:8080';
-    } else {
-      this.apiUrl = 'http://localhost:8080';
-    }
-
+        if (hostname.includes('54.156.244.197')) {
+            this.apiUrl = 'http://54.156.244.197:8080';
+        }
+        else if(hostname.includes('18.210.18.180')) {
+            this.apiUrl = 'http://18.210.18.180:8080';
+        } else {
+            this.apiUrl = 'http://localhost:8080';
+        }
     }
 
     public  types=['R','I','M']

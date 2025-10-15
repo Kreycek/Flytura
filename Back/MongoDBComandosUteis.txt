@@ -41,7 +41,7 @@
 
 16) Entrar no container docker exec -it clarion mongosh -u admin -p secret
 
-Inserir import status
+17) Inserir import status
                   db.tokenAccess.insertOne({name:'Fila', token:'XC45678@3TG34', active:true }) 
                 
 

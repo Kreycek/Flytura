@@ -1,0 +1,5 @@
+1) Para efetuar o backup fazer
+1.1) mongodump --host localhost --port 27017 --username admin --password secret --authenticationDatabase admin --db flytura --out .
+1.2) para trazer para a máquina local digite -> scp -i KeyParFlytura.pem -r ec2-user@54.156.244.197:/home/ec2-user/flytura /mnt/c/Projetos/Flytura/Back/BKPDBMongoDB
+1.3) copie para homologação como o comando -> scp -i KeyParFlytura.pem -r /mnt/c/Projetos/Flytura/Back/BKPDBMongoDB/flytura ec2-user@18.210.18.180:/home/ec2-user/bkpMongoDbProd
+1.4) dentro da pasta /home/ec2-user/bkpMongoDbProd rode o arquivo  ./restore_mongodb.sh
