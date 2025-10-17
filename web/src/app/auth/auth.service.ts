@@ -15,9 +15,9 @@ export class AuthService {
   validateToken(): Observable<any> {
     // Recuperar o token do localStorage
     const token = localStorage.getItem('token');
-    console.log('token ',token);
+
     if (!token || token==undefined) {
-      console.log('token encontrado',token);
+
       return new Observable((observer) => {
         observer.error('Token não encontrado');
       });

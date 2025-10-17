@@ -46,7 +46,7 @@ export class AddInvoicesComponent {
     ngOnInit() {
         this.route.paramMap.subscribe(params => {
           const id = params.get('id');  // Substitua 'id' pelo nome do parâmetro
-          console.log('ID',id);
+
   
           if(id) {
             this.isEdit=true;
@@ -103,7 +103,7 @@ export class AddInvoicesComponent {
         if(this.id) {    
             objGravar.id=this.id
 
-               console.log('ID',objGravar);
+  
             this.invoiceOnlyFlyService.updateOnlyFlyExcelData(objGravar).pipe(
             tap(async (response:any) =>    {    
 

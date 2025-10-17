@@ -60,7 +60,7 @@ export class AddUsuarioComponent {
       if(id) {
         this.isEdit=true;
         this.usuarioService.getUserById(id??'0').subscribe((response)=>{
-           console.log('dados retornados ',response);
+
           this.idUser=id;    
           this. createFormUser(response);
           this.loadPerfil(response.Perfil);
@@ -157,7 +157,7 @@ export class AddUsuarioComponent {
     }
     const formValues=this.formulario?.value;
 
-    console.log('obj gravar ',this.formulario);
+
     const objGravar: { 
       id?:string |null;
       name: string;

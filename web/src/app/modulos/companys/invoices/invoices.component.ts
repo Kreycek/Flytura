@@ -60,7 +60,7 @@ export class InvoicesOnlyFlyComponent {
       if (file) {
         const formData = new FormData();
               formData.append('file', file);
-              // console.log(file.name);
+
             this.invoiceService.importarPlanilha(formData).subscribe(()=>{
                 this.invoiceService.getAllOnlyFlyExcelDataPagination(this.currentPage,this.limit).subscribe(async (response:any)=>{     
         
@@ -89,14 +89,14 @@ export class InvoicesOnlyFlyComponent {
         this.invoiceService.getAllOnlyFlyExcelDataPagination(this.currentPage,this.limit).subscribe((response:any)=>{     
   
             this.dados=response.onlyFlyData;  
-            console.log('this.dados ',this.dados);
+
             this.totalRegistros = response.total;
             this.totalPages = response.pages;
         });
 
         this.airLineService.getAllAirLine().subscribe((response)=>{
           this.airLInes=response;
-          console.log('teste',response);
+
         });
 
 this.invoiceService.getAllStatusImportData().subscribe((response:any)=>{     

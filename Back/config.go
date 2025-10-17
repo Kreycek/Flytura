@@ -1,5 +1,5 @@
 // config/config.go
-package clarion
+package flytura
 
 import (
 	"encoding/json"
@@ -16,6 +16,10 @@ var SecretKey = []byte("my_secret_key")
 var UrlSiteLocalHost = "localhost:4200"
 var UrlSiteProduction = "54.156.244.197"
 var UrlSiteHomol = "18.210.18.180"
+var BucketProd = "flytura-bucket"
+var BucketRegion = "us-east-1"
+var AccessKeyAws = "AKIATTTYBPAD3ENZW3KB"
+var SecretKeyAws = "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"
 
 var ConectionString = "mongodb://admin:secret@localhost:27017"
 

@@ -3,6 +3,7 @@ package main
 import (
 	flytura "Flytura"
 	"Flytura/internal/auth"
+	"Flytura/internal/awsS3"
 	"fmt"
 	"io"
 	"strings"
@@ -114,6 +115,14 @@ func main() {
 		Data Final da criação : 09/09/2025 22:39
 	*/
 	http.HandleFunc("/GetAllAirline", airLine.GetAllAirLineHandler)
+
+	//AMAZON S3
+	/*
+		Configuração criada por Ricardo Silva Ferreira
+		Inicio da criação 17/10/2025 13:10
+		Data Final da criação : 17/10/2025 13:15
+	*/
+	http.HandleFunc("/UploadS3Files", awsS3.UploadS3FilesHandler)
 
 	//API'S PUBLICAS
 	http.HandleFunc("/GetDataExcelByStatus", onlyFly.GetDataExcelByStatusHandler)

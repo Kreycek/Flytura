@@ -19,7 +19,7 @@ export class MenuComponent {
     private router: Router,
   ) {}
   ngOnInit() {
-    console.log('activeMenu',this.activeMenu);
+
     setTimeout(() => {
       this.i=true;
     }, 1000);

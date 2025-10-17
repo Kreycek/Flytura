@@ -174,7 +174,7 @@ export class CenterComponent {
 
       this.invoiceService.GroupByCompanyName().subscribe((response:any)=>{
 
-          console.log('response ',response);
+       
           response.forEach((element:any) => {
               _values.push(element.total)
               _labels.push(element._id + ' ' + element.total)
@@ -188,7 +188,7 @@ export class CenterComponent {
 
         this.airLineService.getAllAirLine().subscribe((response)=>{
           this.airLInes=response;
-          console.log('teste',response);
+
         });
 
         this.invoiceService.getAllStatusImportData().subscribe((response:any)=>{     
