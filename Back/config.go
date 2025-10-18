@@ -23,8 +23,6 @@ var AccessKeyAws = os.Getenv("AWS_ACCESS_KEY_ID")
 var SecretKeyAws = os.Getenv("AWS_SECRET_ACCESS_KEY")
 
 //para criar as variáveis no powerShell
-//[System.Environment]::SetEnvironmentVariable("AWS_ACCESS_KEY_ID", "AKIATTTYBPAD3ENZW3KB", "User")
-//[System.Environment]::SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", "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", "User")
 
 var ConectionString = "mongodb://admin:secret@localhost:27017"
 
