@@ -19,8 +19,8 @@ var UrlSiteProduction = "54.156.244.197"
 var UrlSiteHomol = "18.210.18.180"
 var BucketProd = "flytura-bucket"
 var BucketRegion = "us-east-1"
-var AccessKeyAws = os.Getenv("AWS_ACCESS_KEY_ID")
-var SecretKeyAws = os.Getenv("AWS_SECRET_ACCESS_KEY")
+var AKA = os.Getenv("AWS_ACCESS_KEY_ID")
+var SKA = os.Getenv("AWS_SECRET_ACCESS_KEY")
 
 //para criar as variáveis no powerShell
 
