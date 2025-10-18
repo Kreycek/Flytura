@@ -24,8 +24,8 @@ var (
 )
 
 func UploadToS3(file io.Reader, filename string) error {
-	accessKey := flytura.AKA
-	secretKey := flytura.SKA
+	accessKey := flytura.AccessKeyAws
+	secretKey := flytura.SecretKeyAws
 	region := region
 	bucketName := bucketName
 	key := "uploads/" + filename

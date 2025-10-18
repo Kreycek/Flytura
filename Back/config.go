@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt"
@@ -18,8 +19,12 @@ var UrlSiteProduction = "54.156.244.197"
 var UrlSiteHomol = "18.210.18.180"
 var BucketProd = "flytura-bucket"
 var BucketRegion = "us-east-1"
-var AKA = "AKIATTTYBPAD3ENZW3KB"
-var SKA = "lBnn5RHUuGMENTXwpft5Oi57kpwwm4hbVYNqIkrj"
+var AccessKeyAws = os.Getenv("AWS_ACCESS_KEY_ID")
+var SecretKeyAws = os.Getenv("AWS_SECRET_ACCESS_KEY")
+
+//para criar as variáveis no powerShell
+//[System.Environment]::SetEnvironmentVariable("AWS_ACCESS_KEY_ID", "AKIATTTYBPAD3ENZW3KB", "User")
+//[System.Environment]::SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", "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", "User")
 
 var ConectionString = "mongodb://admin:secret@localhost:27017"
 
