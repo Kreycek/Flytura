@@ -3,43 +3,81 @@
 
   "Ecra":{
     "UsuarioList":{
-        "name":"Name",
-        "email":"Email",
-        "lastName":"Last Name",
-        "status":"Status",
+       
+       
+        
         "userType":"User Type",
-        "all":"All",
-        "search":"Search",
+     
         "users":"Users",
-        "putName":"Fill name",
+        
         "user":"User",
         "userName":"Username",
-        "putEmail":"Fill Mail",
+       
         "password":"Password",
         "passwordConfirm":"Password confirm",
         "passport":"Passport",
-        "edit":"Edit",
+       
         "mobile":"Mobile",
-        "new":"New",
+        
         "passwordNotEqual":"Passwords are not equal",
         "profiles":"Profile",
-        "save":"Save",
-        "cancel":"Cancel",
+       
         "nameRequired":"Name is required",
         "emailValid":"Fill valid email.",
         "passwordSixChar":"Password confirm required 6 characters."
     },
-      "menu":{
-        "register":{
-            "register":"Register",
-            "import":"Import",
-            "download":"Download"
-        }
+    "menu":{
+        "management":{
+            "management":"Management",
+           
+            "users":"Users"
+        },
+    "account":{
+             "account":"Account",
+            "purchaseRecord":"Purchase Record"
+    }
+          
+        
     },
     "users":"Users",
      "Management":"Management",
     "DashBoard":"Dashboard",
+     "AirLineCompany":"Airline Company",
+     "DtStart":"Start date",
+    "DtEnd":"End date",
     "next":"Next",
-    "before":"Before"
+    "before":"Before",
+    "Status":"Status",
+    "Key":"Key",
+    "DtImport":"Import date",
+    "putName":"Fill name",
+     "putLastName":"Enter last name",
+    "putPassword":"Enter password",
+    "confirmPassword":"Confirm password",
+    "putPassaport":"Enter passaport",
+    "putKey":"Enter the key",
+    "putCelPhone":"Enter your cell phone number",
+    "putEmail":"Fill Mail",
+    "name":"Name",
+    "email":"Email",
+    "lastName":"Last Name",
+    "new":"New",
+    "all":"All",
+    "search":"Search",
+    "save":"Save",
+    "cancel":"Cancel",
+    "edit":"Edit",
+    "selectPlanSheet":"Select excel spreadsheet",
+    "insertManualRegister":"Insert manual record",
+    "infoNotFound":"No se encontró información",
+    "selectDate":"Choose a date",
+    "activeUser":"Activate user?",
+    "purchaseRecord":"Purchase Record",
+    "active":"Active",
+    "requiredFieldAirLineCompany":"The airline field is mandatory",
+    "requiredFieldKey":"The key field is required",
+    "requiredFieldName":"The name field is required",
+    "requiredFieldLastName":"The last name field is required",
+    "selected":"Select"
   }
 }

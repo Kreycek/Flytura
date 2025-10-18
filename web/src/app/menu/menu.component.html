@@ -1,41 +1,30 @@
 <nav class="sidebar sidebar-offcanvas{{!activeMenu ? ' active' : ''}}" id="sidebar">
     <ul class="nav">
-      <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0)" (click)="navigateToPages('/aplicacao/center')">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">{{ 'Ecra.DashBoard' | translate }}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="collapse"  (click)="navigateToPages('/aplicacao/usuario')" href="#UI1" aria-expanded="false" aria-controls="UI5">
-          <i class="icon-columns menu-icon"></i>
-           <span class="menu-title">{{ 'Ecra.users' | translate }}</span>   
-           <i class="menu-arrow"></i>    
-        </a>      
-      </li>
+  
       <li class="nav-item">
         <a class="nav-link" data-bs-toggle="collapse" href="#UI5" aria-expanded="false" aria-controls="UI5">
           <i class="icon-columns menu-icon"></i>
-          <span class="menu-title">{{ 'Ecra.menu.register.register' | translate }}</span>
+          <span class="menu-title">{{ 'Ecra.menu.management.management' | translate }}</span>
           <i class="menu-arrow"></i>
         </a>
         <div class="collapse" id="UI5">
           <ul class="nav flex-column sub-menu">
-            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" (click)="navigateToPages('/aplicacao/sheetModels')">{{ 'Ecra.menu.register.download' | translate }}</a></li>            
-            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" (click)="navigateToPages('/aplicacao/invoicesOnlyFlyExcel')">{{ 'Ecra.menu.register.import' | translate }}</a></li>
+           
+             <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" (click)="navigateToPages('/aplicacao/center')">{{ 'Ecra.DashBoard' | translate }}</a></li>            
+            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" (click)="navigateToPages('/aplicacao/usuario')">{{ 'Ecra.menu.management.users' | translate }}</a></li>            
           </ul>
         </div>
       </li>
-      <li class="nav-item" style="display: none;">
+      <li class="nav-item">
         <a class="nav-link" data-bs-toggle="collapse" href="#UI6" aria-expanded="false" aria-controls="UI6">
           <i class="icon-columns menu-icon"></i>
-          <span class="menu-title">{{ 'Ecra.Management' | translate }}</span>
+          <span class="menu-title">{{ 'Ecra.menu.account.account' | translate }}</span>
           <i class="menu-arrow"></i>
         </a>
         <div class="collapse" id="UI6">
           <ul class="nav flex-column sub-menu">
 
-         
+            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" (click)="navigateToPages('/aplicacao/invoicesOnlyFlyExcel')">{{ 'Ecra.menu.account.purchaseRecord' | translate }}</a></li>            
           </ul>
         </div>
       </li>

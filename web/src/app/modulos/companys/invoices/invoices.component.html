@@ -1,8 +1,9 @@
+
 <app-modal-ok></app-modal-ok>
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-          <h4 class="card-title">Faturas</h4>
+          <h4 class="card-title">{{ 'Ecra.menu.account.purchaseRecord' | translate }}</h4>
           <p class="card-description" style="display: none;"> Add class <code>.table-striped</code>
           </p>
 
@@ -10,40 +11,43 @@
             <div class="row">
               <div class="col-lg-2 col-md-4 col-sm-6 col-12">
                 <div class="form-group">
-                  <label for="searchKey" style="font-size: 12px">Key:</label>
-                  <input type="text" id="key" style="font-size: 12px" [(ngModel)]="searchKey" class="form-control" placeholder="Digite a key">
+                  <label for="searchKey" style="font-size: 12px">{{ 'Ecra.Key' | translate }}:</label>
+                  <input type="text" id="key" style="font-size: 12px" [(ngModel)]="searchKey" 
+                  class="form-control" placeholder="{{ 'Ecra.putKey' | translate }}">
                 </div>
               </div>
             
             <div class="col-lg-4 col-md-5 col-sm-6 col-12" >
               <div class="form-group">
-                <label for="searchName" style="font-size: 12px">Nombre:</label>
-                <input type="text" style="font-size: 12px" id="searchName" [(ngModel)]="searchName" class="form-control" placeholder="Digite o nombre">
+                <label for="searchName" style="font-size: 12px">{{ 'Ecra.name' | translate }}:</label>
+                <input type="text" style="font-size: 12px" id="searchName" [(ngModel)]="searchName" class="form-control" 
+                placeholder="{{ 'Ecra.putName' | translate }} ">
               </div>
               </div>
             <div class="col-lg-2 col-md-5 col-sm-6 col-12">
                 <div class="form-group">
-                  <label for="searchLasName" style="font-size: 12px">Apelido:</label>
-                  <input type="text" id="searchLastName" style="font-size: 12px" [(ngModel)]="searchLastName" class="form-control" placeholder="Digite o apelido">
+                  <label for="searchLasName" style="font-size: 12px">{{ 'Ecra.lastName' | translate }}:</label>
+                  <input type="text" id="searchLastName" style="font-size: 12px" 
+                  [(ngModel)]="searchLastName" class="form-control" placeholder="{{ 'Ecra.putLastName' | translate }} ">
                 </div>
             </div>
             <div class="col-lg-3 col-md-5 col-sm-6 col-12">
                 <div class="form-group">
                  
-                   <label for="searchRole" style="font-size: 12px">Compania aérea:</label>
+                   <label for="searchRole" style="font-size: 12px">{{ 'Ecra.AirLineCompany' | translate }}:</label>
                 <select id="searchRole" [(ngModel)]="searchAirlineCode" class="form-select">
-                  <option value="" style="font-size: 12px">Todos</option>
-                  airLInes
+                  <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>
+                  
                   <option *ngFor="let data of airLInes" [value]="data.code" style="font-size: 12px">{{data.name}}</option>
                 </select>
                 </div>
             </div>
             <div class="col-lg-2 col-md-5 col-sm-6 col-12">
                 <div class="form-group">
-                     <label for="searchRole" style="font-size: 12px">Dt. Inicio:</label>
+                     <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtStart' | translate }}:</label>
                         <input 
                               matInput [matDatepicker]="picker1" 
-                              placeholder="Escolha uma data"
+                              placeholder="{{ 'Ecra.selectDate' | translate }}"
                                class="form-control w-100"
                                [(ngModel)]="searchAirlineDtInicio"
                               (click)="picker1.open()">                        
@@ -53,10 +57,10 @@
             </div>
             <div class="col-lg-2 col-md-5 col-sm-6 col-12">
                 <div class="form-group">
-                     <label for="searchRole" style="font-size: 12px">Dt. Fim:</label>
+                     <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtEnd' | translate }}:</label>
                         <input 
                               matInput [matDatepicker]="picker2" 
-                              placeholder="Escolha uma data"
+                              placeholder="{{ 'Ecra.selectDate' | translate }}"
                                class="form-control w-100"
                                   [(ngModel)]="searchAirlineDtFim"
                               (click)="picker2.open()">                        
@@ -68,16 +72,16 @@
             <div class="col-lg-3 col-md-5 col-sm-6 col-12">
                 <div class="form-group">
                  
-                   <label for="searchRole" style="font-size: 12px">Status:</label>
+                   <label for="searchRole" style="font-size: 12px">{{ 'Ecra.Status' | translate }}:</label>
                 <select id="searchRole" [(ngModel)]="searchStatus" class="form-select">
-                  <option value="" style="font-size: 12px">Todos</option>
-                  airLInes
+                  <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>
+                  
                   <option *ngFor="let data of statusImportData" [value]="data.name" style="font-size: 12px">{{data.name}}</option>
                 </select>
                 </div>
             </div>
                <div class="col-lg-2 col-md-12 text-md-right" style="text-align: left; margin-top: 27px;;">
-              <button style="font-size: 12px" class="btn btn-primary"(click)="searchOnlyFlyExcelData(1)">Pesquisar</button>
+              <button style="font-size: 12px" class="btn btn-primary"(click)="searchOnlyFlyExcelData(1)">{{ 'Ecra.search' | translate }}</button>
             </div>
             </div>           
           </div>
@@ -92,7 +96,7 @@
                       width: 50%; 
                       text-align: left;">
                     <label class="custom-file-upload">
-                    Selecionar Planila excel
+                   {{ 'Ecra.selectPlanSheet' | translate }}
                     <input type="file" (change)="onFileSelected($event)" accept=".xlsx,.xls,.csv" #fileInput />
                      </label>
                     </div>
@@ -106,18 +110,18 @@
                         font-size: 14px;
                         border-radius: 15px;
                       ">                  
-                     &nbsp; &nbsp; Inserir registro manual &nbsp; &nbsp; 
+                     &nbsp; &nbsp;  {{ 'Ecra.insertManualRegister' | translate }} &nbsp; &nbsp; 
                     </span>
                     </div>
                </th>                         
               </tr>              
               <tr>
-                <th class="fmtTableBorder"> Key </th>              
-                <th class="fmtTableBorder"> Nombre </th>            
-                <th class="fmtTableBorder"> Apelido</th>   
-                 <th class="fmtTableBorder"> Compania</th>     
-                <th class="fmtTableBorder"> Dt. Importação</th>                                 
-                <th class="fmtTableBorder"> Status </th>   
+                <th class="fmtTableBorder"> {{ 'Ecra.Key' | translate }} </th>              
+                <th class="fmtTableBorder"> {{ 'Ecra.name' | translate }} </th>            
+                <th class="fmtTableBorder"> {{ 'Ecra.lastName' | translate }}</th>   
+                 <th class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th>     
+                <th class="fmtTableBorder"> {{ 'Ecra.Status' | translate }}</th>                                 
+                <th class="fmtTableBorder"> {{ 'Ecra.DtImport' | translate }} </th>   
                 <th class="fmtTableBorder">  </th> 
                 
               </tr>

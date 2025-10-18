@@ -4,7 +4,7 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-        <h4 class="card-title"> {{ 'Ecra.UsuarioList.users' | translate }}</h4>
+        <h4 class="card-title"> {{ 'Ecra.users' | translate }}</h4>
         <p class="card-description" style="display: none;"> Add class <code>.table-striped</code>
         </p>
 
@@ -12,15 +12,15 @@
           <div class="row">
             <div class="col-lg-3 col-md-4 col-sm-6 col-12">
               <div class="form-group">
-                <label for="searchName">{{ 'Ecra.UsuarioList.name' | translate }}:</label>
-                <input type="text" id="searchName" [(ngModel)]="searchName" class="form-control" placeholder=" {{ 'Ecra.UsuarioList.putName' | translate }}">
+                <label for="searchName">{{ 'Ecra.name' | translate }}:</label>
+                <input type="text" id="searchName" [(ngModel)]="searchName" class="form-control" placeholder=" {{ 'Ecra.putName' | translate }}">
               </div>
             </div>
             
             <div class="col-lg-3 col-md-5 col-sm-6 col-12">
               <div class="form-group">
-                <label for="searchEmail">{{ 'Ecra.UsuarioList.email' | translate }}:</label>
-                <input type="text" id="searchEmail" [(ngModel)]="searchEmail" class="form-control" placeholder="{{ 'Ecra.UsuarioList.putEmail' | translate }}">
+                <label for="searchEmail">{{ 'Ecra.email' | translate }}:</label>
+                <input type="text" id="searchEmail" [(ngModel)]="searchEmail" class="form-control" placeholder="{{ 'Ecra.putEmail' | translate }}">
               </div>
             </div>
             
@@ -28,14 +28,14 @@
               <div class="form-group">
                 <label for="searchRole">{{ 'Ecra.UsuarioList.userType' | translate }}</label>
                 <select id="searchRole" [(ngModel)]="searchRole" class="form-select">
-                  <option value="">{{ 'Ecra.UsuarioList.all' | translate }}</option>
+                  <option value="">{{ 'Ecra.all' | translate }}</option>
                   <option *ngFor="let perfil of perfis" [value]="perfil.name">{{ perfil.name }}</option>
                 </select>
               </div>
             </div>
         
             <div class="col-lg-3 col-md-12 text-md-right" style="margin-top: 30px;">
-              <button class="btn btn-primary" (click)="searchUsers(1)"> {{ 'Ecra.UsuarioList.search' | translate }}</button>
+              <button class="btn btn-primary" (click)="searchUsers(1)"> {{ 'Ecra.search' | translate }}</button>
             </div>
           </div>
         </div>
@@ -49,10 +49,10 @@
                </th>                         
               </tr>              
               <tr >
-                <th class="fmtTableBorder"> {{ 'Ecra.UsuarioList.name' | translate }} </th>              
-                <th class="fmtTableBorder"> {{ 'Ecra.UsuarioList.email' | translate }} </th>
-                <th class="fmtTableBorder"> {{ 'Ecra.UsuarioList.lastName' | translate }} </th>         
-                <th class="fmtTableBorder">  {{ 'Ecra.UsuarioList.status' | translate }} </th>                    
+                <th class="fmtTableBorder"> {{ 'Ecra.name' | translate }} </th>              
+                <th class="fmtTableBorder"> {{ 'Ecra.email' | translate }} </th>
+                <th class="fmtTableBorder"> {{ 'Ecra.lastName' | translate }} </th>         
+                <th class="fmtTableBorder">  {{ 'Ecra.Status' | translate }} </th>                    
                 <th class="fmtTableBorder"></th> 
               </tr>
             </thead>

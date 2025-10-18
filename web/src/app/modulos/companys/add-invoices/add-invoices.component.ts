@@ -9,10 +9,12 @@ import { catchError, tap, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { InvoicesService } from '../invoices/invoices.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { AirLineService } from '../airLine/airLIne.service';
 
 @Component({
   selector: 'app-add-invoices',
-  imports: [CommonModule, ReactiveFormsModule, ModalOkComponent, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ModalOkComponent, FormsModule,TranslateModule],
   templateUrl: './add-invoices.component.html',
   styleUrl: './add-invoices.component.css'
 })
@@ -22,6 +24,8 @@ export class AddInvoicesComponent {
   
         documentMiniFormCod:string=''
         documentMiniFormDescription:string=''
+         airLInes:any[]=[]
+         fileName:string=''
  
        
        isEdit=false;
@@ -39,7 +43,8 @@ export class AddInvoicesComponent {
            private router: Router, 
            public configService:ConfigService,
            public moduloService:ModuloService,
-           private cdr: ChangeDetectorRef
+           private cdr: ChangeDetectorRef,
+           private airLineService: AirLineService,
        ) {} 
   
   
@@ -51,6 +56,9 @@ export class AddInvoicesComponent {
           if(id) {
             this.isEdit=true;
             this.invoiceOnlyFlyService.getOnlyFlyExcelDataById(id??'0').subscribe((response)=>{       
+              console.log('dados',response);
+
+              this.fileName=response.FileName;
   
               this.id=id;    
               this.createForm(response);   
@@ -59,16 +67,23 @@ export class AddInvoicesComponent {
           }
           else {
             this.isEdit=false;
-            this.createForm({Active:true});   
+            this.createForm({Active:true, CompanyCode:''});   
           }
        
         });    
+
+             this.airLineService.getAllAirLine().subscribe((response)=>{
+          this.airLInes=response;
+         
+
+        });
     }
   
       
     createForm(obj:any) {
           this.formulario = this.fb.group({
             active: [obj.Active, Validators.required],
+            companyCode: [obj.CompanyCode, Validators.required],
             key: [obj.Key, Validators.required],
             name: [obj.Name, Validators.required],
             lastName: [obj.LastName, Validators.required],          
@@ -77,19 +92,28 @@ export class AddInvoicesComponent {
    
   
     gravar() {    
-
+console.log('this.formulario',this.formulario);
          if (this.formulario?.invalid) {
         this.formulario.markAllAsTouched();
         return;
       }
 
         const formValues=this.formulario?.value;
+
+        const companyData=this.airLInes.filter((response:any)=>{
+
+          return response.code===formValues.companyCode
+        })[0]
         const objGravar: { 
           id?:string |null;
           key: string;
           name: string;
           lastName: string;
-          active:boolean;        
+          active:boolean;
+          companyCode:string,
+          companyName:string,
+          fileName:string,
+          status:string
           
         } ={
           id:null,
@@ -97,6 +121,10 @@ export class AddInvoicesComponent {
           name:formValues.name??'',       
           lastName:formValues.lastName??'',       
           active:formValues.active,
+          companyCode:formValues.companyCode,
+          companyName:companyData ? companyData.name : '',
+          fileName:this.fileName ? this.fileName : 'Criado Manualmente',
+          status:companyData.status ? companyData.status : 'Fila'
           
         }     
    

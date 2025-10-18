@@ -6,9 +6,9 @@
         <h4 class="card-title">
           
           @if(idUser) {
-            {{ 'Ecra.UsuarioList.edit' | translate }} {{ 'Ecra.UsuarioList.user' | translate }}
+            {{ 'Ecra.edit' | translate }} {{ 'Ecra.UsuarioList.user' | translate }}
           } @else {
-               {{ 'Ecra.UsuarioList.new' | translate }}  {{ 'Ecra.UsuarioList.user' | translate }}
+               {{ 'Ecra.new' | translate }}  {{ 'Ecra.UsuarioList.user' | translate }}
           }
           
         </h4>
@@ -16,19 +16,19 @@
         <form class="forms-sample">
         <br>
           <div class="form-group">
-            <label for="nome">Ativar usuário? <span class="required">*</span></label>
+            <label for="nome">{{ 'Ecra.activeUser' | translate }}<span class="required">*</span></label>
             <input  type="checkbox"  formControlName="active" class="form-check-input">&nbsp;<label class="espacoLabel">Ativo</label>             
           </div>          
 
           <div class="form-group">
-            <label for="nome"> {{ 'Ecra.UsuarioList.name' | translate }} <span class="required">*</span></label>
+            <label for="nome"> {{ 'Ecra.name' | translate }} <span class="required">*</span></label>
             <input
               type="text"
               class="form-control"
               formControlName="nome"
               id="nome"
               (keydown.space)="$event.preventDefault()"
-              placeholder="Digite o nome"
+              placeholder="{{ 'Ecra.putName' | translate }}"
               [ngClass]="{'is-invalid': formulario.get('nome')?.invalid && formulario.get('nome')?.touched}"
             />
             <div class="invalid-feedback" *ngIf="formulario.get('nome')?.invalid && formulario.get('nome')?.touched">
@@ -36,18 +36,18 @@
             </div>
           </div>  
           <div class="form-group">
-            <label for="sobrenome"> {{ 'Ecra.UsuarioList.lastName' | translate }}  </label>
+            <label for="sobrenome"> {{ 'Ecra.lastName' | translate }}  </label>
             <input
               type="text"
               class="form-control"
               formControlName="sobrenome"
               id="sobrenome"
-              placeholder="Digite o último nome"  
+              placeholder="{{ 'Ecra.putLastName' | translate }}"  
               [ngClass]="{'is-invalid': formulario.get('sobrenome')?.invalid && formulario.get('sobrenome')?.touched}"           
             />        
           </div>  
           <div class="form-group">
-            <label for="email">{{ 'Ecra.UsuarioList.email' | translate }} <span class="required">*</span></label>
+            <label for="email">{{ 'Ecra.email' | translate }} <span class="required">*</span></label>
             <input
               type="text"
               class="form-control"
@@ -56,7 +56,7 @@
               id="email"
               (keydown.space)="$event.preventDefault()"
                (blur)="fillUserName(formulario.get('email')?.value)"
-              placeholder="Digite o email"
+              placeholder="{{ 'Ecra.putEmail' | translate }}"
               [ngClass]="{'is-invalid': formulario.get('email')?.invalid && formulario.get('email')?.touched}"
             />
             <div class="invalid-feedback" *ngIf="formulario.get('email')?.invalid && formulario.get('email')?.touched">
@@ -87,7 +87,7 @@
               formControlName="password"
               id="password"
               (keydown.space)="$event.preventDefault()"
-              placeholder="Digite a senha"
+              placeholder="{{ 'Ecra.putPassword' | translate }}"
               [ngClass]="{'is-invalid': formulario.get('password')?.invalid && formulario.get('password')?.touched}"  
             />
             <small *ngIf="formulario.get('password')?.invalid && formulario.get('password')?.touched" class="text-danger">
@@ -104,7 +104,7 @@
               formControlName="passwordConfirm"
               id="passwordConfirm"
               (keydown.space)="$event.preventDefault()"
-              placeholder="Confirme a senha"
+              placeholder="{{ 'Ecra.confirmPassword' | translate }}"
               [ngClass]="{'is-invalid': formulario.get('passwordConfirm')?.invalid && formulario.get('passwordConfirm')?.touched}"  
             />
             <div class="invalid-feedback" *ngIf="formulario.get('passwordConfirm')?.invalid && formulario.get('passwordConfirm')?.touched">
@@ -123,7 +123,7 @@
               class="form-control"
               formControlName="passaporte"
               id="passaporte"
-              placeholder="Digite o passaporte" />
+              placeholder="{{ 'Ecra.putPassaport' | translate }}" />
            
           </div>
           <div class="form-group">
@@ -133,7 +133,7 @@
               class="form-control"
               formControlName="mobile"
               id="telemovel"
-              placeholder="Digite o telemóvel"            
+              placeholder="{{ 'Ecra.putCelPhone' | translate }}"            
             />           
           </div> 
         </form>
@@ -207,8 +207,8 @@
       <div class="card">
         <div class="card-body">
           <div style="float: none;">
-            <button type="submit" class="btn btn-primary me-2" [disabled]="formulario.invalid" (click)="gravar()">{{ 'Ecra.UsuarioList.save' | translate }}</button>
-            <button class="btn btn-light" (click)="cancel()">{{ 'Ecra.UsuarioList.cancel' | translate }}</button>
+            <button type="submit" class="btn btn-primary me-2" [disabled]="formulario.invalid" (click)="gravar()">{{ 'Ecra.save' | translate }}</button>
+            <button class="btn btn-light" (click)="cancel()">{{ 'Ecra.cancel' | translate }}</button>
           </div> 
         </div>
       </div>

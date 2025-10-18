@@ -13,10 +13,11 @@ import { AirLineService } from '../airLine/airLIne.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import moment from 'moment';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-invoices',
-  imports: [CommonModule,FormsModule,PaginatorComponent,ModalOkComponent,MatDatepickerModule,MatNativeDateModule,],
+  imports: [CommonModule,FormsModule,PaginatorComponent,ModalOkComponent,MatDatepickerModule,MatNativeDateModule,TranslateModule],
   templateUrl: './invoices.component.html',
   styleUrl: './invoices.component.css',
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'pt-BR' }],

@@ -3,43 +3,74 @@
 
   "Ecra":{
     "UsuarioList":{
-        "name":"Nome",
-        "email":"Email",
-        "lastName":"Sobrenome",
-        "status":"Status",
-        "userType":"Tipo de usuário",
-        "all":"Todos",
-        "search":"Buscar",
-        "users":"Usuários",
-        "userName":"Usuário",
-        "putName":"Digite o nome",
-        "user":"Usuário",
-        "putEmail":"Digite o email",
+        
+      
+        "userType":"Tipo de usuário",     
+        "userName":"Usuário",       
+        "user":"Usuário",       
         "password":"Senha",
         "passwordConfirm":"Confirmar senha",
         "passport":"Passaporte",
-        "edit":"Editar",
+        
         "mobile":"Celular",
-        "new":"Novo",
+       
         "passwordNotEqual":"As senhas devem ser iguais",
         "profiles":"Perfis",
-        "save":"Salvar",
-        "cancel":"Cancelar",
+       
         "nameRequired":"O nome é obrigartório",
         "emailValid":"Preencha com um email válido.",
         "passwordSixChar":"A confirmação de senha deve conter no minimo 6 caracteres."
     },
       "menu":{
-        "register":{
-            "register":"Cadastro",
-            "import":"Importar",
-            "download":"Download"
-        }
+        "management":{
+            "management":"Gestão",
+            "users":"Usuários"
+        },
+    "account":{
+            "account":"Conta",
+            "purchaseRecord":"Registro de compra"
+    }
     },
     "users":"Usuários",
-     "Management":"Gestão",
+    "Management":"Gestão",
     "DashBoard":"Dashboard",
+    "AirLineCompany":"Compania aérea",
+    "DtStart":"Data de início",
+    "DtEnd":"Data de fim",
     "next":"Próximo",
-    "before":"Anterior"
+    "before":"Anterior",
+    "Status":"Status",    
+    "Key":"Chave",
+    "DtImport":"Data da importação",
+    "putName":"Digite o nome",
+    "putLastName":"Digite o sobrenome",
+    "putPassword":"Digite a senha",
+    "confirmPassword":"Confirme a senha",
+    "putPassaport":"Digite o passaporte",
+    "putCelPhone":"Digite o número do celular",
+    "putEmail":"Digite o email",
+    "putKey":"Digite a chave",
+    "name":"Nome",
+    "email":"Email",
+    "lastName":"Sobrenome",
+    "new":"Novo",
+    "all":"Todos",
+    "search":"Buscar",
+    "save":"Salvar",
+    "cancel":"Cancelar",
+    "edit":"Editar",
+    "selectPlanSheet":"Selecionar planilha excel",
+    "insertManualRegister":"Inserir registro manual",
+    "infoNotFound":"Nenhuma informação encontrada",
+    "selectDate":"Escolha uma data",
+    "activeUser":"Ativar usuário?",
+    "purchaseRecord":"Registro de compra",
+    "active":"Ativo",
+    "requiredFieldAirLineCompany":"O campo compania aérea é obrigatório",
+    "requiredFieldKey":"O campo chave é obrigatório",
+    "requiredFieldName":"El campo de nombre es obligatorio",
+    "requiredFieldLastName":"O campo sobrenome é obrigatório",
+    "selected":"Selecione"
+    
   }
 }

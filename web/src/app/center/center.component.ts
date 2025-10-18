@@ -12,10 +12,11 @@ import { ConfigService } from '../services/config.service';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import moment from 'moment';
 import { ModalOkComponent } from '../modal/modal-ok/modal-ok.component';
+import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-center',
   standalone: true,
-  imports: [CommonModule,FormsModule,MatDatepickerModule],
+  imports: [CommonModule,FormsModule,MatDatepickerModule,TranslateModule],
   
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'pt-BR' }],
   templateUrl: './center.component.html',
