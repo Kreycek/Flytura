@@ -18,8 +18,8 @@ var UrlSiteProduction = "54.156.244.197"
 var UrlSiteHomol = "18.210.18.180"
 var BucketProd = "flytura-bucket"
 var BucketRegion = "us-east-1"
-var AccessKeyAws = "AKIATTTYBPAD3ENZW3KB"
-var SecretKeyAws = "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"
+var AKA = "AKIATTTYBPAD3ENZW3KB"
+var SKA = "lBnn5RHUuGMENTXwpft5Oi57kpwwm4hbVYNqIkrj"
 
 var ConectionString = "mongodb://admin:secret@localhost:27017"
 
