@@ -9,14 +9,14 @@ import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AirLineService } from '../modulos/companys/airLine/airLIne.service';
 import { ConfigService } from '../services/config.service';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import moment from 'moment';
 import { ModalOkComponent } from '../modal/modal-ok/modal-ok.component';
 import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-center',
   standalone: true,
-  imports: [CommonModule,FormsModule,MatDatepickerModule,TranslateModule],
+  imports: [CommonModule,FormsModule,MatDatepickerModule,TranslateModule,MatNativeDateModule],
   
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'pt-BR' }],
   templateUrl: './center.component.html',

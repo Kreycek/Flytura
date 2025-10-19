@@ -1,4 +1,4 @@
-nano ~/.bashrcnano ~/.bashrc# ~/.bashrc: executed by bash(1) for non-login shells.
+#nano ~/.bashrcnano ~/.bashrc# ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
@@ -99,4 +99,4 @@ fi
 #fi
 export XDG_RUNTIME_DIR=/run/user/0
 
-echo 'export PATH=$PATH:/usr
+'export PATH=$PATH:/usr/local/bin

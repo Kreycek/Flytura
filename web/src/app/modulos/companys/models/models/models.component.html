@@ -1,3 +1,14 @@
+
+
+<div class="modal-backdrop" *ngIf="isVisible">
+    <div class="modal-content">
+      <!-- <p class="modal-title" [innerHTML]="message"></p> -->
+
+  
+      <!-- Lista com barra de rolagem -->
+      <div  class="modal-list">
+    
+
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -5,6 +16,7 @@
           <p class="card-description" style="display: none;"> Add class <code>.table-striped</code>
           </p>
    <div class="search-container" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+    <br>
             <div class="row">
             <div class="col-lg-3 col-md-5 col-sm-6 col-12" >
               <div class="form-group">
@@ -80,3 +92,12 @@
         </div>
     </div>
 </div>
+
+   
+      </div>
+  
+      <div class="modal-buttons">
+        <button class="modal-button confirm" (click)="fechar()">Fechar</button>
+      </div>
+    </div>
+  </div>

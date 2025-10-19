@@ -14,17 +14,18 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import moment from 'moment';
 import { TranslateModule } from '@ngx-translate/core';
+import { ModelsComponent } from '../models/models/models.component';
 
 @Component({
   selector: 'app-invoices',
-  imports: [CommonModule,FormsModule,PaginatorComponent,ModalOkComponent,MatDatepickerModule,MatNativeDateModule,TranslateModule],
+  imports: [CommonModule,FormsModule,PaginatorComponent,ModalOkComponent,MatDatepickerModule,MatNativeDateModule,TranslateModule,ModelsComponent],
   templateUrl: './invoices.component.html',
   styleUrl: './invoices.component.css',
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'pt-BR' }],
 })
 export class InvoicesOnlyFlyComponent { 
      @ViewChild(ModalOkComponent) modalOk!: ModalOkComponent;  
-
+     @ViewChild(ModelsComponent) modalDocuments!: ModelsComponent;
 
     searchKey: any = '';
     searchName: string = '';
@@ -253,4 +254,16 @@ tooltip = {
   }
 
 
+  async openModels() {
+     const resultado = await this.modalDocuments.openModal(
+       [],
+       "Lista de documentos da empresa <br\><br\>",
+        true); 
+
+      if (resultado) {      
+      } else {
+        
+      }
+    }  
+  
 }

@@ -19,8 +19,10 @@ var UrlSiteProduction = "54.156.244.197"
 var UrlSiteHomol = "18.210.18.180"
 var BucketProd = "flytura-bucket"
 var BucketRegion = "us-east-1"
+var ImagesInvoices = "invoices"
 var AKA = os.Getenv("AKID")
 var SKA = os.Getenv("ASK")
+var FileAwsS3URL = "https://flytura-bucket.s3.us-east-1.amazonaws.com"
 
 //para criar as variáveis no powerShell
 

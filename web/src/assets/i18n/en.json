@@ -78,6 +78,9 @@
     "requiredFieldKey":"The key field is required",
     "requiredFieldName":"The name field is required",
     "requiredFieldLastName":"The last name field is required",
-    "selected":"Select"
+    "selected":"Select",
+    "invoices":"Invoices",
+    "fileName":"File name"
+    
   }
 }

@@ -11,6 +11,7 @@ import { AddUsuarioComponent } from './modulos/ferramentaGestao/users/add-usuari
 import { InvoicesOnlyFlyComponent } from './modulos/companys/invoices/invoices.component';
 import { AddInvoicesComponent } from './modulos/companys/add-invoices/add-invoices.component';
 import { ModelsComponent } from './modulos/companys/models/models/models.component';
+import { InvoicesComponent } from './modulos/ferramentaGestao/invoices/invoices.component';
 
 export const routes: Routes = [
 
@@ -51,6 +52,10 @@ export const routes: Routes = [
             {
                 path:'sheetModels',
                 component:ModelsComponent
+            } , 
+            {
+                path:'invoices',
+                component:InvoicesComponent
             }
 
             

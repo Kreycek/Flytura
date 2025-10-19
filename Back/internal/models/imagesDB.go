@@ -12,5 +12,6 @@ type ImagesDB struct {
 	DtImport    time.Time          `json:"dtImport" bson:"dtImport,omitempty"`
 	CompanyCode string             `json:"companyCode" bson:"companyCode,omitempty"`
 	CompanyName string             `json:"companyName" bson:"companyName,omitempty"`
-	FileURL     string             `json:"fileURL" bson:"fileURL"`
+	FileURL     string             `json:"fileURL" bson:"fileURL,omitempty"`
+	Active      bool               `json:"active" bson:"active,omitempty"`
 }

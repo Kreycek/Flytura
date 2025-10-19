@@ -70,7 +70,9 @@
     "requiredFieldKey":"O campo chave é obrigatório",
     "requiredFieldName":"El campo de nombre es obligatorio",
     "requiredFieldLastName":"O campo sobrenome é obrigatório",
-    "selected":"Selecione"
+    "selected":"Selecione",
+    "invoices":"Faturas",
+    "fileName":"Nome do arquivo"
     
   }
 }

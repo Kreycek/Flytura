@@ -74,6 +74,8 @@
     "requiredFieldAirLineCompany":"El campo de aerolínea es obligatorio",
     "requiredFieldKey":"El campo clave es obligatorio",
     "requiredFieldLastName":"El campo de apellido es obligatorio",
-    "selected":"Seleccionar"
+    "selected":"Seleccionar",
+    "invoices":"Facturas",
+    "fileName":"Nombre do arquivo"
   }
 }

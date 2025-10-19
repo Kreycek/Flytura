@@ -123,6 +123,7 @@ func main() {
 		Data Final da criação : 17/10/2025 13:15
 	*/
 	http.HandleFunc("/UploadS3Files", awsS3.UploadS3FilesHandler)
+	http.HandleFunc("/SearchS3Images", awsS3.SearchS3ImagesDBHandler)
 
 	//API'S PUBLICAS
 	http.HandleFunc("/GetDataExcelByStatus", onlyFly.GetDataExcelByStatusHandler)
