@@ -29,6 +29,9 @@ var (
 func UploadToS3(file io.Reader, filename, companyCode string) error {
 	accessKey := flytura.AKA
 	secretKey := flytura.SKA
+
+	fmt.Println("accessKey", accessKey)
+	fmt.Println("secretKey", secretKey)
 	region := region
 	bucketName := bucketName
 	key := flytura.ImagesInvoices + "/" + filename

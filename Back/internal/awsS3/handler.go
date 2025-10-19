@@ -133,7 +133,7 @@ func SearchS3ImagesDBHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println("StartDate", startDate)
-	fmt.Println("EndDate", endDate)
+	fmt.Println("EndDate", endDateStr)
 	// Definir valores padrão para paginação
 
 	if limit < 1 {
