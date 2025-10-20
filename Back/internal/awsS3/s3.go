@@ -78,12 +78,13 @@ func UploadToS3(file io.Reader, filename, companyCode string) error {
 	companyName := airLineData["Name"].(string)
 
 	image := models.ImagesDB{
-		ID:          primitive.NewObjectID(),
-		FileName:    filename,
-		DtImport:    time.Now(),
-		CompanyCode: companyCode,
-		CompanyName: companyName,
-		FileURL:     flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + filename, // ou uma URL pública se estiver usando S3, etc.
+		ID:           primitive.NewObjectID(),
+		FileName:     filename,
+		DtImport:     time.Now(),
+		CompanyCode:  companyCode,
+		CompanyName:  companyName,
+		DownloadDone: false,
+		FileURL:      flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + filename, // ou uma URL pública se estiver usando S3, etc.
 	}
 
 	InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
@@ -122,7 +123,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 19/10/2025 19:07
 Data Final da criação : 19/10/2025 19:09
 */
-func SearchImagesDB(
+func SearchImagesDBPagination(
 	client *mongo.Client,
 	dbName, collectionName string,
 	companyCode *string,
@@ -186,16 +187,91 @@ func SearchImagesDB(
 		}
 
 		dataImg = append(dataImg, map[string]any{
-			"ID":          data.ID.Hex(), // Convertendo para string
-			"FileName":    data.FileName,
-			"CompanyCode": data.CompanyCode,
-			"CompanyName": data.CompanyName,
-			"DtImport":    data.DtImport,
-			"FileUrl":     data.FileURL,
-			"Active":      data.Active,
+			"ID":           data.ID.Hex(), // Convertendo para string
+			"FileName":     data.FileName,
+			"CompanyCode":  data.CompanyCode,
+			"CompanyName":  data.CompanyName,
+			"DtImport":     data.DtImport,
+			"FileUrl":      data.FileURL,
+			"Active":       data.Active,
+			"DownloadDone": data.DownloadDone,
 		})
 	}
 
 	// Retorna usuários e total de registros
+	return dataImg, total, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 20/10/2025 13:29
+Data Final da criação : 20/10/2025 13:30
+*/
+
+func SearchImagesDBFull(
+	client *mongo.Client,
+	dbName, collectionName string,
+	companyCode *string,
+	startDate *time.Time,
+	endDate *time.Time) ([]any, int64, error) {
+
+	collection := client.Database(dbName).Collection(collectionName)
+
+	// Criando o filtro dinâmico
+	filter := bson.M{}
+
+	if companyCode != nil && *companyCode != "" {
+		filter["companyCode"] = *companyCode
+	}
+
+	if startDate != nil || endDate != nil {
+		dateFilter := bson.M{}
+
+		if startDate != nil {
+			start := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
+			dateFilter["$gte"] = start
+		}
+
+		if endDate != nil {
+			end := time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, int(time.Second-time.Nanosecond), endDate.Location())
+			dateFilter["$lte"] = end
+		}
+
+		filter["dtImport"] = dateFilter
+	}
+
+	// Contar total de documentos
+	total, err := collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Executa a consulta sem paginação
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(context.Background())
+
+	// Processa os resultados
+	var dataImg []any
+	for cursor.Next(context.Background()) {
+		var data models.ImagesDB
+		if err := cursor.Decode(&data); err != nil {
+			return nil, 0, fmt.Errorf("erro ao decodificar imagem: %v", err)
+		}
+
+		dataImg = append(dataImg, map[string]any{
+			"ID":           data.ID.Hex(),
+			"FileName":     data.FileName,
+			"CompanyCode":  data.CompanyCode,
+			"CompanyName":  data.CompanyName,
+			"DtImport":     data.DtImport,
+			"FileUrl":      data.FileURL,
+			"Active":       data.Active,
+			"DownloadDone": data.DownloadDone,
+		})
+	}
+
 	return dataImg, total, nil
 }

@@ -59,8 +59,8 @@
           <table class="table table-bordered">
             <thead> 
                <tr>
-                <th class="fmtTableBorder" colspan="4" style="text-align: right;"> 
-                  <a href="javascript:void(0)"  (click)="donwloadJustOne();"> Download {{ 'Ecra.all' | translate }} </a>
+                <th class="fmtTableBorder" colspan="5" style="text-align: right;"> 
+                  <a href="javascript:void(0)"  (click)="donwloadAll();"> Download {{ 'Ecra.all' | translate }} </a>
                  </th>    
                
               </tr>
@@ -69,6 +69,7 @@
                   <th class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th>                                    
                 <th class="fmtTableBorder"> {{ 'Ecra.DtImport' | translate }} </th>   
                  <th class="fmtTableBorder">  </th>   
+                  <th class="fmtTableBorder">Já fez Donwload?  </th>  
               </tr>
             </thead>
             <tbody>
@@ -76,7 +77,8 @@
                 <td> {{item.FileName}} </td>
                 <td> {{item.CompanyName}} </td>        
                 <td> {{item.DtImport | date:'dd/MM/YYYY HH:MM'}} </td>   
-                <td>  <a href="{{item.FileUrl}}"  (click)="donwloadJustOne();">Download </a></td>                       
+                <td>  <a href="{{item.FileUrl}}"  (click)="donwloadJustOne(item);">Download </a></td>  
+                 <td> {{item.DownloadDone ?'Sim':'Não'}} </td>                             
               </tr>             
             </tbody>
           </table>

@@ -283,7 +283,7 @@ func InsertPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Ler o corpo da requisição
-	var data models.OnlyFlyExcel
+	var data models.PurcharseRecord
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, "erro ao decodificar corpo da requisição", http.StatusBadRequest)
@@ -336,7 +336,7 @@ func UpdatePurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decodificar o JSON recebido
-	var data models.OnlyFlyExcel
+	var data models.PurcharseRecord
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 		// http.Error(w, "Erro ao decodificar JSON", http.StatusBadRequest)
 		flytura.FormataRetornoHTTP(w, "Erro ao decodificar JSON", http.StatusBadRequest)

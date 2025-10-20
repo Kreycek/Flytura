@@ -33,6 +33,11 @@ export class InvoicesComponent {
     currentPage: number = 1;
     limit: number = 0;  
     dados:any;
+    imgsDownload:string[]=[]
+     objPesquisar:any= { 
+          
+         
+      };
     
     /**
      *
@@ -41,10 +46,7 @@ export class InvoicesComponent {
       private airLineService: AirLineService,
             public configService:ConfigService,
             public invoicesService:InvoicesService
-          ) {
-     
-      
-    }
+          ) {}
 
      async invalidDate(date: string, msg:string, showAlert:boolean=false) : Promise<boolean> {              
               const value = moment(date); // inputDate pode ser string, Date, etc.
@@ -64,90 +66,75 @@ export class InvoicesComponent {
               } else {
                return false;
               }
-          }
+    }
 
-          ngOnInit() {
+    ngOnInit() {
 
-               this.limit=this.configService.limitPaginator;
-
-                  this.airLineService.getAllAirLine().subscribe((response)=>{
+        this.limit=this.configService.limitPaginator;
+        this.airLineService.getAllAirLine().subscribe((response)=>{
           this.airLInes=response;
-
         });
-            this.search(this.currentPage);
+        this.search(this.currentPage);
            
-          }
+    }
 
-          async search(pageNumber:number) {
+    async search(pageNumber:number) {
 
-              let _values:any[]=[]
-                      let _labels:any[]=[]
-                      let objPesquisar: {                    
-                            companyCode?:string| null;  
-                            startDate?:string | null;
-                            endDate?:string | null;
-                       
-                        }
-                  
-                        if(this.searchAirlineDtInicio || this.searchAirlineDtFim ){
-                       
-                            if(await this.invalidDate(this.searchAirlineDtInicio, 'Data de início inválida, ou se a data de fim estiver preenchida é necessário preencher uma data de início.', true)) {
-                                return false;
-                            }
-                  
-                            if(await this.invalidDate(this.searchAirlineDtFim, 'Data de fim inválida, ou se a data de início estiver preenchida é necessário preencher uma data de fim.', true)) {
-                                return false;
-                            }
-                                
-                            const startDate = moment(this.searchAirlineDtInicio, 'YYYY-MM-DD');
-                            const endDate = moment(this.searchAirlineDtFim, 'YYYY-MM-DD');
-                  
-                            if (startDate.isAfter(endDate)) {
-                                const resultado = await this.modalOk.openModal('Data de início não pode ser maior que a data de fim',true);             
-                                    if (resultado) {
-                                      return false;
-                                      // Insira aqui a lógica para continuar após a confirmação
-                                    } else {
-                                      
-                                    }
-                              
-                            }
-                  
-                            if (endDate.isBefore(startDate)) {
-                              const resultado = await this.modalOk.openModal('Data de fim é menor que a data de inicio',true);             
-                                    if (resultado) {
-                                      return false;
-                                      // Insira aqui a lógica para continuar após a confirmação
-                                    } else {
-                                      
-                                    }          
-                            }
-                        }
-            
-                  objPesquisar= { 
+       
+          
+        if(this.searchAirlineDtInicio || this.searchAirlineDtFim ) {
+        
+            if(await this.invalidDate(this.searchAirlineDtInicio, 'Data de início inválida, ou se a data de fim estiver preenchida é necessário preencher uma data de início.', true)) {
+                return false;
+            }
+  
+            if(await this.invalidDate(this.searchAirlineDtFim, 'Data de fim inválida, ou se a data de início estiver preenchida é necessário preencher uma data de fim.', true)) {
+                return false;
+            }
+                
+            const startDate = moment(this.searchAirlineDtInicio, 'YYYY-MM-DD');
+            const endDate = moment(this.searchAirlineDtFim, 'YYYY-MM-DD');
+  
+            if (startDate.isAfter(endDate)) {
+                const resultado = await this.modalOk.openModal('Data de início não pode ser maior que a data de fim',true);             
+                    if (resultado) {
+                      return false;
+                      // Insira aqui a lógica para continuar após a confirmação
+                    } else {
                       
-                        companyCode:this.searchAirlineCode,
-                        startDate:this.searchAirlineDtInicio  ? moment(this.searchAirlineDtInicio).format('YYYY-MM-DDTHH:mm:ss[Z]') : null,                               
-                        endDate: this.searchAirlineDtFim ? moment(this.searchAirlineDtFim).set({ hour: 23, minute: 59, second: 59 }).format('YYYY-MM-DDTHH:mm:ss[Z]')  : null
+                    }
+              
+            }
+  
+            if (endDate.isBefore(startDate)) {
+              const resultado = await this.modalOk.openModal('Data de fim é menor que a data de inicio',true);             
+                    if (resultado) {
+                      return false;
+                      // Insira aqui a lógica para continuar após a confirmação
+                    } else {
+                      
+                    }          
+              }
+      }                       
 
-                        
-                    };
-
-
-                              
-      this.invoicesService.getAllS3ImagesDBlDataPagination(
+      this.objPesquisar=   {companyCode:this.searchAirlineCode,
+            startDate:this.searchAirlineDtInicio  ? moment(this.searchAirlineDtInicio).format('YYYY-MM-DDTHH:mm:ss[Z]') : null,                               
+            endDate: this.searchAirlineDtFim ? moment(this.searchAirlineDtFim).set({ hour: 23, minute: 59, second: 59 }).format('YYYY-MM-DDTHH:mm:ss[Z]')  : null     }
+      this.invoicesService.getAllS3ImagesDBDataPagination(
         pageNumber,
-         this.limit,
-        objPesquisar.companyCode,
-        objPesquisar.startDate,
-        objPesquisar.endDate).subscribe((response:any)=>{
-
-          this.dados=response.imagesDB;    
+        this.limit,
+        this.objPesquisar.companyCode,
+        this.objPesquisar.startDate,
+        this.objPesquisar.endDate).subscribe((response:any)=>{
+       
+  console.log('Faturas',response);
+      
+               this.dados=response.imagesDB;    
           this.totalRegistros = response.total;
           this.totalPages = response.pages;
       })
 
-                              return null
+      return null;
     }
 
      
@@ -156,7 +143,59 @@ export class InvoicesComponent {
       this.search(this.currentPage);
     }
 
-    donwloadJustOne() {
-      
+     donwloadAll() {
+      this.objPesquisar={
+              companyCode:this.searchAirlineCode,
+              startDate:this.searchAirlineDtInicio  ? moment(this.searchAirlineDtInicio).format('YYYY-MM-DDTHH:mm:ss[Z]') : null,                               
+              endDate: this.searchAirlineDtFim ? moment(this.searchAirlineDtFim).set({ hour: 23, minute: 59, second: 59 }).format('YYYY-MM-DDTHH:mm:ss[Z]')  : null     
+      }
+
+      this.invoicesService.getAllS3ImagesDBFull(this.objPesquisar.companyCode,this.objPesquisar.startDate,this.objPesquisar.endDate)
+         .subscribe((response:any)=>{
+
+                  this.imgsDownload = [];
+                  let ids:String[]=[]
+
+                  interface ImageResponse {
+                    ID:string
+                    FileName: string;
+                    DownloadDone:boolean
+                    // outras propriedades, se houver
+                  }
+
+                  for (const item of response.imagesDB as ImageResponse[]) {
+                    this.imgsDownload.push(item.FileName);
+                    ids.push(item.ID)
+                  }
+
+          
+                  if (this.imgsDownload.length > 0) {
+                      this.invoicesService.downloadZip(this.imgsDownload);
+                  }
+
+                  this.dados=response.imagesDB;    
+
+                   this.invoicesService.updateMultipleDownloadStatusS3Image({
+                    ids:ids,
+                    DownloadDone:true
+                   }).subscribe((response:any)=>{
+                     for (const item of this.dados as ImageResponse[]) {
+                      item.DownloadDone=true;
+                  }
+                   })
+        
+      })
+
+
+     }
+
+    donwloadJustOne(linha:any) {
+
+      const objUpdate={Id:linha.ID, DownloadDone:true}
+
+      linha.DownloadDone=true;
+
+      this.invoicesService.updateDownloadStatusS3Image(objUpdate).subscribe()
+
     }
 }

@@ -123,7 +123,10 @@ func main() {
 		Data Final da criação : 17/10/2025 13:15
 	*/
 	http.HandleFunc("/UploadS3Files", awsS3.UploadS3FilesHandler)
-	http.HandleFunc("/SearchS3Images", awsS3.SearchS3ImagesDBHandler)
+	http.HandleFunc("/SearchS3ImagesDBPagination", awsS3.SearchS3ImagesDBPaginationHandler)
+	http.HandleFunc("/SearchS3ImagesDBFull", awsS3.SearchS3ImagesDBFullHandler)
+	http.HandleFunc("/UpdateDownloadStatusS3Image", awsS3.UpdateDownloadStatusS3ImageHandler)
+	http.HandleFunc("/UpdateMultipleDownloadStatusS3Images", awsS3.UpdateMultipleDownloadStatusS3ImagesHandler)
 
 	//API'S PUBLICAS
 	http.HandleFunc("/GetPurcharseRecordByStatus", purcharseRecord.GetPurcharseRecordStatusHandler)

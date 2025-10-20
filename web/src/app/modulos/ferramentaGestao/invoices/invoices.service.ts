@@ -19,9 +19,9 @@ export class InvoicesService {
 
 
   
-  getAllS3ImagesDBlDataPagination(page:number, limit:number, companyCode?:string | null, startDate?:string | null, endDate?:string | null): Observable<any> {
+  getAllS3ImagesDBDataPagination(page:number, limit:number, companyCode?:string | null, startDate?:string | null, endDate?:string | null): Observable<any> {
     return this.http.get(
-        this.configService.apiUrl + "/SearchS3Images?page="+page + 
+        this.configService.apiUrl + "/SearchS3ImagesDBPagination?page="+page + 
         "&limit="+limit + 
         "&companyCode="+companyCode+ 
         "&startDate="+startDate+ 
@@ -33,7 +33,18 @@ export class InvoicesService {
   }
 
  
-  
+  getAllS3ImagesDBFull(companyCode?:string | null, startDate?:string | null, endDate?:string | null): Observable<any> {
+    return this.http.get(
+        this.configService.apiUrl + "/SearchS3ImagesDBFull?companyCode="+companyCode+ 
+        "&startDate="+startDate+ 
+        "&endDate="+endDate , {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    });
+  }
+
+
   async downloadZip(urls: string[]) {
     const zip = new JSZip();
 
@@ -51,6 +62,14 @@ export class InvoicesService {
     zip.generateAsync({ type: 'blob' }).then((content) => {
       saveAs(content, 'Facturas.zip');
     });
+  }
+
+
+  updateDownloadStatusS3Image(formData:any): Observable<any> {
+    return this.http.post(this.configService.apiUrl + "/UpdateDownloadStatusS3Image", formData);
+  }
+  updateMultipleDownloadStatusS3Image(formData:any): Observable<any> {
+    return this.http.post(this.configService.apiUrl + "/UpdateMultipleDownloadStatusS3Images", formData);
   }
 
 

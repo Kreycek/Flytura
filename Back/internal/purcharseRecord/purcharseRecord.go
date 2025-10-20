@@ -85,7 +85,7 @@ func ProcessExcel(filePath, fileName, companyName, companyCode string, client *m
 			continue // cabeçalho
 		}
 
-		obj := models.OnlyFlyExcel{
+		obj := models.PurcharseRecord{
 
 			Key:       "",
 			Name:      "",
@@ -137,7 +137,7 @@ func GetExcelData(client *mongo.Client, dbName, collectionName string) ([]any, e
 
 	var dadosBanco []any
 	for cursor.Next(context.Background()) {
-		var cc models.OnlyFlyExcel
+		var cc models.PurcharseRecord
 		if err := cursor.Decode(&cc); err != nil {
 			return nil, fmt.Errorf("erro ao decodificar ,centro de custo: %v", err)
 		}
@@ -250,7 +250,7 @@ func SearchExcelData(
 	// Processa os resultados
 	var excelData []any
 	for cursor.Next(context.Background()) {
-		var data models.OnlyFlyExcel
+		var data models.PurcharseRecord
 		if err := cursor.Decode(&data); err != nil {
 			return nil, 0, fmt.Errorf("erro ao decodificar usuário: %v", err)
 		}
@@ -279,7 +279,7 @@ Inicio da criação 04/09/2025 21:36
 Data Final da criação : 04/09/2025 21:36
 */
 // Função para inserir um usuário na coleção "user"
-func InsertExcelData(client *mongo.Client, dbName, collectionName string, data models.OnlyFlyExcel) error {
+func InsertExcelData(client *mongo.Client, dbName, collectionName string, data models.PurcharseRecord) error {
 	collection := client.Database(dbName).Collection(collectionName)
 
 	// Criar um contexto para a operação de inserção
@@ -311,7 +311,7 @@ func GetExcelDataByID(client *mongo.Client, dbName, collectionName, excelId stri
 	filter := bson.M{"_id": objectID}
 
 	// Variável para armazenar o usuário retornado
-	var excelData models.OnlyFlyExcel
+	var excelData models.PurcharseRecord
 
 	// Usar FindOne para pegar apenas um único registro
 	err := collection.FindOne(context.Background(), filter).Decode(&excelData)
@@ -372,7 +372,7 @@ func GetAllExcelData(client *mongo.Client, dbName, collectionName string, page, 
 
 	var ccs []any
 	for cursor.Next(context.Background()) {
-		var cc models.OnlyFlyExcel
+		var cc models.PurcharseRecord
 		if err := cursor.Decode(&cc); err != nil {
 			return nil, 0, fmt.Errorf("erro ao decodificar centro de custo: %v", err)
 		}
@@ -525,7 +525,7 @@ func GetDataExcelByStatus(client *mongo.Client, dbName, collectionName, companyC
 
 	var dadosBanco []any
 	for cursor.Next(context.Background()) {
-		var cc models.OnlyFlyExcel
+		var cc models.PurcharseRecord
 		if err := cursor.Decode(&cc); err != nil {
 			return nil, fmt.Errorf("erro ao decodificar ,centro de custo: %v", err)
 		}

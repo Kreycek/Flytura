@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type OnlyFlyExcel struct {
+type PurcharseRecord struct {
 	ID            primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Key           string             `json:"key" bson:"key,omitempty"`
 	Name          string             `json:"name" bson:"name,omitempty"`
