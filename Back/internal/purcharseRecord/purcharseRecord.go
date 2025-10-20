@@ -1,4 +1,4 @@
-package onlyFly
+package purcharseRecord
 
 import (
 	"Flytura/internal/db"

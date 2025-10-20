@@ -4,12 +4,12 @@ import (
 	flytura "Flytura"
 	"Flytura/internal/auth"
 	"Flytura/internal/awsS3"
+	"Flytura/internal/purcharseRecord"
 	"fmt"
 	"io"
 	"strings"
 
 	airLine "Flytura/internal/airLine"
-	"Flytura/internal/onlyFly"
 	"Flytura/internal/perfil"
 	"Flytura/internal/users"
 	"encoding/json"
@@ -91,22 +91,22 @@ func main() {
 		Inicio da criação 05/09/2025 14:06
 		Data Final da criação : 09/09/2025 14:10
 	*/
-	http.HandleFunc("/uploadOnlyFlyExcelData", onlyFly.UploadOnlyFlyHandler)
+	http.HandleFunc("/UploadPurcharseRecord", purcharseRecord.UploadPurcharseRecordHandler)
 	// Não permite pesquisar por parametro apenas traz todos os registro para paginação inicialmente a primeira página
-	http.HandleFunc("/GetAllOnlyFlyExcelData", onlyFly.GetAllExcelDatasHandler)
+	http.HandleFunc("/GetAllPurcharseRecordPagination", purcharseRecord.GetAllPurcharseRecordPaginationHandler)
 	// Obtem todos sem paginação
-	http.HandleFunc("/GetOnlyFlyExcelData", onlyFly.GetAllOnlyExcelDatasHandler)
-	http.HandleFunc("/GetOnlyFlyExcelDataById", onlyFly.GetExcelDataByIdHandler)
-	http.HandleFunc("/InsertOnlyFlyExcelData", onlyFly.InsertExcelDataHandler)
-	http.HandleFunc("/UpdateOnlyFlyExcelData", onlyFly.UpdateExcelDataHandler)
-	http.HandleFunc("/VerifyExistOnlyFlyExcelData", onlyFly.VerifyExistExcelDataHandler)
-	http.HandleFunc("/SearchOnlyFlyExcelData", onlyFly.SearchExcelsHandler)
+	http.HandleFunc("/GetAllPurcharseRecord", purcharseRecord.GetAllPurcharseRecordHandler)
+	http.HandleFunc("/GetPurcharseRecordById", purcharseRecord.GetPurcharseRecordByIdHandler)
+	http.HandleFunc("/InsertPurcharseRecord", purcharseRecord.InsertPurcharseRecordHandler)
+	http.HandleFunc("/UpdatePurcharseRecord", purcharseRecord.UpdatePurcharseRecordHandler)
+	http.HandleFunc("/VerifyExistPurcharseRecord", purcharseRecord.VerifyExistPurcharseRecordHandler)
+	http.HandleFunc("/SearchPurcharseRecord", purcharseRecord.SearchPurcharseRecordHandler)
 
 	//Inicio da criação 30/11/2025 17:13
-	http.HandleFunc("/GetAllImportStatus", onlyFly.GetAllImportStatussHandler)
+	http.HandleFunc("/GetAllImportStatus", purcharseRecord.GetAllImportStatussHandler)
 
 	//Inicio da criação 01/10/2025 16:59
-	http.HandleFunc("/GroupByCompanyName", onlyFly.GroupByCompanyNameHandler)
+	http.HandleFunc("/GroupByCompanyName", purcharseRecord.GroupByCompanyNameHandler)
 
 	//AIRLINE
 	/*
@@ -126,7 +126,7 @@ func main() {
 	http.HandleFunc("/SearchS3Images", awsS3.SearchS3ImagesDBHandler)
 
 	//API'S PUBLICAS
-	http.HandleFunc("/GetDataExcelByStatus", onlyFly.GetDataExcelByStatusHandler)
+	http.HandleFunc("/GetPurcharseRecordByStatus", purcharseRecord.GetPurcharseRecordStatusHandler)
 
 	//TESTE
 	http.HandleFunc("/teste", loginHandler)

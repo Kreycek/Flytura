@@ -13,6 +13,7 @@ import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import moment from 'moment';
 import { ModalOkComponent } from '../modal/modal-ok/modal-ok.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { ModuloService } from '../modulos/modulo.service';
 @Component({
   selector: 'app-center',
   standalone: true,
@@ -36,7 +37,9 @@ export class CenterComponent {
     constructor( 
         private purcharseRecordService: PurcharseRecordService,
         private airLineService: AirLineService,
-        public configService:ConfigService) {}
+        public configService:ConfigService,
+        public moduloService:ModuloService
+      ) {}
 
       async invalidDate(date: string, msg:string, showAlert:boolean=false) : Promise<boolean> {              
           const value = moment(date); // inputDate pode ser string, Date, etc.
@@ -158,11 +161,6 @@ export class CenterComponent {
           this.msgNotFound=true;
           this.graphicData([],[]);
         }
-
-       
-
-          
-        
       })
 
       return null
@@ -192,7 +190,7 @@ export class CenterComponent {
 
         });
 
-        this.purcharseRecordService.getAllStatusImportData().subscribe((response:any)=>{     
+        this.moduloService.getAllStatusImportData().subscribe((response:any)=>{     
         this.statusImportData=response
 
           });

@@ -15,6 +15,7 @@ import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import moment from 'moment';
 import { TranslateModule } from '@ngx-translate/core';
 import { ModelsComponent } from '../models/models/models.component';
+import { ModuloService } from '../../modulo.service';
 
 @Component({
   selector: 'app-invoices',
@@ -50,7 +51,8 @@ export class PurcharseRecordComponent {
       private router: Router, 
       private purcharseRecordService: PurcharseRecordService,
       private airLineService: AirLineService,
-      public configService:ConfigService
+      public configService:ConfigService,
+      public moduloService:ModuloService
       
     ) {} 
       
@@ -66,7 +68,7 @@ export class PurcharseRecordComponent {
             this.purcharseRecordService.importarPlanilha(formData).subscribe(()=>{
                 this.purcharseRecordService.getAllPurchaseRecordDataPagination(this.currentPage,this.limit).subscribe(async (response:any)=>{     
         
-                  this.dados=response.onlyFlyData;  
+                  this.dados=response.purcharseRecord;  
                   this.totalRegistros = response.total;
                   this.totalPages = response.pages;
                     const resultado = await this.modalOk.openModal("Planilha importada com sucesso",true);             
@@ -90,7 +92,7 @@ export class PurcharseRecordComponent {
      
         this.purcharseRecordService.getAllPurchaseRecordDataPagination(this.currentPage,this.limit).subscribe((response:any)=>{     
   
-            this.dados=response.onlyFlyData;  
+            this.dados=response.purcharseRecord;  
 
             this.totalRegistros = response.total;
             this.totalPages = response.pages;
@@ -101,7 +103,7 @@ export class PurcharseRecordComponent {
 
         });
 
-this.purcharseRecordService.getAllStatusImportData().subscribe((response:any)=>{     
+this.moduloService.getAllStatusImportData().subscribe((response:any)=>{     
         this.statusImportData=response
 
           });
@@ -198,7 +200,7 @@ this.purcharseRecordService.getAllStatusImportData().subscribe((response:any)=>{
       
   
       this.purcharseRecordService.searchPurchaseRecordData(objPesquisar).subscribe((response:any)=>{
-        this.dados=response.onlyFlyData;    
+        this.dados=response.purcharseRecord;    
         this.totalRegistros = response.total;
         this.totalPages = response.pages;
       })

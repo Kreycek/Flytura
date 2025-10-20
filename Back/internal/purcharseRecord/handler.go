@@ -1,4 +1,4 @@
-package onlyFly
+package purcharseRecord
 
 import (
 	flytura "Flytura"
@@ -35,7 +35,7 @@ Inicio da criação 03/09/2025 22:05
 Data Final da criação : 05/09/2025 22:40
 */
 
-func UploadOnlyFlyHandler(w http.ResponseWriter, r *http.Request) {
+func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(10 << 20) // 10MB
 	file, fileHeader, err := r.FormFile("file")
 	if err != nil {
@@ -105,7 +105,7 @@ func UploadOnlyFlyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.CloseMongoDB(clients)
 
-	err = ProcessExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, clients, flytura.DBName, "onlyFlyExcel")
+	err = ProcessExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, clients, flytura.DBName, "purcharseRecord")
 	if err != nil {
 		http.Error(w, "Erro ao processar planilha", http.StatusInternalServerError)
 		return
@@ -126,7 +126,7 @@ Inicio da criação 05/09/2025 14:04
 Data Final da criação : 05/09/2025 14:33
 */
 // Obtem todos sem paginação
-func GetAllOnlyExcelDatasHandler(w http.ResponseWriter, r *http.Request) {
+func GetAllPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 
 	status, msg := flytura.TokenValido(w, r)
 
@@ -144,7 +144,7 @@ func GetAllOnlyExcelDatasHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	onlyFlyData, err := GetExcelData(client, flytura.DBName, "onlyFlyExcel")
+	onlyFlyData, err := GetExcelData(client, flytura.DBName, "purcharseRecord")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -165,7 +165,7 @@ Data Final da criação : 05/09/2025 11:00
 */
 
 // Não permite pesquisar por parametro apenas traz todos os registro para paginação
-func GetAllExcelDatasHandler(w http.ResponseWriter, r *http.Request) {
+func GetAllPurcharseRecordPaginationHandler(w http.ResponseWriter, r *http.Request) {
 	status, msg := flytura.TokenValido(w, r)
 	if !status {
 		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
@@ -192,7 +192,7 @@ func GetAllExcelDatasHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Obter usuários paginados
-	data, total, err := GetAllExcelData(client, flytura.DBName, "onlyFlyExcel", page, limit)
+	data, total, err := GetAllExcelData(client, flytura.DBName, "purcharseRecord", page, limit)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar diários: %v", err), http.StatusInternalServerError)
 		return
@@ -200,11 +200,11 @@ func GetAllExcelDatasHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Criar resposta JSON com paginação
 	response := map[string]any{
-		"total":       total,
-		"page":        page,
-		"limit":       limit,
-		"pages":       (total + limit - 1) / limit, // Calcula o número total de páginas
-		"onlyFlyData": data,
+		"total":           total,
+		"page":            page,
+		"limit":           limit,
+		"pages":           (total + limit - 1) / limit, // Calcula o número total de páginas
+		"purcharseRecord": data,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -220,7 +220,7 @@ Inicio da criação 05/09/2025 11:23
 Data Final da criação : 05/09/2025 11:34
 */
 
-func GetExcelDataByIdHandler(w http.ResponseWriter, r *http.Request) {
+func GetPurcharseRecordByIdHandler(w http.ResponseWriter, r *http.Request) {
 	// Validar token
 	status, msg := flytura.TokenValido(w, r)
 	if !status {
@@ -251,7 +251,7 @@ func GetExcelDataByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	costCenters, err := GetExcelDataByID(client, flytura.DBName, "onlyFlyExcel", id)
+	costCenters, err := GetExcelDataByID(client, flytura.DBName, "purcharseRecord", id)
 	if err != nil {
 		http.Error(w, "Erro ao buscar diários", http.StatusInternalServerError)
 		return
@@ -274,7 +274,7 @@ Inicio da criação 05/09/2025 11:05
 Data Final da criação : 05/09/2025 11:15
 */
 
-func InsertExcelDataHandler(w http.ResponseWriter, r *http.Request) {
+func InsertPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	// Validar o token de autenticação
 	status, msg := flytura.TokenValido(w, r)
 	if !status {
@@ -306,7 +306,7 @@ func InsertExcelDataHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Inserir o usuário no MongoDB
-	err = InsertExcelData(client, flytura.DBName, "onlyFlyExcel", data)
+	err = InsertExcelData(client, flytura.DBName, "purcharseRecord", data)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao inserir fatura: %v", err), http.StatusInternalServerError)
 		return
@@ -327,7 +327,7 @@ Inicio da criação 05/09/2025 12:01
 Data Final da criação : 05/09/2025 12:07
 */
 
-func UpdateExcelDataHandler(w http.ResponseWriter, r *http.Request) {
+func UpdatePurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	// Validar o token de autenticação
 	status, msg := flytura.TokenValido(w, r)
 	if !status {
@@ -383,7 +383,7 @@ func UpdateExcelDataHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection("onlyFlyExcel")
+	collection := client.Database(flytura.DBName).Collection("purcharseRecord")
 	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": data.ID}, update)
 	if err != nil {
 		flytura.FormataRetornoHTTP(w, "Erro ao atualizar fatura", http.StatusInternalServerError)
@@ -413,7 +413,7 @@ Data Final da criação : 05/09/2025 13:33
 */
 
 // Função para verificar o nome de usuário e senha
-func VerifyExistExcelDataHandler(w http.ResponseWriter, r *http.Request) {
+func VerifyExistPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 
 	status, msg := flytura.TokenValido(w, r)
 	if !status {
@@ -440,7 +440,7 @@ func VerifyExistExcelDataHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter a coleção de usuários
-	collection := db.GetCollection(client, flytura.DBName, "onlyFlyExcel")
+	collection := db.GetCollection(client, flytura.DBName, "purcharseRecord")
 	// filter := bson.D{
 	// 	{Key: "$or", Value: bson.A{
 	// 		bson.D{{Key: "email", Value: userName}},
@@ -472,7 +472,7 @@ Inicio da criação 05/09/2025 13:39
 Data Final da criação : 05/09/2025 14:03
 */
 
-func SearchExcelsHandler(w http.ResponseWriter, r *http.Request) {
+func SearchPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	// Verificar se a requisição é do tipo POST
 	if r.Method != http.MethodPost {
 		http.Error(w, "Método não permitido dever ser um post", http.StatusMethodNotAllowed)
@@ -528,7 +528,7 @@ func SearchExcelsHandler(w http.ResponseWriter, r *http.Request) {
 	costCenters, total, err := SearchExcelData(
 		client,
 		flytura.DBName,
-		"onlyFlyExcel",
+		"purcharseRecord",
 		request.Key,
 		request.Name,
 		request.LastName,
@@ -546,11 +546,11 @@ func SearchExcelsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Criar resposta JSON com paginação
 	response := map[string]any{
-		"total":       total,
-		"page":        request.Page,
-		"limit":       request.Limit,
-		"pages":       (total + request.Limit - 1) / request.Limit, // Número total de páginas
-		"onlyFlyData": costCenters,
+		"total":           total,
+		"page":            request.Page,
+		"limit":           request.Limit,
+		"pages":           (total + request.Limit - 1) / request.Limit, // Número total de páginas
+		"purcharseRecord": costCenters,
 	}
 
 	// Retornar resposta JSON
@@ -639,7 +639,7 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Chamada da função com filtros
-	onlyFlyData, err := GroupByCompanyNameFiltered(client, flytura.DBName, "onlyFlyExcel", startDate, endDate, statusParam, companyNameParam)
+	onlyFlyData, err := GroupByCompanyNameFiltered(client, flytura.DBName, "purcharseRecord", startDate, endDate, statusParam, companyNameParam)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -658,7 +658,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 14/10/2025 22:01
 Data Final da criação :  14/10/2025 22:12
 */
-func GetDataExcelByStatusHandler(w http.ResponseWriter, r *http.Request) {
+func GetPurcharseRecordStatusHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Conectar ao MongoDB
 	client, err := db.ConnectMongoDB(flytura.ConectionString)
@@ -696,7 +696,7 @@ func GetDataExcelByStatusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	dataExcel, err := GetDataExcelByStatus(client, flytura.DBName, "onlyFlyExcel", companyCode, status)
+	dataExcel, err := GetDataExcelByStatus(client, flytura.DBName, "purcharseRecord", companyCode, status)
 	if err != nil {
 		http.Error(w, "Erro ao dados da planilha", http.StatusInternalServerError)
 		return

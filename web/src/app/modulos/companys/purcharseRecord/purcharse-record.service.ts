@@ -15,7 +15,7 @@ export class PurcharseRecordService {
   ) {}
 
   getAllPurchaseRecordDataPagination(page:number, limit:number): Observable<any> {
-    return this.http.get(this.configService.apiUrl + "/GetAllOnlyFlyExcelData?page="+page + "&limit="+limit , {
+    return this.http.get(this.configService.apiUrl + "/GetAllPurcharseRecordPagination?page="+page + "&limit="+limit , {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
@@ -24,7 +24,7 @@ export class PurcharseRecordService {
 
     //Carregar todos os diários sem documentos
     getAllPurchaseRecordData(): Observable<any> {
-      return this.http.get(this.configService.apiUrl + "/GetOnlyFlyExcelData" , {
+      return this.http.get(this.configService.apiUrl + "/GetAllPurcharseRecord" , {
         headers: new HttpHeaders({
           'Content-Type': 'application/json',
         }),
@@ -33,7 +33,7 @@ export class PurcharseRecordService {
   
 
   getPurchaseRecordDataById(id:string): Observable<any> {
-    return this.http.get(this.configService.apiUrl + "/GetOnlyFlyExcelDataById?id="+id, {
+    return this.http.get(this.configService.apiUrl + "/GetPurcharseRecordById?id="+id, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
@@ -41,7 +41,7 @@ export class PurcharseRecordService {
   }
 
   addPurchaseRecordData(data:any): Observable<any> {
-    return this.http.post(this.configService.apiUrl + "/InsertOnlyFlyExcelData", data, {
+    return this.http.post(this.configService.apiUrl + "/InsertPurcharseRecord", data, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
@@ -49,7 +49,7 @@ export class PurcharseRecordService {
   }
 
   updatePurchaseRecordData(data:any): Observable<any> {
-    return this.http.post(this.configService.apiUrl + "/UpdateOnlyFlyExcelData", data, {
+    return this.http.post(this.configService.apiUrl + "/UpdatePurcharseRecord", data, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
@@ -57,7 +57,7 @@ export class PurcharseRecordService {
   }
 
   verifyExistPurchaseRecordData(data:any): Observable<any> {
-    return this.http.post(this.configService.apiUrl + "/VerifyExistOnlyFlyExcelData", data, {
+    return this.http.post(this.configService.apiUrl + "/VerifyExistPurcharseRecord", data, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
@@ -65,7 +65,7 @@ export class PurcharseRecordService {
   }
 
   searchPurchaseRecordData(data:any): Observable<any> {
-    return this.http.post(this.configService.apiUrl + "/SearchOnlyFlyExcelData", data, {
+    return this.http.post(this.configService.apiUrl + "/SearchPurcharseRecord", data, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
@@ -74,19 +74,9 @@ export class PurcharseRecordService {
 
   
   importarPlanilha(formData:FormData): Observable<any> {
-    return this.http.post(this.configService.apiUrl + "/uploadOnlyFlyExcelData", formData);
+    return this.http.post(this.configService.apiUrl + "/UploadPurcharseRecord", formData);
 
   }
-
-
-  //Carregar todos os status de importação
-    getAllStatusImportData(): Observable<any> {
-      return this.http.get(this.configService.apiUrl + "/GetAllImportStatus" , {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-        }),
-      });
-    }
 
 
     
