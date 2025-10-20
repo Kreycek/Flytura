@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 // @ts-ignore
 import * as Plotly from 'plotly.js-dist-min';
-import { InvoicesService } from '../modulos/companys/invoices/invoices.service';
+import { PurcharseRecordService } from '../modulos/companys/purcharseRecord/purcharse-record.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -34,7 +34,7 @@ export class CenterComponent {
     msgNotFound=false;
 
     constructor( 
-        private invoiceService: InvoicesService,
+        private purcharseRecordService: PurcharseRecordService,
         private airLineService: AirLineService,
         public configService:ConfigService) {}
 
@@ -142,7 +142,7 @@ export class CenterComponent {
                     status:this.searchStatus
                   };
 
-        this.invoiceService.GroupByCompanyName(objPesquisar.status,objPesquisar.companyCode,objPesquisar.startDate,objPesquisar.endDate).subscribe((response:any)=>{
+        this.purcharseRecordService.GroupByCompanyName(objPesquisar.status,objPesquisar.companyCode,objPesquisar.startDate,objPesquisar.endDate).subscribe((response:any)=>{
 
          if(response) {
           response.forEach((element:any) => {
@@ -173,7 +173,7 @@ export class CenterComponent {
       let _values:any[]=[]
       let _labels:any[]=[]
 
-      this.invoiceService.GroupByCompanyName().subscribe((response:any)=>{
+      this.purcharseRecordService.GroupByCompanyName().subscribe((response:any)=>{
 
        
           response.forEach((element:any) => {
@@ -192,7 +192,7 @@ export class CenterComponent {
 
         });
 
-        this.invoiceService.getAllStatusImportData().subscribe((response:any)=>{     
+        this.purcharseRecordService.getAllStatusImportData().subscribe((response:any)=>{     
         this.statusImportData=response
 
           });

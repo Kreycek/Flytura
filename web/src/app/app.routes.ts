@@ -8,8 +8,8 @@ import { UsuarioComponent } from './modulos/ferramentaGestao/users/usuario/usuar
 import { AddUsuarioComponent } from './modulos/ferramentaGestao/users/add-usuario/add-usuario.component';
 
 
-import { InvoicesOnlyFlyComponent } from './modulos/companys/invoices/invoices.component';
-import { AddInvoicesComponent } from './modulos/companys/add-invoices/add-invoices.component';
+import { PurcharseRecordComponent } from './modulos/companys/purcharseRecord/purcharse-record.component';
+import { AddPurchaseRecordComponent } from './modulos/companys/add-purchase-record/add-purcharse-record.component';
 import { ModelsComponent } from './modulos/companys/models/models/models.component';
 import { InvoicesComponent } from './modulos/ferramentaGestao/invoices/invoices.component';
 
@@ -38,16 +38,16 @@ export const routes: Routes = [
                 component:AddUsuarioComponent
             },             
             {
-                path:'invoicesOnlyFlyExcel',
-                component:InvoicesOnlyFlyComponent
+                path:'purcharseRecord',
+                component:PurcharseRecordComponent
             }, 
             {
-                path:'addInvoicesOnlyFlyExcel',
-                component:AddInvoicesComponent
+                path:'addPurchaseRecord',
+                component:AddPurchaseRecordComponent
             }, 
             {
-                path:'addInvoicesOnlyFlyExcel/:id',
-                component:AddInvoicesComponent
+                path:'addPurchaseRecord/:id',
+                component:AddPurchaseRecordComponent
             }, 
             {
                 path:'sheetModels',

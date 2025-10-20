@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../../../services/config.service';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver'
+
 
 @Injectable({
   providedIn: 'root',
@@ -28,5 +31,27 @@ export class InvoicesService {
       }),
     });
   }
+
+ 
+  
+  async downloadZip(urls: string[]) {
+    const zip = new JSZip();
+
+    for (const url of urls) {
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const filename = url.split('/').pop() || 'file';
+        zip.file(filename, blob);
+      } catch (error) {
+        console.error(`Erro ao baixar ${url}:`, error);
+      }
+    }
+
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+      saveAs(content, 'Facturas.zip');
+    });
+  }
+
 
 }
