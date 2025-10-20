@@ -85,7 +85,7 @@ func main() {
 	http.HandleFunc("/getUserById", users.GetUserByIdHandler)
 	http.HandleFunc("/updateUser", users.UpdateUserHandler)
 
-	//ONLY FLY
+	//PURCHARSE RECORD
 	/*
 		Configuração criada por Ricardo Silva Ferreira
 		Inicio da criação 05/09/2025 14:06
@@ -122,7 +122,7 @@ func main() {
 		Inicio da criação 17/10/2025 13:10
 		Data Final da criação : 17/10/2025 13:15
 	*/
-	http.HandleFunc("/UploadS3Files", awsS3.UploadS3FilesHandler)
+
 	http.HandleFunc("/SearchS3ImagesDBPagination", awsS3.SearchS3ImagesDBPaginationHandler)
 	http.HandleFunc("/SearchS3ImagesDBFull", awsS3.SearchS3ImagesDBFullHandler)
 	http.HandleFunc("/UpdateDownloadStatusS3Image", awsS3.UpdateDownloadStatusS3ImageHandler)
@@ -130,6 +130,7 @@ func main() {
 
 	//API'S PUBLICAS
 	http.HandleFunc("/GetPurcharseRecordByStatus", purcharseRecord.GetPurcharseRecordStatusHandler)
+	http.HandleFunc("/UploadS3Files", awsS3.UploadS3FilesHandler)
 
 	//TESTE
 	http.HandleFunc("/teste", loginHandler)

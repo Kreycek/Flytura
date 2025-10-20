@@ -72,7 +72,10 @@
     "requiredFieldLastName":"O campo sobrenome é obrigatório",
     "selected":"Selecione",
     "invoices":"Faturas",
-    "fileName":"Nome do arquivo"
+    "fileName":"Nome do arquivo",
+    "doDonwload":"Já fez download?",
+    "yes":"Sim",
+    "no":"Não"
     
   }
 }

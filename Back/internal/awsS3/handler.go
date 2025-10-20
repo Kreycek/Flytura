@@ -43,8 +43,9 @@ func UploadS3FilesHandler(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	companyCode := r.FormValue("companyCode")
+	key := r.FormValue("key")
 
-	err = UploadToS3(file, header.Filename, companyCode)
+	err = UploadToS3(file, header.Filename, companyCode, key)
 	if err != nil {
 
 		fmt.Println("Erro detalhado ao enviar para S3:", err)

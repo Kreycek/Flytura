@@ -26,7 +26,7 @@ var (
 	region     = flytura.BucketRegion // ajuste conforme necessário
 )
 
-func UploadToS3(file io.Reader, filename, companyCode string) error {
+func UploadToS3(file io.Reader, filename, companyCode, key string) error {
 	accessKey := flytura.AKA
 	secretKey := flytura.SKA
 
@@ -34,7 +34,7 @@ func UploadToS3(file io.Reader, filename, companyCode string) error {
 	fmt.Println("secretKey", secretKey)
 	region := region
 	bucketName := bucketName
-	key := flytura.ImagesInvoices + "/" + filename
+	directory := flytura.ImagesInvoices + "/" + filename
 
 	cfg, errLdc := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(region),
@@ -50,7 +50,7 @@ func UploadToS3(file io.Reader, filename, companyCode string) error {
 
 	_, errLdc = client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: &bucketName,
-		Key:    &key,
+		Key:    &directory,
 		Body:   file,
 		// ACL removido porque o bucket não permite ACLs
 	})
@@ -84,14 +84,15 @@ func UploadToS3(file io.Reader, filename, companyCode string) error {
 		CompanyCode:  companyCode,
 		CompanyName:  companyName,
 		DownloadDone: false,
+		Key:          key,
 		FileURL:      flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + filename, // ou uma URL pública se estiver usando S3, etc.
 	}
 
 	InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
 
-	fmt.Println("bucketName ", bucketName)
-	fmt.Println("region ", region)
-	fmt.Println("key ", key)
+	// fmt.Println("bucketName ", bucketName)
+	// fmt.Println("region ", region)
+	// fmt.Println("key ", key)
 
 	fmt.Printf("Arquivo enviado para: https://%s.s3.%s.amazonaws.com/%s\n", bucketName, region, key)
 	return nil
@@ -194,6 +195,7 @@ func SearchImagesDBPagination(
 			"DtImport":     data.DtImport,
 			"FileUrl":      data.FileURL,
 			"Active":       data.Active,
+			"Key":          data.Key,
 			"DownloadDone": data.DownloadDone,
 		})
 	}
@@ -269,6 +271,7 @@ func SearchImagesDBFull(
 			"DtImport":     data.DtImport,
 			"FileUrl":      data.FileURL,
 			"Active":       data.Active,
+			"Key":          data.Key,
 			"DownloadDone": data.DownloadDone,
 		})
 	}

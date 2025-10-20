@@ -76,6 +76,9 @@
     "requiredFieldLastName":"El campo de apellido es obligatorio",
     "selected":"Seleccionar",
     "invoices":"Facturas",
-    "fileName":"Nombre do arquivo"
+    "fileName":"Nombre do arquivo",
+    "doDonwload":"¿Ya lo has descargado?",
+    "yes":"Si",
+    "no":"No"
   }
 }

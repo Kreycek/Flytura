@@ -80,7 +80,10 @@
     "requiredFieldLastName":"The last name field is required",
     "selected":"Select",
     "invoices":"Invoices",
-    "fileName":"File name"
+    "fileName":"File name",
+    "doDonwload":"Have you downloaded it yet?",
+    "yes":"Yes",
+    "no":"No"
     
   }
 }

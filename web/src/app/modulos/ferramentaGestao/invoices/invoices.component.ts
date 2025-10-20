@@ -118,8 +118,8 @@ export class InvoicesComponent {
       }                       
 
       this.objPesquisar=   {companyCode:this.searchAirlineCode,
-            startDate:this.searchAirlineDtInicio  ? moment(this.searchAirlineDtInicio).format('YYYY-MM-DDTHH:mm:ss[Z]') : null,                               
-            endDate: this.searchAirlineDtFim ? moment(this.searchAirlineDtFim).set({ hour: 23, minute: 59, second: 59 }).format('YYYY-MM-DDTHH:mm:ss[Z]')  : null     }
+            startDate:this.searchAirlineDtInicio  ? moment(this.searchAirlineDtInicio).format('YYYY-MM-DDTHH:mm:ss[Z]') : '',                               
+            endDate: this.searchAirlineDtFim ? moment(this.searchAirlineDtFim).set({ hour: 23, minute: 59, second: 59 }).format('YYYY-MM-DDTHH:mm:ss[Z]')  : ''     }
       this.invoicesService.getAllS3ImagesDBDataPagination(
         pageNumber,
         this.limit,
