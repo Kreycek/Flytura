@@ -123,10 +123,10 @@ export class AddUsuarioComponent {
   retornaIdTipoPerfil(namePerfil:string ) : number  {
     if(namePerfil.toLowerCase()=='administrador')
       return 1
-    else  if(namePerfil.toLowerCase()=="super administrador") {
+    else  if(namePerfil.toLowerCase()=="usuário") {
       return 2
     }
-    else if(namePerfil.toLowerCase()=='utilizador') {
+    else if(namePerfil.toLowerCase()=='contador') {
       return 3
     }
     else {

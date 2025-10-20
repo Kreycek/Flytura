@@ -85,6 +85,9 @@ func VerifyUser(w http.ResponseWriter, r *http.Request) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["username"] = user.Username
+	claims["perfis"] = result["perfil"]
+	claims["name"] = result["name"].(string)
+	claims["lastName"] = result["lastName"].(string)
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	// Criar o token

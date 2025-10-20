@@ -75,7 +75,8 @@
     "fileName":"Nome do arquivo",
     "doDonwload":"Já fez download?",
     "yes":"Sim",
-    "no":"Não"
+    "no":"Não",
+    "welcomeUser":"Bem vindo"
     
   }
 }

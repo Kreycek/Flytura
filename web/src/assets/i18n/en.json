@@ -83,7 +83,8 @@
     "fileName":"File name",
     "doDonwload":"Have you downloaded it yet?",
     "yes":"Yes",
-    "no":"No"
+    "no":"No",
+    "welcomeUser":"Welcome"
     
   }
 }

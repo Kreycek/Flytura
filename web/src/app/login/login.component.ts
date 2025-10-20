@@ -37,7 +37,7 @@ export class LoginComponent {
         // Valida o token após o login
         this.loginService.validateTokenAfterLogin(token).subscribe({
           next: (validationResponse) => {
-            this.router.navigate(['/aplicacao']);
+             this.router.navigate(['/aplicacao/center']);
           },
           error: (validationError) => {
             // console.error('Erro ao validar o token:', validationError);
