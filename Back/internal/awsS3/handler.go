@@ -348,7 +348,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 20/10/2025 15:21
 Data Final da criação : 20/10/2025 15:40
 */
-func UpdateMultipleDownloadStatusS3ImagesHandler(w http.ResponseWriter, r *http.Request) {
+func UpdateMultipleStatusS3ImagesHandler(w http.ResponseWriter, r *http.Request) {
 	// Validar o token de autenticação
 	status, msg := flytura.TokenValido(w, r)
 	if !status {

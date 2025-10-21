@@ -1,3 +1,21 @@
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #276E6E;   
+    color: white;
+    border-radius: 4px;
+}
+
+input[type="file"] {
+    display: none;
+}
+  
+table.table-bordered th.fmtTableBorder {
+    border-width: 1px; 
+    border-bottom-color: #CED4DA;
+    font-size: 13px;
+}
 
 /* Estilo do mat-datepicker quando aberto */
 ::ng-deep .mat-datepicker-content {

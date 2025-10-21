@@ -126,11 +126,11 @@ func main() {
 	http.HandleFunc("/SearchS3ImagesDBPagination", awsS3.SearchS3ImagesDBPaginationHandler)
 	http.HandleFunc("/SearchS3ImagesDBFull", awsS3.SearchS3ImagesDBFullHandler)
 	http.HandleFunc("/UpdateDownloadStatusS3Image", awsS3.UpdateDownloadStatusS3ImageHandler)
-	http.HandleFunc("/UpdateMultipleDownloadStatusS3Images", awsS3.UpdateMultipleDownloadStatusS3ImagesHandler)
 
 	//API'S PUBLICAS
 	http.HandleFunc("/GetPurcharseRecordByStatus", purcharseRecord.GetPurcharseRecordStatusHandler)
 	http.HandleFunc("/UploadS3Files", awsS3.UploadS3FilesHandler)
+	http.HandleFunc("/UpdatePurcharseRecordMultiple", purcharseRecord.UpdatePurcharseRecordMultipleHandler)
 
 	//TESTE
 	http.HandleFunc("/teste", loginHandler)

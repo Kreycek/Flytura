@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -739,7 +740,7 @@ func VerifyAccessValidTokenListSheet(client *mongo.Client, dbName, collectionNam
 	err := collection.FindOne(context.Background(), filter).Decode(&tokenAccessSheet)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, fmt.Errorf("plano de contas não encontrado")
+			return nil, fmt.Errorf("token não encontrado")
 		}
 		return nil, fmt.Errorf("erro ao buscar plano de contas: %v", err)
 	}
@@ -754,4 +755,89 @@ func VerifyAccessValidTokenListSheet(client *mongo.Client, dbName, collectionNam
 	}
 
 	return _return, nil
+}
+
+type RequestModelPurcharseRecord struct {
+	Key           string `json:"key" bson:"key,omitempty"`
+	Status        string `json:"status" bson:"status,omitempty"`
+	MessageReturn string `json:"messageReturn" bson:"messageReturn,omitempty"`
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 21/10/2025 16:19
+Data Final da criação : 21/10/2025 16:21
+*/
+func UpdatePurcharseRecordMultipleHandler(w http.ResponseWriter, r *http.Request) {
+	// Validar o token de autenticação
+
+	// Decodificar o JSON recebido como array
+	var records []RequestModelPurcharseRecord
+	if err := json.NewDecoder(r.Body).Decode(&records); err != nil {
+		flytura.FormataRetornoHTTP(w, "Erro ao decodificar JSON", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("Header", records)
+
+	// Conectar ao MongoDB
+	client, err := db.ConnectMongoDB(flytura.ConectionString)
+	if err != nil {
+		flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+		return
+	}
+	defer client.Disconnect(context.Background())
+
+	collection := client.Database(flytura.DBName).Collection("purcharseRecord")
+
+	token := r.Header.Get("token")
+
+	if token == "" {
+		http.Error(w, "Token não fornecido", http.StatusUnauthorized)
+		return
+	}
+
+	var error error
+	_, error = VerifyAccessValidTokenListSheet(client, flytura.DBName, "tokenAccess", token)
+	if error != nil {
+		http.Error(w, "Token inválido", http.StatusBadRequest)
+		log.Println("Token inválido", err)
+		return
+	}
+
+	// Contador de atualizações
+	var updatedCount int64
+	//Retira os espaços das string
+	re := regexp.MustCompile(`\s+`)
+
+	for _, data := range records {
+
+		// if data.UpdatedAt.IsZero() {
+		fmt.Println(data)
+
+		dtUpdatedAt := time.Now()
+		// }
+
+		fmt.Println("key ", data.Key)
+		update := bson.M{
+			"$set": bson.M{
+				"status":        data.Status,
+				"messageReturn": data.MessageReturn,
+				"updatedAt":     dtUpdatedAt,
+			},
+		}
+
+		result, err := collection.UpdateOne(context.Background(), bson.M{"key": re.ReplaceAllString(data.Key, "")}, update)
+		if err == nil {
+			updatedCount += result.ModifiedCount
+		} else {
+			fmt.Println("key err ", err)
+		}
+	}
+
+	if updatedCount == 0 {
+		flytura.FormataRetornoHTTP(w, "Nenhuma fatura foi atualizada", http.StatusOK)
+	} else {
+		flytura.FormataRetornoHTTP(w, fmt.Sprintf("%d faturas atualizadas com sucesso", updatedCount), http.StatusOK)
+	}
 }

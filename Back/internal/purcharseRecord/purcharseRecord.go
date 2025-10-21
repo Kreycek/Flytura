@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"time"
@@ -96,8 +97,10 @@ func ProcessExcel(filePath, fileName, companyName, companyCode string, client *m
 			CreatedAt: time.Now(),
 		}
 
+		//Retira os espaços das string
+		re := regexp.MustCompile(`\s+`)
 		// fmt.Println(row[0])
-		obj.Key = row[0]
+		obj.Key = re.ReplaceAllString(row[0], "")
 		obj.Name = row[1]
 		obj.LastName = row[2]
 		obj.FileName = fileName
@@ -256,16 +259,17 @@ func SearchExcelData(
 		}
 
 		excelData = append(excelData, map[string]any{
-			"ID":           data.ID.Hex(), // Convertendo para string
-			"Key":          data.Key,
-			"Name":         data.Name,
-			"LastName":     data.LastName,
-			"FileName":     data.FileName,
-			"CompanyCode":  data.CompanyCode,
-			"CompanyName":  data.CompanyName,
-			"Status":       data.Status,
-			"DtImportacao": data.CreatedAt,
-			"Active":       data.Active,
+			"ID":            data.ID.Hex(), // Convertendo para string
+			"Key":           data.Key,
+			"Name":          data.Name,
+			"LastName":      data.LastName,
+			"FileName":      data.FileName,
+			"CompanyCode":   data.CompanyCode,
+			"CompanyName":   data.CompanyName,
+			"MessageReturn": data.MessageReturn,
+			"Status":        data.Status,
+			"DtImportacao":  data.CreatedAt,
+			"Active":        data.Active,
 		})
 	}
 
@@ -326,16 +330,17 @@ func GetExcelDataByID(client *mongo.Client, dbName, collectionName, excelId stri
 
 	// Retornar o usuário como um mapa
 	excelDatas := map[string]any{
-		"ID":           excelData.ID.Hex(), // Agora o campo ID é uma string
-		"Key":          excelData.Key,
-		"Name":         excelData.Name,
-		"LastName":     excelData.LastName,
-		"FileName":     excelData.FileName,
-		"Status":       excelData.Status,
-		"CompanyCode":  excelData.CompanyCode,
-		"CompanyName":  excelData.CompanyName,
-		"DtImportacao": excelData.CreatedAt,
-		"Active":       excelData.Active,
+		"ID":            excelData.ID.Hex(), // Agora o campo ID é uma string
+		"Key":           excelData.Key,
+		"Name":          excelData.Name,
+		"LastName":      excelData.LastName,
+		"FileName":      excelData.FileName,
+		"Status":        excelData.Status,
+		"CompanyCode":   excelData.CompanyCode,
+		"CompanyName":   excelData.CompanyName,
+		"MessageReturn": excelData.MessageReturn,
+		"DtImportacao":  excelData.CreatedAt,
+		"Active":        excelData.Active,
 	}
 
 	return excelDatas, nil
@@ -534,16 +539,17 @@ func GetDataExcelByStatus(client *mongo.Client, dbName, collectionName, companyC
 		Id := cc.ID
 		// Preenche o usuário com o ID convertido em string
 		dadosBanco = append(dadosBanco, map[string]any{
-			"ID":           Id, // Agora o campo ID é uma string
-			"key":          cc.Key,
-			"name":         cc.Name,
-			"lastName":     cc.LastName,
-			"FileName":     cc.FileName,
-			"CompanyCode":  cc.CompanyCode,
-			"Status":       cc.Status,
-			"CompanyName":  cc.CompanyName,
-			"DtImportacao": cc.CreatedAt,
-			"Active":       cc.Active,
+			"ID":            Id, // Agora o campo ID é uma string
+			"key":           cc.Key,
+			"name":          cc.Name,
+			"lastName":      cc.LastName,
+			"FileName":      cc.FileName,
+			"CompanyCode":   cc.CompanyCode,
+			"Status":        cc.Status,
+			"CompanyName":   cc.CompanyName,
+			"MessageReturn": cc.MessageReturn,
+			"DtImportacao":  cc.CreatedAt,
+			"Active":        cc.Active,
 		})
 
 	}

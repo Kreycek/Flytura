@@ -1,6 +1,4 @@
 import { Component, ViewChild } from '@angular/core';
-
-import { BrowserModule } from '@angular/platform-browser';
 // @ts-ignore
 import * as Plotly from 'plotly.js-dist-min';
 import { PurcharseRecordService } from '../modulos/companys/purcharseRecord/purcharse-record.service';
