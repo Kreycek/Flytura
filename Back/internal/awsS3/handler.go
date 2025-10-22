@@ -137,8 +137,8 @@ func SearchS3ImagesDBPaginationHandler(w http.ResponseWriter, r *http.Request) {
 		limit = 10 // valor padrão se a conversão falhar
 	}
 
-	fmt.Println("StartDate", startDate)
-	fmt.Println("EndDate", endDateStr)
+	// fmt.Println("StartDate", startDate)
+	// fmt.Println("EndDate", endDateStr)
 	// Definir valores padrão para paginação
 
 	if limit < 1 {

@@ -134,8 +134,8 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validar o token
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println("Token válido. Usuário:", claims["username"])
+	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		// fmt.Println("Token válido. Usuário:", claims["username"])
 
 		// Enviar uma resposta com o status de sucesso e a mensagem "Token válido"
 

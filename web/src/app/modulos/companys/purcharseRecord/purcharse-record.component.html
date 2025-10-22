@@ -74,7 +74,7 @@
                 <div class="form-group">
                  
                    <label for="searchRole" style="font-size: 12px">{{ 'Ecra.Status' | translate }}:</label>
-                <select id="searchRole" [(ngModel)]="searchStatus" class="form-select">
+                  <select id="searchRole" [(ngModel)]="searchStatus" class="form-select">
                   <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>
                   
                   <option *ngFor="let data of statusImportData" [value]="data.name" style="font-size: 12px">{{data.name}}</option>
@@ -82,7 +82,7 @@
                 </div>
             </div>
             <div class="col-lg-2 col-md-3 text-md-right" style="text-align: left; margin-top: 27px;;">
-              <button style="font-size: 12px" class="btn btn-primary"(click)="searchOnlyFlyExcelData(1)">{{ 'Ecra.search' | translate }}</button>
+              <button style="font-size: 12px" class="btn btn-primary"(click)="searchPurcharseRecord(1)">{{ 'Ecra.search' | translate }}</button>
             </div>
             <div class="col-lg-2 col-md-3 text-md-right" style="text-align: left; margin-top: 27px;;">
               <a href="javascript:void(0)" (click)="openModels();">Download Planilha</a>

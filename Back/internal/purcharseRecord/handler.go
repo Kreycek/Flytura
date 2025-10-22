@@ -531,8 +531,8 @@ func SearchPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("StartDate", request.StartDate)
-	fmt.Println("EndDate", request.EndDate)
+	// fmt.Println("StartDate", request.StartDate)
+	// fmt.Println("EndDate", request.EndDate)
 	// Definir valores padrão para paginação
 	if request.Page < 1 {
 		request.Page = 1

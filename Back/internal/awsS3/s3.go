@@ -142,8 +142,8 @@ func SearchImagesDBPagination(
 		filter["companyCode"] = *companyCode
 	}
 
-	fmt.Println("startDate", startDate)
-	fmt.Println("endDate", endDate)
+	// fmt.Println("startDate", startDate)
+	// fmt.Println("endDate", endDate)
 	if startDate != nil || endDate != nil {
 		dateFilter := bson.M{}
 

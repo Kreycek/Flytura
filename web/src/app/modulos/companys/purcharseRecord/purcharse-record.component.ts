@@ -149,9 +149,8 @@ export class PurcharseRecordComponent {
 
         });
 
-this.moduloService.getAllStatusImportData().subscribe((response:any)=>{     
-        this.statusImportData=response
-
+          this.moduloService.getAllStatusImportData().subscribe((response:any)=>{     
+            this.statusImportData=response;
           });
      }
   
@@ -159,7 +158,7 @@ this.moduloService.getAllStatusImportData().subscribe((response:any)=>{
   
     onPageChange(newPage: number) {
       this.currentPage = newPage;
-      this.searchOnlyFlyExcelData(this.currentPage);
+      this.searchPurcharseRecord(this.currentPage);
     }
   
     async invalidDate(date: string, msg:string, showAlert:boolean=false) : Promise<boolean> {              
@@ -182,7 +181,7 @@ this.moduloService.getAllStatusImportData().subscribe((response:any)=>{
         }
     }
     
-    async searchOnlyFlyExcelData(currentPage:number) {    
+    async searchPurcharseRecord(currentPage:number) {    
   
       let objPesquisar: { 
           key: string;
