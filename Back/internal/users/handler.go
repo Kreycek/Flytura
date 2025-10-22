@@ -46,7 +46,7 @@ func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Obter usuários paginados
-	users, total, err := GetAllUsers(client, flytura.DBName, "user", page, limit)
+	users, total, err := GetAllUsers(client, flytura.DBName, flytura.UserDBTableName, page, limit)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar perfis: %v", err), http.StatusInternalServerError)
 		return
@@ -114,7 +114,7 @@ func SearchUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar usuários com paginação
-	users, total, err := SearchUsers(client, flytura.DBName, "user", request.Name, request.Email, request.Perfil, request.Page, request.Limit)
+	users, total, err := SearchUsers(client, flytura.DBName, flytura.UserDBTableName, request.Name, request.Email, request.Perfil, request.Page, request.Limit)
 	if err != nil {
 		http.Error(w, "Erro ao buscar usuários", http.StatusInternalServerError)
 		return
@@ -167,7 +167,7 @@ func VerifyExistUser(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter a coleção de usuários
-	collection := db.GetCollection(client, flytura.DBName, "user")
+	collection := db.GetCollection(client, flytura.DBName, flytura.UserDBTableName)
 	// filter := bson.D{
 	// 	{Key: "$or", Value: bson.A{
 	// 		bson.D{{Key: "email", Value: userName}},
@@ -229,7 +229,7 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	user, err := GetUserByID(client, flytura.DBName, "user", id)
+	user, err := GetUserByID(client, flytura.DBName, flytura.UserDBTableName, id)
 	if err != nil {
 		http.Error(w, "Erro ao buscar usuário", http.StatusInternalServerError)
 		return
@@ -290,7 +290,7 @@ func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Inserir o usuário no MongoDB
-	err = InsertUser(client, flytura.DBName, "user", user)
+	err = InsertUser(client, flytura.DBName, flytura.UserDBTableName, user)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao inserir usuário: %v", err), http.StatusInternalServerError)
 		return
@@ -372,7 +372,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection("user")
+	collection := client.Database(flytura.DBName).Collection(flytura.UserDBTableName)
 	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": user.ID}, update)
 	if err != nil {
 		flytura.FormataRetornoHTTP(w, "Erro ao atualizar usuário, Erro ao atualizar usuário", http.StatusInternalServerError)

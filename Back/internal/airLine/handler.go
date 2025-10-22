@@ -33,7 +33,7 @@ func GetAllAirLineHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	airline, err := GetAirLines(client, flytura.DBName, "airline")
+	airline, err := GetAirLines(client, flytura.DBName, flytura.Airline)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar companias: %v", err), http.StatusInternalServerError)
 		return

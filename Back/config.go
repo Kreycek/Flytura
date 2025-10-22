@@ -13,7 +13,6 @@ import (
 
 // Variável global que contém a chave secreta para JWT
 var SecretKey = []byte("my_secret_key")
-
 var UrlSiteLocalHost = "localhost:4200"
 var UrlSiteProduction = "54.156.244.197"
 var UrlSiteHomol = "18.210.18.180"
@@ -23,13 +22,18 @@ var ImagesInvoices = "invoices"
 var AKA = os.Getenv("AKID")
 var SKA = os.Getenv("ASK")
 var FileAwsS3URL = "https://flytura-bucket.s3.us-east-1.amazonaws.com"
-
-//para criar as variáveis no powerShell
-
 var ConectionString = "mongodb://admin:secret@localhost:27017"
+var DBName = "flytura"
+
+var UserDBTableName = "user"
+var PurcharseRecordTableName = "purcharseRecord"
+var TokenAccessTableName = "tokenAccess"
+var StatusImportTableName = "statusImport"
+var PerfilTableName = "perfil"
+var ImagesDBTableName = "imagesDB"
+var Airline = "airline"
 
 // var ConectionString = "mongodb://localhost:27017"
-var DBName = "flytura"
 
 func TokenValido(w http.ResponseWriter, r *http.Request) (bool, string) {
 
@@ -74,10 +78,10 @@ func ValidateToken(tokenString string) (*jwt.Token, error) {
 	return token, nil
 }
 
-func FormataRetornoHTTP(w http.ResponseWriter, mensagem any, codHttp int) error {
+func FormataRetornoHTTP(w http.ResponseWriter, obj any, codHttp int) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(codHttp) // Código 200 OK
-	return json.NewEncoder(w).Encode(map[string]any{"message": mensagem})
+	return json.NewEncoder(w).Encode(map[string]any{"message": obj})
 }
 
 func FormataRetornoHTTPGeneric(w http.ResponseWriter, bodyName string, body any, codHttp int) error {

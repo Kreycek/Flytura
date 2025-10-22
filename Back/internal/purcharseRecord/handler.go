@@ -56,14 +56,14 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 
 	parts := strings.Split(nameWithoutExt, "-")
 
-	fmt.Println("Nome do arquivo sem extensão:", parts[1])
+	// fmt.Println("Nome do arquivo sem extensão:", parts[1])
 	codeFile := ""
 	if len(parts) > 1 {
 
 		fmt.Println("Nome do arquivo limpo 1:", strings.Join(strings.Fields(parts[1]), ""))
 		codeFile = strings.Join(strings.Fields(parts[1]), "")[:4] //retira todos os espaços da string e pega apenas os 4 primeiros caracteres
 
-		fmt.Println("Nome do arquivo limpo:", codeFile)
+		// fmt.Println("Nome do arquivo limpo:", codeFile)
 	} else {
 		codeFile = "error"
 		log.Println("Nome do arquivo inválido:", err)
@@ -76,7 +76,7 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("ddd", airLineData["FileName"])
+	// fmt.Println("ddd", airLineData["FileName"])
 
 	companyName := airLineData["Name"].(string)
 	companyCode := airLineData["Code"].(string)
@@ -106,18 +106,34 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.CloseMongoDB(clients)
 
-	err = ProcessExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, clients, flytura.DBName, "purcharseRecord")
-	if err != nil {
+	Results := struct {
+		TotalEmpty         int64 `json:"totalEmpty"`
+		TotalRecordsImport int64 `json:"totalRecordsImport"`
+		EmptySheet         bool  `json:"emptySheet"`
+	}{
+		TotalEmpty:         0,
+		TotalRecordsImport: 0,
+		EmptySheet:         false,
+	}
+
+	totalEmptyRegister, totalRegister, emptySheet, errProcessExcel := ProcessExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, clients, flytura.DBName, flytura.PurcharseRecordTableName)
+	if errProcessExcel != nil {
 		http.Error(w, "Erro ao processar planilha", http.StatusInternalServerError)
 		return
 	}
 
-	// Retornar a resposta com os dados dos usuários
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(true); err != nil {
-		log.Printf("erro ao codificar resposta JSON: %v", err)
+	// fmt.Println("vazio", emptySheet)
+
+	Results.EmptySheet = emptySheet
+	Results.TotalRecordsImport = totalRegister
+
+	if totalEmptyRegister > 0 {
+		Results.TotalEmpty = totalEmptyRegister
 	}
+
+	// Retornar a resposta com os dados dos usuários
+
+	flytura.FormataRetornoHTTP(w, Results, http.StatusOK)
 
 }
 
@@ -145,7 +161,7 @@ func GetAllPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	onlyFlyData, err := GetExcelData(client, flytura.DBName, "purcharseRecord")
+	onlyFlyData, err := GetExcelData(client, flytura.DBName, flytura.PurcharseRecordTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -193,7 +209,7 @@ func GetAllPurcharseRecordPaginationHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Obter usuários paginados
-	data, total, err := GetAllExcelData(client, flytura.DBName, "purcharseRecord", page, limit)
+	data, total, err := GetAllExcelData(client, flytura.DBName, flytura.PurcharseRecordTableName, page, limit)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar diários: %v", err), http.StatusInternalServerError)
 		return
@@ -252,7 +268,7 @@ func GetPurcharseRecordByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	costCenters, err := GetExcelDataByID(client, flytura.DBName, "purcharseRecord", id)
+	costCenters, err := GetExcelDataByID(client, flytura.DBName, flytura.PurcharseRecordTableName, id)
 	if err != nil {
 		http.Error(w, "Erro ao buscar diários", http.StatusInternalServerError)
 		return
@@ -307,7 +323,7 @@ func InsertPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Inserir o usuário no MongoDB
-	err = InsertExcelData(client, flytura.DBName, "purcharseRecord", data)
+	err = InsertExcelData(client, flytura.DBName, flytura.PurcharseRecordTableName, data)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao inserir fatura: %v", err), http.StatusInternalServerError)
 		return
@@ -384,7 +400,7 @@ func UpdatePurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection("purcharseRecord")
+	collection := client.Database(flytura.DBName).Collection(flytura.PurcharseRecordTableName)
 	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": data.ID}, update)
 	if err != nil {
 		flytura.FormataRetornoHTTP(w, "Erro ao atualizar fatura", http.StatusInternalServerError)
@@ -423,7 +439,7 @@ func VerifyExistPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse o corpo da requisição
-	var cc models.OnlyFlyExcelVerifyExistRequest
+	var cc models.PurcharseRecordVerifyExistRequest
 
 	err := json.NewDecoder(r.Body).Decode(&cc)
 	if err != nil {
@@ -441,7 +457,7 @@ func VerifyExistPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter a coleção de usuários
-	collection := db.GetCollection(client, flytura.DBName, "purcharseRecord")
+	collection := db.GetCollection(client, flytura.DBName, flytura.PurcharseRecordTableName)
 	// filter := bson.D{
 	// 	{Key: "$or", Value: bson.A{
 	// 		bson.D{{Key: "email", Value: userName}},
@@ -529,7 +545,7 @@ func SearchPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	costCenters, total, err := SearchExcelData(
 		client,
 		flytura.DBName,
-		"purcharseRecord",
+		flytura.PurcharseRecordTableName,
 		request.Key,
 		request.Name,
 		request.LastName,
@@ -586,7 +602,7 @@ func GetAllImportStatussHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	onlyFlyData, err := GetExcelData(client, flytura.DBName, "statusImport")
+	onlyFlyData, err := GetExcelData(client, flytura.DBName, flytura.StatusImportTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -640,7 +656,7 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Chamada da função com filtros
-	onlyFlyData, err := GroupByCompanyNameFiltered(client, flytura.DBName, "purcharseRecord", startDate, endDate, statusParam, companyNameParam)
+	onlyFlyData, err := GroupByCompanyNameFiltered(client, flytura.DBName, flytura.PurcharseRecordTableName, startDate, endDate, statusParam, companyNameParam)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -689,7 +705,7 @@ func GetPurcharseRecordStatusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var error error
-	_, error = VerifyAccessValidTokenListSheet(client, flytura.DBName, "tokenAccess", token)
+	_, error = VerifyAccessValidTokenListSheet(client, flytura.DBName, flytura.TokenAccessTableName, token)
 	if error != nil {
 		http.Error(w, "Token inválido", http.StatusBadRequest)
 		log.Println("Token inválido", err)
@@ -697,7 +713,7 @@ func GetPurcharseRecordStatusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	dataExcel, err := GetDataExcelByStatus(client, flytura.DBName, "purcharseRecord", companyCode, status)
+	dataExcel, err := GetDataExcelByStatus(client, flytura.DBName, flytura.PurcharseRecordTableName, companyCode, status)
 	if err != nil {
 		http.Error(w, "Erro ao dados da planilha", http.StatusInternalServerError)
 		return
@@ -788,7 +804,7 @@ func UpdatePurcharseRecordMultipleHandler(w http.ResponseWriter, r *http.Request
 	}
 	defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection("purcharseRecord")
+	collection := client.Database(flytura.DBName).Collection(flytura.PurcharseRecordTableName)
 
 	token := r.Header.Get("token")
 
@@ -798,7 +814,7 @@ func UpdatePurcharseRecordMultipleHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	var error error
-	_, error = VerifyAccessValidTokenListSheet(client, flytura.DBName, "tokenAccess", token)
+	_, error = VerifyAccessValidTokenListSheet(client, flytura.DBName, flytura.TokenAccessTableName, token)
 	if error != nil {
 		http.Error(w, "Token inválido", http.StatusBadRequest)
 		log.Println("Token inválido", err)

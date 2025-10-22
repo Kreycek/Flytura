@@ -28,7 +28,7 @@ func GetAllPerfilsHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	users, err := GetAllPerfil(client, flytura.DBName, "perfil")
+	users, err := GetAllPerfil(client, flytura.DBName, flytura.PerfilTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return

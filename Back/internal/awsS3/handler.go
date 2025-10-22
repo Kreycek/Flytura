@@ -149,7 +149,7 @@ func SearchS3ImagesDBPaginationHandler(w http.ResponseWriter, r *http.Request) {
 	imagesDb, total, err := SearchImagesDBPagination(
 		client,
 		flytura.DBName,
-		"imagesDB",
+		flytura.ImagesDBTableName,
 		&companyCode,
 		startDate,
 		endDate,
@@ -242,7 +242,7 @@ func SearchS3ImagesDBFullHandler(w http.ResponseWriter, r *http.Request) {
 	imagesDb, total, err := SearchImagesDBFull(
 		client,
 		flytura.DBName,
-		"imagesDB",
+		flytura.ImagesDBTableName,
 		&companyCode,
 		startDate,
 		endDate)
@@ -320,7 +320,7 @@ func UpdateDownloadStatusS3ImageHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection("imagesDB")
+	collection := client.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
 	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": data.ID}, update)
 	if err != nil {
 		flytura.FormataRetornoHTTP(w, "Erro ao atualizar dados da imagem", http.StatusInternalServerError)
@@ -392,7 +392,7 @@ func UpdateMultipleStatusS3ImagesHandler(w http.ResponseWriter, r *http.Request)
 	}
 	defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection("imagesDB")
+	collection := client.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
 
 	// Criar filtro e atualização
 	filter := bson.M{"_id": bson.M{"$in": objectIDs}}

@@ -37,7 +37,7 @@ func VerifyUser(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter a coleção de usuários
-	collection := db.GetCollection(client, flytura.DBName, "user")
+	collection := db.GetCollection(client, flytura.DBName, flytura.UserDBTableName)
 
 	filter := bson.D{
 		{Key: "$or", Value: bson.A{

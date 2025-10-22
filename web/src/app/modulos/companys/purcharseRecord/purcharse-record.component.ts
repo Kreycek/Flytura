@@ -13,7 +13,7 @@ import { AirLineService } from '../airLine/airLIne.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import moment from 'moment';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ModelsComponent } from '../models/models/models.component';
 import { ModuloService } from '../../modulo.service';
 
@@ -52,11 +52,22 @@ export class PurcharseRecordComponent {
       private purcharseRecordService: PurcharseRecordService,
       private airLineService: AirLineService,
       public configService:ConfigService,
-      public moduloService:ModuloService
+      public moduloService:ModuloService,
+      private translate: TranslateService
       
     ) {} 
       
   @ViewChild('fileInput') fileInput!: ElementRef;
+
+  loadDataAfterImport() {
+            this.purcharseRecordService.getAllPurchaseRecordDataPagination(this.currentPage,this.limit).subscribe(async (response:any)=>{     
+                  
+                  this.dados=response.purcharseRecord;  
+                  this.totalRegistros = response.total;
+                  this.totalPages = response.pages;
+                   
+              });
+  }
       
    onFileSelected(event: any) {
       const file: File = event.target.files[0];
@@ -65,13 +76,43 @@ export class PurcharseRecordComponent {
         const formData = new FormData();
               formData.append('file', file);
 
-            this.purcharseRecordService.importarPlanilha(formData).subscribe(()=>{
-                this.purcharseRecordService.getAllPurchaseRecordDataPagination(this.currentPage,this.limit).subscribe(async (response:any)=>{     
-        
-                  this.dados=response.purcharseRecord;  
-                  this.totalRegistros = response.total;
-                  this.totalPages = response.pages;
-                    const resultado = await this.modalOk.openModal("Planilha importada com sucesso",true);             
+            this.purcharseRecordService.importarPlanilha(formData).subscribe(async (returnSheet:any)=>{
+              console.log('resulta importação ',returnSheet);
+
+              if(returnSheet.message) {
+                  if(returnSheet.message.emptySheet) {
+                    const resultado = await this.modalOk.openModal(this.translate.instant('Ecra.sheetEmpty'),true);             
+                    if (resultado) {
+                       this.fileInput.nativeElement.value = '';
+                      return false;
+                      // Insira aqui a lógica para continuar após a confirmação
+                    }    
+                  }
+                  else if(returnSheet.message.totalEmpty===0 && returnSheet.message.totalRecordsImport===0) {
+                      const resultado = await this.modalOk.openModal(this.translate.instant('Ecra.sheetImportedAfter'),true);             
+                    if (resultado) {
+                      this.loadDataAfterImport();
+                       this.fileInput.nativeElement.value = '';
+                        return false;
+                      // Insira aqui a lógica para continuar após a confirmação
+                    } 
+                  }
+                  else if(returnSheet.message.totalEmpty>0) {
+                      const resultado = await this.modalOk.openModal(
+                       this.translate.instant('Ecra.sheetImportedProblemPart1') + 
+                        returnSheet.message.totalEmpty + 
+                        this.translate.instant('Ecra.sheetImportedProblemPart2') ,true);             
+                    if (resultado) {
+                        this.loadDataAfterImport();
+                         this.fileInput.nativeElement.value = '';
+                      return false;
+                      // Insira aqui a lógica para continuar após a confirmação
+                    } 
+                  }
+                  else {
+                     this.loadDataAfterImport();
+
+                    const resultado = await this.modalOk.openModal(this.translate.instant('Ecra.sheetImportedOk'),true);             
                       if (resultado) {
                         this.fileInput.nativeElement.value = '';
                         
@@ -80,7 +121,12 @@ export class PurcharseRecordComponent {
                       } else {
                         
                       }
-              });
+                  }
+              }
+            
+
+               
+               return null
             })  
           } 
     }

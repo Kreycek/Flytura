@@ -171,15 +171,15 @@ export class CenterComponent {
 
       this.purcharseRecordService.GroupByCompanyName().subscribe((response:any)=>{
 
-       
+       if(response) {
           response.forEach((element:any) => {
-              _values.push(element.total)
-              _labels.push(element._id + ' ' + element.total)
-          });
+                  _values.push(element.total)
+                  _labels.push(element._id + ' ' + element.total)
+              });
 
-          if(_values.length>0 && _labels.length>0)
-                this.graphicData(_values,_labels);
-
+              if(_values.length>0 && _labels.length>0)
+                    this.graphicData(_values,_labels);
+            }
           
       })
 

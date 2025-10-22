@@ -84,7 +84,12 @@
     "doDonwload":"Have you downloaded it yet?",
     "yes":"Yes",
     "no":"No",
-    "welcomeUser":"Welcome"
+    "welcomeUser":"Welcome",
+    "sheetImportedOk":"Spreadsheet imported successfully",
+    "sheetImportedAfter":"This spreadsheet has already been imported",
+    "sheetEmpty":"The imported spreadsheet is empty",
+    "sheetImportedProblemPart1":"Spreadsheet imported successfully but ",
+     "sheetImportedProblemPart2":" have blank keys "
     
   }
 }

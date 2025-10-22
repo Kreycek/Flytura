@@ -1,6 +1,7 @@
 package purcharseRecord
 
 import (
+	flytura "Flytura"
 	"Flytura/internal/db"
 	"Flytura/internal/models"
 	"context"
@@ -25,11 +26,14 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 03/09/2025 22:20
 Data Final da criação : 04/09/2025 18:50
 */
-func ProcessExcel(filePath, fileName, companyName, companyCode string, client *mongo.Client, dbName, collectionName string) error {
+func ProcessExcel(filePath, fileName, companyName, companyCode string, client *mongo.Client, dbName, collectionName string) (int64, int64, bool, error) {
 
 	extensao := strings.ToLower(filepath.Ext(filePath))
 	var sheetList []string
 	var rows [][]string
+	var emptyRecord int64 = 0
+	var totalRecord int64 = 0
+	var emptySheet = true
 
 	// fmt.Println("Extensão ", extensao)
 
@@ -37,14 +41,14 @@ func ProcessExcel(filePath, fileName, companyName, companyCode string, client *m
 		excelXls, err := xls.Open(filePath, "utf-8")
 
 		if err != nil {
-			return err
+			return 0, 0, emptySheet, err
 		}
 
 		// fmt.Println("XLS ")
 
 		sheet := excelXls.GetSheet(0)
 		if sheet == nil {
-			return fmt.Errorf("nenhuma aba encontrada no .xls")
+			return 0, 0, emptySheet, fmt.Errorf("nenhuma aba encontrada no .xls")
 		}
 
 		for i := 0; i <= int(sheet.MaxRow); i++ {
@@ -60,7 +64,7 @@ func ProcessExcel(filePath, fileName, companyName, companyCode string, client *m
 		// fmt.Println("XLSX")
 		excelXlsx, err := excelize.OpenFile(filePath)
 		if err != nil {
-			return err
+			return 0, 0, emptySheet, err
 		}
 		sheetList = excelXlsx.GetSheetList()
 		if len(sheetList) == 0 {
@@ -71,7 +75,7 @@ func ProcessExcel(filePath, fileName, companyName, companyCode string, client *m
 		// fmt.Println("sheetName ", sheetName)
 		rows, err = excelXlsx.GetRows(sheetName)
 		if err != nil {
-			return fmt.Errorf("erro ao ler linhas da aba %s: %v", sheetName, err)
+			return 0, 0, emptySheet, fmt.Errorf("erro ao ler linhas da aba %s: %v", sheetName, err)
 		}
 
 	}
@@ -82,6 +86,7 @@ func ProcessExcel(filePath, fileName, companyName, companyCode string, client *m
 	ctx := context.Background()
 
 	for i, row := range rows {
+
 		if i == 0 {
 			continue // cabeçalho
 		}
@@ -113,13 +118,31 @@ func ProcessExcel(filePath, fileName, companyName, companyCode string, client *m
 		// 	"preco": preco,
 		// }
 
-		_, err := collection.InsertOne(ctx, obj)
-		if err != nil {
-			log.Println("Erro ao inserir:", err)
+		if obj.Key != "" {
+
+			emptySheet = false
+			//A FUNÇÃO ABAIXO VERIFICA SE A CHAVE KEY JÁ FOI IMPORTADA
+			exist, errVerify := VeryExistKey(client, flytura.DBName, flytura.PurcharseRecordTableName, obj.Key)
+			if errVerify != nil {
+				log.Println("Erro ao inserir:", errVerify)
+			} else {
+
+				if !exist {
+					totalRecord++
+					_, err := collection.InsertOne(ctx, obj)
+					if err != nil {
+						log.Println("Erro ao inserir:", err)
+					}
+				}
+			}
+		} else {
+			//SE NA PLANILHA SE A CHAVE KEY ESTIVER VAZIA CONTA
+			emptyRecord++
 		}
+
 	}
 
-	return nil
+	return emptyRecord, totalRecord, emptySheet, nil
 }
 
 /*
@@ -562,6 +585,29 @@ func GetDataExcelByStatus(client *mongo.Client, dbName, collectionName, companyC
 	// Retorna os usuários
 	return dadosBanco, nil
 
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 21/10/2025 21:09
+Data Final da criação : 21/10/2025 21:10
+*/
+func VeryExistKey(client *mongo.Client, dbName, collectionName, key string) (bool, error) {
+
+	collection := client.Database(dbName).Collection(collectionName)
+	filter := bson.M{"key": key}
+	// Variável para armazenar o usuário retornado
+	var excelData models.PurcharseRecord
+	exist := true
+	// Usar FindOne para pegar apenas um único registro
+	err := collection.FindOne(context.Background(), filter).Decode(&excelData)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			exist = false
+		}
+	}
+	// Converter o _id para string
+	return exist, nil
 }
 
 // func GroupByCompanyName(client *mongo.Client, dbName, collectionName string) ([]bson.M, error) {

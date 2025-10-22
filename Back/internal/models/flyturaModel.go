@@ -4,6 +4,6 @@ type EmailRequest struct {
 	Email string `json:"email"`
 }
 
-type OnlyFlyExcelVerifyExistRequest struct {
+type PurcharseRecordVerifyExistRequest struct {
 	Key string `json:"key"`
 }

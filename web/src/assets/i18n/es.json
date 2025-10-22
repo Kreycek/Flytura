@@ -80,6 +80,11 @@
     "doDonwload":"¿Ya lo has descargado?",
     "yes":"Si",
     "no":"No",
-    "welcomeUser":"Bienvenido"
+    "welcomeUser":"Bienvenido",
+    "sheetImportedOk":"Hoja de cálculo importada correctamente",
+    "sheetImportedAfter":"Esta hoja de cálculo ya ha sido importada",
+    "sheetEmpty":"La hoja de cálculo importada está vacía",
+    "sheetImportedProblemPart1":"La hoja de cálculo se importó correctamente, pero ",
+     "sheetImportedProblemPart2":" tienen claves en blanco "
   }
 }

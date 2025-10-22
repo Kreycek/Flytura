@@ -76,7 +76,12 @@
     "doDonwload":"Já fez download?",
     "yes":"Sim",
     "no":"Não",
-    "welcomeUser":"Bem vindo"
+    "welcomeUser":"Bem vindo",
+    "sheetImportedOk":"Planilha importada com sucesso",
+    "sheetImportedAfter":"Essa planilha já foi importada",
+    "sheetEmpty":"A Planilha importada está vazia",
+    "sheetImportedProblemPart1":"Planilha importada com sucesso porém ",
+     "sheetImportedProblemPart2":" estão com a chave em branco  "
     
   }
 }

@@ -103,7 +103,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 17/10/2025 17:26
 Data Final da criação : 17/10/2025 17:26
 */
-// Função para inserir um usuário na coleção "user"
+// Função para inserir imagem
 func InsertIMGS3(client *mongo.Client, dbName, collectionName string, data models.ImagesDB) error {
 	collection := client.Database(dbName).Collection(collectionName)
 
