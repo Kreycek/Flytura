@@ -26,7 +26,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 03/09/2025 22:20
 Data Final da criação : 04/09/2025 18:50
 */
-func ProcessExcel(filePath, fileName, companyName, companyCode string, client *mongo.Client, dbName, collectionName string) (int64, int64, bool, error) {
+func ProcessPurcharseRecordExcel(filePath, fileName, companyName, companyCode string, client *mongo.Client, dbName, collectionName string) (int64, int64, bool, error) {
 
 	extensao := strings.ToLower(filepath.Ext(filePath))
 	var sheetList []string
@@ -151,7 +151,7 @@ Inicio da criação 04/09/2025 21:20
 Data Final da criação : 04/09/2025 21:31
 */
 // Função para obter todos os diários para carregar o drop de buscar
-func GetExcelData(client *mongo.Client, dbName, collectionName string) ([]any, error) {
+func GetPurcharseRecord(client *mongo.Client, dbName, collectionName string) ([]any, error) {
 	collection := db.GetCollection(client, dbName, collectionName)
 
 	// Consultar todos os documentos
@@ -200,7 +200,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 04/09/2025 21:31
 Data Final da criação : 04/09/2025 21:35
 */
-func SearchExcelData(
+func SearchPurcharseRecordPagination(
 	client *mongo.Client,
 	dbName, collectionName string,
 	key *string,
@@ -306,7 +306,7 @@ Inicio da criação 04/09/2025 21:36
 Data Final da criação : 04/09/2025 21:36
 */
 // Função para inserir um usuário na coleção "user"
-func InsertExcelData(client *mongo.Client, dbName, collectionName string, data models.PurcharseRecord) error {
+func InsertPurcharseRecord(client *mongo.Client, dbName, collectionName string, data models.PurcharseRecord) error {
 	collection := client.Database(dbName).Collection(collectionName)
 
 	// Criar um contexto para a operação de inserção
@@ -326,7 +326,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 04/09/2025 21:37
 Data Final da criação : 04/09/2025 21:38
 */
-func GetExcelDataByID(client *mongo.Client, dbName, collectionName, excelId string) (map[string]any, error) {
+func GetPurcharseRecordByID(client *mongo.Client, dbName, collectionName, excelId string) (map[string]any, error) {
 
 	collection := client.Database(dbName).Collection(collectionName)
 
@@ -374,7 +374,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 04/09/2025 21:39
 Data Final da criação : 04/09/2025 21:40
 */
-func GetAllExcelData(client *mongo.Client, dbName, collectionName string, page, limit int) ([]any, int, error) {
+func GetAllPurcharseRecord(client *mongo.Client, dbName, collectionName string, page, limit int) ([]any, int, error) {
 	collection := db.GetCollection(client, dbName, collectionName)
 
 	// Criar o filtro (por enquanto vazio, pode ser expandido)
@@ -531,7 +531,7 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 14/10/2025 21:51
 Data Final da criação : 14/10/2025 21:59
 */
-func GetDataExcelByStatus(client *mongo.Client, dbName, collectionName, companyCode, status string) ([]any, error) {
+func GetPurcharseRecordByStatus(client *mongo.Client, dbName, collectionName, companyCode, status string) ([]any, error) {
 
 	collection := client.Database(dbName).Collection(collectionName)
 

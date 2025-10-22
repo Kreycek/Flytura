@@ -116,7 +116,7 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 		EmptySheet:         false,
 	}
 
-	totalEmptyRegister, totalRegister, emptySheet, errProcessExcel := ProcessExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, clients, flytura.DBName, flytura.PurcharseRecordTableName)
+	totalEmptyRegister, totalRegister, emptySheet, errProcessExcel := ProcessPurcharseRecordExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, clients, flytura.DBName, flytura.PurcharseRecordTableName)
 	if errProcessExcel != nil {
 		http.Error(w, "Erro ao processar planilha", http.StatusInternalServerError)
 		return
@@ -161,7 +161,7 @@ func GetAllPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	onlyFlyData, err := GetExcelData(client, flytura.DBName, flytura.PurcharseRecordTableName)
+	onlyFlyData, err := GetPurcharseRecord(client, flytura.DBName, flytura.PurcharseRecordTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -209,7 +209,7 @@ func GetAllPurcharseRecordPaginationHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Obter usuários paginados
-	data, total, err := GetAllExcelData(client, flytura.DBName, flytura.PurcharseRecordTableName, page, limit)
+	data, total, err := GetAllPurcharseRecord(client, flytura.DBName, flytura.PurcharseRecordTableName, page, limit)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar diários: %v", err), http.StatusInternalServerError)
 		return
@@ -268,7 +268,7 @@ func GetPurcharseRecordByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	costCenters, err := GetExcelDataByID(client, flytura.DBName, flytura.PurcharseRecordTableName, id)
+	costCenters, err := GetPurcharseRecordByID(client, flytura.DBName, flytura.PurcharseRecordTableName, id)
 	if err != nil {
 		http.Error(w, "Erro ao buscar diários", http.StatusInternalServerError)
 		return
@@ -323,7 +323,7 @@ func InsertPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Inserir o usuário no MongoDB
-	err = InsertExcelData(client, flytura.DBName, flytura.PurcharseRecordTableName, data)
+	err = InsertPurcharseRecord(client, flytura.DBName, flytura.PurcharseRecordTableName, data)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao inserir fatura: %v", err), http.StatusInternalServerError)
 		return
@@ -419,7 +419,7 @@ func UpdatePurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Responder com sucesso
-	flytura.FormataRetornoHTTP(w, "Fatura cadastrada com sucesso", http.StatusOK)
+	flytura.FormataRetornoHTTP(w, "Registro de compra cadastrado com sucesso", http.StatusOK)
 
 }
 
@@ -542,7 +542,7 @@ func SearchPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar usuários com paginação
-	costCenters, total, err := SearchExcelData(
+	costCenters, total, err := SearchPurcharseRecordPagination(
 		client,
 		flytura.DBName,
 		flytura.PurcharseRecordTableName,
@@ -602,7 +602,7 @@ func GetAllImportStatussHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	onlyFlyData, err := GetExcelData(client, flytura.DBName, flytura.StatusImportTableName)
+	onlyFlyData, err := GetPurcharseRecord(client, flytura.DBName, flytura.StatusImportTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -713,7 +713,7 @@ func GetPurcharseRecordStatusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	dataExcel, err := GetDataExcelByStatus(client, flytura.DBName, flytura.PurcharseRecordTableName, companyCode, status)
+	dataExcel, err := GetPurcharseRecordByStatus(client, flytura.DBName, flytura.PurcharseRecordTableName, companyCode, status)
 	if err != nil {
 		http.Error(w, "Erro ao dados da planilha", http.StatusInternalServerError)
 		return
