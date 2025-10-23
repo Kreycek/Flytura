@@ -129,11 +129,14 @@ export class InvoicesComponent {
                     this.objPesquisar.endDate
               ).subscribe((response:any)=>{
                 console.log('response.imagesDB',response.imagesDB);
-                                                                
-                  this.dados=response.imagesDB.map((element:any) => {
-                      element.PasteName=element.FileName?.replace(".zip", "");
-                      return element
-                  });;    
+                if(response.imagesDB) {
+                    this.dados=response.imagesDB.map((element:any) => {
+                        element.PasteName=element.FileName?.replace(".zip", "");
+                        return element
+                    });
+                } else {
+                   this.dados=null;
+                }
 
                   this.totalRegistros = response.total;
                   this.totalPages = response.pages;
