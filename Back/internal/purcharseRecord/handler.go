@@ -161,7 +161,7 @@ func GetAllPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	onlyFlyData, err := GetPurcharseRecord(client, flytura.DBName, flytura.PurcharseRecordTableName)
+	purcharseRecordData, err := GetPurcharseRecord(client, flytura.DBName, flytura.PurcharseRecordTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -170,7 +170,7 @@ func GetAllPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	// Retornar a resposta com os dados dos usuários
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(onlyFlyData); err != nil {
+	if err := json.NewEncoder(w).Encode(purcharseRecordData); err != nil {
 		log.Printf("erro ao codificar resposta JSON: %v", err)
 	}
 }
@@ -602,7 +602,7 @@ func GetAllImportStatussHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	onlyFlyData, err := GetPurcharseRecord(client, flytura.DBName, flytura.StatusImportTableName)
+	purcharseRecordData, err := GetPurcharseRecord(client, flytura.DBName, flytura.StatusImportTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -611,7 +611,7 @@ func GetAllImportStatussHandler(w http.ResponseWriter, r *http.Request) {
 	// Retornar a resposta com os dados dos usuários
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(onlyFlyData); err != nil {
+	if err := json.NewEncoder(w).Encode(purcharseRecordData); err != nil {
 		log.Printf("erro ao codificar resposta JSON: %v", err)
 	}
 }
@@ -625,7 +625,7 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 
 	status, msg := flytura.TokenValido(w, r)
 	if !status {
-		http.Error(w, fmt.Sprintf("token inválido handler onlyfly: %v", msg), http.StatusUnauthorized)
+		http.Error(w, fmt.Sprintf("token inválido handler purcharseRecord: %v", msg), http.StatusUnauthorized)
 		return
 	}
 
@@ -656,7 +656,7 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Chamada da função com filtros
-	onlyFlyData, err := GroupByCompanyNameFiltered(client, flytura.DBName, flytura.PurcharseRecordTableName, startDate, endDate, statusParam, companyNameParam)
+	purcharseRecordData, err := GroupByCompanyNameFiltered(client, flytura.DBName, flytura.PurcharseRecordTableName, startDate, endDate, statusParam, companyNameParam)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -665,7 +665,7 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 	// Retornar a resposta com os dados
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(onlyFlyData); err != nil {
+	if err := json.NewEncoder(w).Encode(purcharseRecordData); err != nil {
 		log.Printf("erro ao codificar resposta JSON: %v", err)
 	}
 }

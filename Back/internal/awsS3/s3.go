@@ -4,14 +4,19 @@ import (
 	"Flytura/internal/airLine"
 	"Flytura/internal/db"
 	"Flytura/internal/models"
+	"bytes"
 	"context"
 	"fmt"
 	"io"
 	"log"
+	"net/http"
+	"path"
+	"strings"
 	"time"
 
 	flytura "Flytura"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -30,8 +35,6 @@ func UploadToS3(file io.Reader, filename, companyCode, key string) error {
 	accessKey := flytura.AKA
 	secretKey := flytura.SKA
 
-	fmt.Println("accessKey", accessKey)
-	fmt.Println("secretKey", secretKey)
 	region := region
 	bucketName := bucketName
 	directory := flytura.ImagesInvoices + "/" + filename
@@ -95,6 +98,60 @@ func UploadToS3(file io.Reader, filename, companyCode, key string) error {
 	// fmt.Println("key ", key)
 
 	fmt.Printf("Arquivo enviado para: https://%s.s3.%s.amazonaws.com/%s\n", bucketName, region, key)
+	return nil
+}
+
+func UploadToS3Only(file io.Reader, filename, companyCode, key string) error {
+	// --- Configurações ---
+	accessKey := flytura.AKA
+	secretKey := flytura.SKA
+	region := region
+	bucketName := bucketName
+	objectKey := path.Join(flytura.ImagesInvoices, filename)
+
+	// --- Lê o conteúdo do arquivo ---
+	var buf bytes.Buffer
+	size, err := io.Copy(&buf, file)
+	if err != nil {
+		return fmt.Errorf("erro ao ler conteúdo do arquivo: %w", err)
+	}
+
+	// --- Detecta o tipo MIME ---
+	header := buf.Bytes()
+	sniffLen := min(len(header), 512)
+	contentType := http.DetectContentType(header[:sniffLen])
+
+	// Força tipo PDF se o nome do arquivo terminar com .pdf
+	if strings.HasSuffix(strings.ToLower(filename), ".pdf") {
+		contentType = "application/pdf"
+	}
+
+	// --- Cria configuração AWS ---
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion(region),
+		config.WithCredentialsProvider(
+			credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
+		),
+	)
+	if err != nil {
+		return fmt.Errorf("erro ao carregar configuração da AWS: %w", err)
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	// --- Envia para o S3 ---
+	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket:             aws.String(bucketName),
+		Key:                aws.String(objectKey),
+		Body:               bytes.NewReader(buf.Bytes()),
+		ContentLength:      aws.Int64(size),
+		ContentType:        aws.String(contentType),
+		ContentDisposition: aws.String(fmt.Sprintf("inline; filename=\"%s\"", filename)),
+	})
+	if err != nil {
+		return fmt.Errorf("erro ao enviar para o S3: %w", err)
+	}
+
 	return nil
 }
 

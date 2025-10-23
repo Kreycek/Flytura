@@ -130,6 +130,7 @@ func main() {
 	//API'S PUBLICAS
 	http.HandleFunc("/GetPurcharseRecordByStatus", purcharseRecord.GetPurcharseRecordStatusHandler)
 	http.HandleFunc("/UploadS3Files", awsS3.UploadS3FilesHandler)
+	http.HandleFunc("/UploadS3FilesUnzipHandler", awsS3.UploadS3FilesUnzipHandler)
 	http.HandleFunc("/UpdatePurcharseRecordMultiple", purcharseRecord.UpdatePurcharseRecordMultipleHandler)
 
 	//TESTE
