@@ -74,13 +74,10 @@ export class InvoicesComponent {
         this.airLineService.getAllAirLine().subscribe((response)=>{
           this.airLInes=response;
         });
-        this.search(this.currentPage);
-           
+        this.search(this.currentPage);           
     }
 
-    async search(pageNumber:number) {
-
-       
+    async search(pageNumber:number) {       
           
         if(this.searchAirlineDtInicio || this.searchAirlineDtFim ) {
         
@@ -117,24 +114,32 @@ export class InvoicesComponent {
               }
       }                       
 
-      this.objPesquisar=   {companyCode:this.searchAirlineCode,
+      this.objPesquisar= {
+            companyCode:this.searchAirlineCode,
             startDate:this.searchAirlineDtInicio  ? moment(this.searchAirlineDtInicio).format('YYYY-MM-DDTHH:mm:ss[Z]') : '',                               
-            endDate: this.searchAirlineDtFim ? moment(this.searchAirlineDtFim).set({ hour: 23, minute: 59, second: 59 }).format('YYYY-MM-DDTHH:mm:ss[Z]')  : ''     }
-      this.invoicesService.getAllS3ImagesDBDataPagination(
-        pageNumber,
-        this.limit,
-        this.objPesquisar.companyCode,
-        this.objPesquisar.startDate,
-        this.objPesquisar.endDate).subscribe((response:any)=>{
-       
-  console.log('Faturas',response);
-      
-               this.dados=response.imagesDB;    
-          this.totalRegistros = response.total;
-          this.totalPages = response.pages;
-      })
+            endDate: this.searchAirlineDtFim ? moment(this.searchAirlineDtFim).set({ hour: 23, minute: 59, second: 59 }).format('YYYY-MM-DDTHH:mm:ss[Z]')  : ''     
+      };
 
-      return null;
+
+      this.invoicesService.getAllS3ImagesDBDataPagination(
+                    pageNumber,
+                    this.limit,
+                    this.objPesquisar.companyCode,
+                    this.objPesquisar.startDate,
+                    this.objPesquisar.endDate
+              ).subscribe((response:any)=>{
+                console.log('response.imagesDB',response.imagesDB);
+                                                                
+                  this.dados=response.imagesDB.map((element:any) => {
+                      element.PasteName=element.FileName?.replace(".zip", "");
+                      return element
+                  });;    
+
+                  this.totalRegistros = response.total;
+                  this.totalPages = response.pages;
+              })
+
+        return null;
     }
 
      
@@ -185,7 +190,7 @@ export class InvoicesComponent {
                   }
                    })
         
-      })
+            })
 
 
      }
@@ -197,6 +202,22 @@ export class InvoicesComponent {
       linha.DownloadDone=true;
 
       this.invoicesService.updateStatusS3Image(objUpdate).subscribe()
+
+    }
+
+
+     updateStatusDownloadPdfOrXml(linha:any,fileType:string) {
+      if(fileType=='pdf')
+        linha.DownloadPDFDone=true;
+
+      if(fileType=='xml')
+         linha.DownloadXMLDone=true;
+
+      const objUpdate={id:linha.ID, fileType:fileType,downloadOk:true}
+
+      linha.DownloadDone=true;
+
+      this.invoicesService.UpdateStatusPdforXml(objUpdate).subscribe()
 
     }
 }

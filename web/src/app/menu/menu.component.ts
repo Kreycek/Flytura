@@ -25,7 +25,9 @@ export class MenuComponent {
     }, 1000);
   }
 
-  navigateToPages(url:string) {
+  selectedMenu=''
+  navigateToPages(url:string,menuId: string) {
+    this.selectedMenu = menuId;
     this.router.navigate([url]);
   }
 

@@ -1,0 +1,6 @@
+.menu-selected {
+  background-color: #ffffff; /* cor de fundo leve */
+  border-left: 4px solid #007bff; /* destaque na lateral */
+  font-weight: bold;
+  color: #007bff; /* cor do texto azul */
+}

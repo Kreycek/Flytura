@@ -248,17 +248,19 @@ func SearchImagesDBPagination(
 		}
 
 		dataImg = append(dataImg, map[string]any{
-			"ID":           data.ID.Hex(), // Convertendo para string
-			"FileName":     data.FileName,
-			"CompanyCode":  data.CompanyCode,
-			"CompanyName":  data.CompanyName,
-			"DtImport":     data.DtImport,
-			"ZipFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.ZipFileName,
-			"PDFFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.PDFFileName,
-			"XMLFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.XMLFileName,
-			"Active":       data.Active,
-			"Key":          data.Key,
-			"DownloadDone": data.DownloadDone,
+			"ID":              data.ID.Hex(), // Convertendo para string
+			"FileName":        data.FileName,
+			"CompanyCode":     data.CompanyCode,
+			"CompanyName":     data.CompanyName,
+			"DtImport":        data.DtImport,
+			"ZipFileName":     flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.ZipFileName,
+			"PDFFileName":     flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.PDFFileName,
+			"DownloadPDFDone": data.DownloadPDFDone,
+			"XMLFileName":     flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.XMLFileName,
+			"DownloadXMLDone": data.DownloadXMLDone,
+			"Active":          data.Active,
+			"Key":             data.Key,
+			"DownloadDone":    data.DownloadDone,
 		})
 	}
 
@@ -326,17 +328,19 @@ func SearchImagesDBFull(
 		}
 
 		dataImg = append(dataImg, map[string]any{
-			"ID":           data.ID.Hex(),
-			"FileName":     data.FileName,
-			"CompanyCode":  data.CompanyCode,
-			"CompanyName":  data.CompanyName,
-			"DtImport":     data.DtImport,
-			"ZipFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.ZipFileName,
-			"PDFFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.PDFFileName,
-			"XMLFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.XMLFileName,
-			"Active":       data.Active,
-			"Key":          data.Key,
-			"DownloadDone": data.DownloadDone,
+			"ID":              data.ID.Hex(),
+			"FileName":        data.FileName,
+			"CompanyCode":     data.CompanyCode,
+			"CompanyName":     data.CompanyName,
+			"DtImport":        data.DtImport,
+			"ZipFileName":     flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.ZipFileName,
+			"PDFFileName":     flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.PDFFileName,
+			"DownloadPDFDone": data.DownloadPDFDone,
+			"XMLFileName":     flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.XMLFileName,
+			"DownloadXMLDone": data.DownloadXMLDone,
+			"Active":          data.Active,
+			"Key":             data.Key,
+			"DownloadDone":    data.DownloadDone,
 		})
 	}
 

@@ -78,9 +78,18 @@
             <tbody>
               <tr *ngFor="let item of dados">     
                  <td> {{item.Key}} </td>         
-                <td> {{item.FileName}} </td>
-                 <td> <a href="{{item.PDFFileName}}" target="_blank"> <img src="../../../../assets/images/PDFLogo.png"/></a> </td>
-                  <td><a href="{{item.XMLFileName}}" target="_blank"> <img src="../../../../assets/images/XMLLogo.png"></a></td>
+                <td> {{item.PasteName}} </td>
+                 <td> <a href="{{item.PDFFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'pdf')" target="_blank"> <img src="../../../../assets/images/PDFLogo.png"/></a> 
+                   @if(item.DownloadPDFDone) {
+                       <i class="mdi mdi-check"></i>
+                    }
+                </td>
+                  <td><a href="{{item.XMLFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'xml')" target="_blank"> <img src="../../../../assets/images/XMLLogo.png"></a> 
+                    @if(item.DownloadXMLDone) {
+                       <i class="mdi mdi-check"></i>
+                    }
+                 
+                  </td>
                 <td> {{item.CompanyName}} </td>        
                 <td> {{item.DtImport | date:'dd/MM/YYYY HH:MM'}} </td>   
                 <td>  <a href="{{item.ZipFileName}}"  (click)="donwloadJustOne(item);">Download </a></td>  

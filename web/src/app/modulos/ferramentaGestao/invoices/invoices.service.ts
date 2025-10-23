@@ -68,9 +68,13 @@ export class InvoicesService {
   updateStatusS3Image(formData:any): Observable<any> {
     return this.http.post(this.configService.apiUrl + "/UpdateStatusS3Image", formData);
   }
+
   updateMultipleStatusS3Images(formData:any): Observable<any> {
     return this.http.post(this.configService.apiUrl + "/UpdateMultipleStatusS3Images", formData);
   }
 
 
+  UpdateStatusPdforXml(formData:any): Observable<any> {
+    return this.http.post(this.configService.apiUrl + "/UpdateStatusPdforXml", formData);
+  }
 }

@@ -117,7 +117,7 @@ func main() {
 	*/
 	http.HandleFunc("/GetAllAirline", airLine.GetAllAirLineHandler)
 
-	//AMAZON S3
+	//AMAZON S3f
 	/*
 		Configuração criada por Ricardo Silva Ferreira
 		Inicio da criação 17/10/2025 13:10
@@ -128,6 +128,7 @@ func main() {
 	http.HandleFunc("/SearchS3ImagesDBFull", awsS3.SearchS3ImagesDBFullHandler)
 	http.HandleFunc("/UpdateStatusS3Image", awsS3.UpdateStatusS3ImageHandler)
 	http.HandleFunc("/UpdateMultipleStatusS3Images", awsS3.UpdateMultipleStatusS3ImagesHandler)
+	http.HandleFunc("/UpdateStatusPdforXml", awsS3.UpdateStatusPdfOrXmlHandler)
 
 	//API'S PUBLICAS
 	http.HandleFunc("/GetPurcharseRecordByStatus", purcharseRecord.GetPurcharseRecordStatusHandler)

@@ -745,3 +745,100 @@ func UpdateMultipleStatusS3ImagesHandler(w http.ResponseWriter, r *http.Request)
 
 	flytura.FormataRetornoHTTP(w, fmt.Sprintf("Atualizadas %d imagens com sucesso", result.ModifiedCount), http.StatusOK)
 }
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 23/10/2025 17:50
+Data Final da criação : 23/10/2025 17:54
+*/
+
+func UpdateStatusPdfOrXmlHandler(w http.ResponseWriter, r *http.Request) {
+	// Validar o token de autenticação
+	status, msg := flytura.TokenValido(w, r)
+	if !status {
+		http.Error(w, fmt.Sprintf("Erro ao validar token: %v", msg), http.StatusUnauthorized)
+		return
+	}
+
+	type request struct {
+		ID         primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+		FileType   string             `json:"fileType" bson:"fileType"`
+		DownloadOk bool               `json:"downloadOk" bson:"downloadOk,omitempty"`
+		UpdatedAt  time.Time          `json:"updatedAt" bson:"updatedAt,omitempty"`
+	}
+	// Decodificar o JSON recebido
+	var data request
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		// http.Error(w, "Erro ao decodificar JSON", http.StatusBadRequest)
+		flytura.FormataRetornoHTTP(w, "Erro ao decodificar JSON", http.StatusBadRequest)
+
+		return
+	}
+
+	// Verifica se o ID é válido
+	if data.ID.IsZero() {
+
+		flytura.FormataRetornoHTTP(w, "ID da fatura inválido", http.StatusBadRequest)
+
+		// http.Error(w, "ID do usuário inválido", http.StatusBadRequest)
+		return
+	}
+
+	if data.UpdatedAt.IsZero() {
+		data.UpdatedAt = time.Now()
+	}
+
+	fmt.Print("AAAAA", data)
+
+	update := bson.M{}
+	// Criar o objeto de atualização
+	if data.FileType == "pdf" {
+		update = bson.M{
+			"$set": bson.M{
+				"downloadPDFDone": data.DownloadOk,
+				"updatedAt":       data.UpdatedAt,
+			},
+		}
+	}
+
+	if data.FileType == "xml" {
+		update = bson.M{
+			"$set": bson.M{
+				"downloadXMLDone": data.DownloadOk,
+				"updatedAt":       data.UpdatedAt,
+			},
+		}
+	}
+
+	// Conectar ao MongoDB e atualizar o usuário
+	client, err := db.ConnectMongoDB(flytura.ConectionString)
+	if err != nil {
+		flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+
+		// http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+		return
+	}
+	defer client.Disconnect(context.Background())
+
+	collection := client.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
+	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": data.ID}, update)
+	if err != nil {
+		flytura.FormataRetornoHTTP(w, "Erro ao atualizar dados da imagem", http.StatusInternalServerError)
+
+		// log.Println("Erro ao atualizar usuário:", err)
+		// http.Error(w, "Erro ao atualizar usuário", http.StatusInternalServerError)
+		return
+	}
+
+	// Verifica se algum documento foi modificado
+	if result.ModifiedCount == 0 {
+		flytura.FormataRetornoHTTP(w, "Nenhuma alteração realizada", http.StatusOK)
+
+		// http.Error(w, "Nenhuma alteração realizada", http.StatusNotModified)
+		return
+	}
+
+	// Responder com sucesso
+	flytura.FormataRetornoHTTP(w, "Imagem atualizda com sucesso", http.StatusOK)
+
+}
