@@ -158,24 +158,25 @@ export class InvoicesComponent {
 
                   interface ImageResponse {
                     ID:string
-                    FileName: string;
+                    ZipFileName: string;
                     DownloadDone:boolean
                     // outras propriedades, se houver
                   }
 
                   for (const item of response.imagesDB as ImageResponse[]) {
-                    this.imgsDownload.push(item.FileName);
+                    this.imgsDownload.push(item.ZipFileName);
                     ids.push(item.ID)
                   }
 
           
                   if (this.imgsDownload.length > 0) {
+                    console.log('this.imgsDownload ',this.imgsDownload);
                       this.invoicesService.downloadZip(this.imgsDownload);
                   }
 
                   this.dados=response.imagesDB;    
 
-                   this.invoicesService.updateMultipleDownloadStatusS3Image({
+                   this.invoicesService.updateMultipleStatusS3Images({
                     ids:ids,
                     DownloadDone:true
                    }).subscribe((response:any)=>{
@@ -195,7 +196,7 @@ export class InvoicesComponent {
 
       linha.DownloadDone=true;
 
-      this.invoicesService.updateDownloadStatusS3Image(objUpdate).subscribe()
+      this.invoicesService.updateStatusS3Image(objUpdate).subscribe()
 
     }
 }

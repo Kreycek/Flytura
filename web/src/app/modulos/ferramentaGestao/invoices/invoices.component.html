@@ -59,7 +59,7 @@
           <table class="table table-bordered">
             <thead> 
                <tr>
-                <th class="fmtTableBorder" colspan="6" style="text-align: right;"> 
+                <th class="fmtTableBorder" colspan="8" style="text-align: right;"> 
                   <a href="javascript:void(0)"  (click)="donwloadAll();"> Download {{ 'Ecra.all' | translate }} </a>
                  </th>    
                
@@ -67,6 +67,8 @@
               <tr>
                   <th class="fmtTableBorder"> {{ 'Ecra.Key' | translate }}</th>    
                 <th class="fmtTableBorder"> {{ 'Ecra.fileName' | translate }}</th>    
+                 <th class="fmtTableBorder">PDF</th>    
+                   <th class="fmtTableBorder">XML</th>    
                   <th class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th>                                    
                 <th class="fmtTableBorder"> {{ 'Ecra.DtImport' | translate }} </th>   
                  <th class="fmtTableBorder">  </th>   
@@ -77,9 +79,11 @@
               <tr *ngFor="let item of dados">     
                  <td> {{item.Key}} </td>         
                 <td> {{item.FileName}} </td>
+                 <td> <a href="{{item.PDFFileName}}" target="_blank"> <img src="../../../../assets/images/PDFLogo.png"/></a> </td>
+                  <td><a href="{{item.XMLFileName}}" target="_blank"> <img src="../../../../assets/images/XMLLogo.png"></a></td>
                 <td> {{item.CompanyName}} </td>        
                 <td> {{item.DtImport | date:'dd/MM/YYYY HH:MM'}} </td>   
-                <td>  <a href="{{item.FileUrl}}"  (click)="donwloadJustOne(item);">Download </a></td>  
+                <td>  <a href="{{item.ZipFileName}}"  (click)="donwloadJustOne(item);">Download </a></td>  
                  <td> 
                   @if (item.DownloadDone) {
                      {{ 'Ecra.yes' | translate }} 

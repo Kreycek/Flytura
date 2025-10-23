@@ -1,14 +1,11 @@
 package awsS3
 
 import (
-	"Flytura/internal/airLine"
-	"Flytura/internal/db"
 	"Flytura/internal/models"
 	"bytes"
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"path"
 	"strings"
@@ -21,7 +18,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -31,75 +27,82 @@ var (
 	region     = flytura.BucketRegion // ajuste conforme necessário
 )
 
-func UploadToS3(file io.Reader, filename, companyCode, key string) error {
-	accessKey := flytura.AKA
-	secretKey := flytura.SKA
+// func UploadToS3(file io.Reader, filename, companyCode, key string) error {
+// 	accessKey := flytura.AKA
+// 	secretKey := flytura.SKA
 
-	region := region
-	bucketName := bucketName
-	directory := flytura.ImagesInvoices + "/" + filename
+// 	region := region
+// 	bucketName := bucketName
+// 	directory := flytura.ImagesInvoices + "/" + filename
 
-	cfg, errLdc := config.LoadDefaultConfig(context.TODO(),
-		config.WithRegion(region),
-		config.WithCredentialsProvider(
-			credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
-		),
-	)
-	if errLdc != nil {
-		return fmt.Errorf("erro ao carregar config: %w", errLdc)
-	}
+// 	cfg, errLdc := config.LoadDefaultConfig(context.TODO(),
+// 		config.WithRegion(region),
+// 		config.WithCredentialsProvider(
+// 			credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
+// 		),
+// 	)
+// 	if errLdc != nil {
+// 		return fmt.Errorf("erro ao carregar config: %w", errLdc)
+// 	}
 
-	client := s3.NewFromConfig(cfg)
+// 	client := s3.NewFromConfig(cfg)
 
-	_, errLdc = client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: &bucketName,
-		Key:    &directory,
-		Body:   file,
-		// ACL removido porque o bucket não permite ACLs
-	})
-	if errLdc != nil {
-		fmt.Println("Erro detalhado ao enviar para S3:", errLdc)
-		return fmt.Errorf("erro ao enviar para S3: %w", errLdc)
-	}
+// 	_, errLdc = client.PutObject(context.TODO(), &s3.PutObjectInput{
+// 		Bucket: &bucketName,
+// 		Key:    &directory,
+// 		Body:   file,
+// 		// ACL removido porque o bucket não permite ACLs
+// 	})
+// 	if errLdc != nil {
+// 		fmt.Println("Erro detalhado ao enviar para S3:", errLdc)
+// 		return fmt.Errorf("erro ao enviar para S3: %w", errLdc)
+// 	}
 
-	clientDb, errConnectDB1 := db.ConnectMongoDB(flytura.ConectionString)
-	if errConnectDB1 != nil {
-		log.Println("Erro ao obter nome do arquivo:", errConnectDB1)
-		return fmt.Errorf("erro ao enviar para S3: %w", errConnectDB1)
+// 	clientDb, errConnectDB1 := db.ConnectMongoDB(flytura.ConectionString)
+// 	if errConnectDB1 != nil {
+// 		log.Println("Erro ao obter nome do arquivo:", errConnectDB1)
+// 		return fmt.Errorf("erro ao enviar para S3: %w", errConnectDB1)
 
-	}
-	defer db.CloseMongoDB(clientDb)
+// 	}
+// 	defer db.CloseMongoDB(clientDb)
 
-	airLineData, errAirLineName := airLine.GetAirLineFileName(clientDb, flytura.DBName, "airline", companyCode)
-	if errAirLineName != nil {
-		log.Println("Erro ao obter nome do arquivo:", errAirLineName)
-		return fmt.Errorf("Erro ao pesquisa compania aérea: %w", errAirLineName)
-	}
+// 	airLineData, errAirLineName := airLine.GetAirLineFileName(clientDb, flytura.DBName, "airline", companyCode)
+// 	if errAirLineName != nil {
+// 		log.Println("Erro ao obter nome do arquivo:", errAirLineName)
+// 		return fmt.Errorf("Erro ao pesquisa compania aérea: %w", errAirLineName)
+// 	}
 
-	fmt.Println("ddd", airLineData["FileName"])
+// 	fmt.Println("ddd", airLineData["FileName"])
 
-	companyName := airLineData["Name"].(string)
+// 	companyName := airLineData["Name"].(string)
 
-	image := models.ImagesDB{
-		ID:           primitive.NewObjectID(),
-		FileName:     filename,
-		DtImport:     time.Now(),
-		CompanyCode:  companyCode,
-		CompanyName:  companyName,
-		DownloadDone: false,
-		Key:          key,
-		FileURL:      flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + filename, // ou uma URL pública se estiver usando S3, etc.
-	}
+// 	image := models.ImagesDB{
+// 		ID:           primitive.NewObjectID(),
+// 		FileName:     filename,
+// 		DtImport:     time.Now(),
+// 		CompanyCode:  companyCode,
+// 		CompanyName:  companyName,
+// 		DownloadDone: false,
+// 		Key:          key,
+// 		FileURL:      flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + filename, // ou uma URL pública se estiver usando S3, etc.
+// 	}
 
-	InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
+// 	InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
 
-	// fmt.Println("bucketName ", bucketName)
-	// fmt.Println("region ", region)
-	// fmt.Println("key ", key)
+// 	// fmt.Println("bucketName ", bucketName)
+// 	// fmt.Println("region ", region)
+// 	// fmt.Println("key ", key)
 
-	fmt.Printf("Arquivo enviado para: https://%s.s3.%s.amazonaws.com/%s\n", bucketName, region, key)
-	return nil
-}
+// 	fmt.Printf("Arquivo enviado para: https://%s.s3.%s.amazonaws.com/%s\n", bucketName, region, key)
+// 	return nil
+// }
+
+/*
+	Função criada por Ricardo Silva Ferreira
+	Inicio da criação 23/10/2025 00:50
+	Data Final da criação : 23/10/2025 01:15
+	Essa função apenas faz donwload para o S3
+*/
 
 func UploadToS3Only(file io.Reader, filename, companyCode, key string) error {
 	// --- Configurações ---
@@ -250,7 +253,9 @@ func SearchImagesDBPagination(
 			"CompanyCode":  data.CompanyCode,
 			"CompanyName":  data.CompanyName,
 			"DtImport":     data.DtImport,
-			"FileUrl":      data.FileURL,
+			"ZipFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.ZipFileName,
+			"PDFFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.PDFFileName,
+			"XMLFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.XMLFileName,
 			"Active":       data.Active,
 			"Key":          data.Key,
 			"DownloadDone": data.DownloadDone,
@@ -326,7 +331,9 @@ func SearchImagesDBFull(
 			"CompanyCode":  data.CompanyCode,
 			"CompanyName":  data.CompanyName,
 			"DtImport":     data.DtImport,
-			"FileUrl":      data.FileURL,
+			"ZipFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.ZipFileName,
+			"PDFFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.PDFFileName,
+			"XMLFileName":  flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + data.XMLFileName,
 			"Active":       data.Active,
 			"Key":          data.Key,
 			"DownloadDone": data.DownloadDone,

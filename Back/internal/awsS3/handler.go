@@ -26,7 +26,7 @@ import (
 Função criada por Ricardo Silva Ferreira
 Início da criação: 17/10/2025 13:02
 Data final da criação:  17/10/2025 13:005
-OBS: Função que enviar os dados para o S3 E grava no banco de dados
+OBS: Função que enviar os dados para o S3 E grava no banco de dados, ela apenas importa um arquivo seja qual for
 */
 
 func UploadS3FilesHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,27 +52,62 @@ func UploadS3FilesHandler(w http.ResponseWriter, r *http.Request) {
 	companyCode := r.FormValue("companyCode")
 	key := r.FormValue("key")
 
-	err = UploadToS3(file, header.Filename, companyCode, key)
+	err = UploadToS3Only(file, header.Filename, companyCode, key)
 	if err != nil {
 
-		fmt.Println("Erro detalhado ao enviar para S3:", err)
+		fmt.Println("Erro ao enviar para S3:", err)
 		// return fmt.Errorf("erro ao enviar para S3: %w", err)
 
 		return
 	}
 
-	fmt.Println("File name ", header.Filename)
-	fmt.Println("CompanyCode ", companyCode)
+	clientDb, err := db.ConnectMongoDB(flytura.ConectionString)
+	if err != nil {
+		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+		return
+	}
+	defer clientDb.Disconnect(context.Background())
 
-	fmt.Fprintf(w, "Arquivo %s enviado com sucesso!", header.Filename)
+	airLineData, errAirLineName := airLine.GetAirLineFileName(clientDb, flytura.DBName, "airline", companyCode)
+	if errAirLineName != nil {
+		log.Println("Erro ao obter nome do arquivo:", errAirLineName)
+	}
+	companyName := airLineData["Name"].(string)
+
+	image := models.ImagesDB{
+		ID:           primitive.NewObjectID(),
+		FileName:     header.Filename,
+		DtImport:     time.Now(),
+		PDFFileName:  "",
+		XMLFileName:  "",
+		CompanyCode:  companyCode,
+		CompanyName:  companyName,
+		DownloadDone: false,
+		Key:          key,
+		ZipFileName:  "",
+	}
+
+	InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
+
+	// Retornar resposta JSON
+	response := map[string]any{
+		"Result": "Arquivo %s enviado com sucesso!",
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("erro ao codificar resposta JSON: %v", err)
+	}
 }
 
 /*
 Função criada por Ricardo Silva Ferreira
 Início da criação: 23/10/2025 01:03
 Data final da criação:  23/10/2025 01:57
-OBS: Função que descompacta arquivos envia vários arquivos para o AWS S3
-*/func UploadS3FilesUnzipHandler(w http.ResponseWriter, r *http.Request) {
+OBS: Função recebe um arquivo .ZIP e que descompacta arquivos envia vários arquivos para o AWS S3
+*/
+
+func UploadS3FilesUnzipHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
 		return
@@ -94,7 +129,7 @@ OBS: Função que descompacta arquivos envia vários arquivos para o AWS S3
 	}
 	defer zipFile.Close()
 
-	fmt.Println("FileName:", header.Filename)
+	// fmt.Println("FileName:", header.Filename)
 
 	// Lê o conteúdo do ZIP para memória
 	buf := new(bytes.Buffer)
@@ -121,6 +156,7 @@ OBS: Função que descompacta arquivos envia vários arquivos para o AWS S3
 
 	pdfFileName := ""
 	xmlFileName := ""
+	zipFileName := ""
 
 	for _, file := range zipReader.File {
 		if file.FileInfo().IsDir() {
@@ -147,6 +183,8 @@ OBS: Função que descompacta arquivos envia vários arquivos para o AWS S3
 			xmlFileName = file.Name
 		case ".pdf":
 			pdfFileName = file.Name
+		case ".zip":
+			zipFileName = file.Name
 		}
 
 		err = UploadToS3Only(bytes.NewReader(fileContent), file.Name, companyCode, key)
@@ -181,7 +219,7 @@ OBS: Função que descompacta arquivos envia vários arquivos para o AWS S3
 		CompanyName:  companyName,
 		DownloadDone: false,
 		Key:          key,
-		FileURL:      flytura.FileAwsS3URL + "/" + flytura.ImagesInvoices + "/" + header.Filename,
+		ZipFileName:  zipFileName,
 	}
 
 	InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
@@ -195,6 +233,160 @@ OBS: Função que descompacta arquivos envia vários arquivos para o AWS S3
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		log.Printf("erro ao codificar resposta JSON: %v", err)
 	}
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Início da criação: 23/10/2025 13:14
+Data final da criação:  23/10/2025 13:17
+OBS: Função recebe um arquivo .ZIP e que descompacta arquivos envia vários arquivos para o AWS S3
+*/
+
+func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	err := r.ParseMultipartForm(50 << 20) // até 50 MB
+	if err != nil {
+		http.Error(w, "Erro ao processar formulário", http.StatusBadRequest)
+		return
+	}
+
+	companyCode := r.FormValue("companyCode")
+	key := r.FormValue("key")
+
+	files := r.MultipartForm.File["file"]
+	if len(files) == 0 {
+		http.Error(w, "Nenhum arquivo ZIP enviado", http.StatusBadRequest)
+		return
+	}
+
+	var importedFiles []string
+	var filesNotZip []string
+
+	for _, header := range files {
+		zipFile, err := header.Open()
+		if err != nil {
+			fmt.Printf("Erro ao abrir %s: %v\n", header.Filename, err)
+			continue
+		}
+		defer zipFile.Close()
+
+		fmt.Println("Processando:", header.Filename)
+
+		buf := new(bytes.Buffer)
+		_, err = io.Copy(buf, zipFile)
+		if err != nil {
+			fmt.Printf("Erro ao copiar conteúdo de %s: %v\n", header.Filename, err)
+			continue
+		}
+
+		err = UploadToS3Only(bytes.NewReader(buf.Bytes()), header.Filename, companyCode, key)
+		if err != nil {
+			fmt.Printf("Erro ao enviar ZIP %s para S3: %v\n", header.Filename, err)
+			continue
+		}
+
+		zipReader, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+		if err != nil {
+			fmt.Printf("Erro ao abrir ZIP %s: %v\n", header.Filename, err)
+			continue
+		}
+
+		pdfFileName := ""
+		xmlFileName := ""
+		zipFileName := ""
+
+		ext := strings.ToLower(filepath.Ext(header.Filename))
+
+		if ext == ".zip" {
+			zipFileName = header.Filename
+		} else {
+			filesNotZip = append(filesNotZip, "O Arquivo "+header.Filename+" não foi importado porque não é um arquivo .zip")
+			continue
+		}
+
+		for _, file := range zipReader.File {
+			if file.FileInfo().IsDir() {
+				continue
+			}
+
+			f, err := file.Open()
+			if err != nil {
+				fmt.Printf("Erro ao abrir %s: %v\n", file.Name, err)
+				continue
+			}
+
+			fileContent, err := io.ReadAll(f)
+			f.Close()
+			if err != nil {
+				fmt.Printf("Erro ao ler conteúdo de %s: %v\n", file.Name, err)
+				continue
+			}
+
+			ext := strings.ToLower(filepath.Ext(file.Name))
+			switch ext {
+			case ".xml":
+				xmlFileName = file.Name
+			case ".pdf":
+				pdfFileName = file.Name
+			case ".zip":
+				zipFileName = file.Name
+			}
+
+			err = UploadToS3Only(bytes.NewReader(fileContent), file.Name, companyCode, key)
+			if err != nil {
+				fmt.Printf("Erro ao enviar %s para S3: %v\n", file.Name, err)
+				continue
+			}
+		}
+
+		clientDb, err := db.ConnectMongoDB(flytura.ConectionString)
+		if err != nil {
+			fmt.Printf("Erro ao conectar ao MongoDB: %v\n", err)
+			continue
+		}
+		defer clientDb.Disconnect(context.Background())
+
+		airLineData, errAirLineName := airLine.GetAirLineFileName(clientDb, flytura.DBName, "airline", companyCode)
+		if errAirLineName != nil {
+			fmt.Printf("Erro ao obter nome da companhia: %v\n", errAirLineName)
+			continue
+		}
+
+		companyName := airLineData["Name"].(string)
+
+		image := models.ImagesDB{
+			ID:           primitive.NewObjectID(),
+			FileName:     header.Filename,
+			DtImport:     time.Now(),
+			PDFFileName:  pdfFileName,
+			XMLFileName:  xmlFileName,
+			CompanyCode:  companyCode,
+			CompanyName:  companyName,
+			DownloadDone: false,
+			Key:          key,
+			ZipFileName:  zipFileName,
+		}
+
+		InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
+		importedFiles = append(importedFiles, header.Filename)
+	}
+
+	response := map[string]any{
+		"Result":           "Arquivos importados com sucesso",
+		"ImportedFiles":    importedFiles,
+		"NotImportedFiles": filesNotZip,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		fmt.Printf("Erro ao codificar resposta JSON: %v\n", err)
+	}
+
 }
 
 /*
@@ -409,7 +601,7 @@ Inicio da criação 20/10/2025 15:02
 Data Final da criação : 20/10/2025 15:05
 */
 
-func UpdateDownloadStatusS3ImageHandler(w http.ResponseWriter, r *http.Request) {
+func UpdateStatusS3ImageHandler(w http.ResponseWriter, r *http.Request) {
 	// Validar o token de autenticação
 	status, msg := flytura.TokenValido(w, r)
 	if !status {

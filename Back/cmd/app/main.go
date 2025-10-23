@@ -101,6 +101,7 @@ func main() {
 	http.HandleFunc("/UpdatePurcharseRecord", purcharseRecord.UpdatePurcharseRecordHandler)
 	http.HandleFunc("/VerifyExistPurcharseRecord", purcharseRecord.VerifyExistPurcharseRecordHandler)
 	http.HandleFunc("/SearchPurcharseRecord", purcharseRecord.SearchPurcharseRecordHandler)
+	http.HandleFunc("/UpdatePurcharseRecordMultiple", purcharseRecord.UpdatePurcharseRecordMultipleHandler)
 
 	//Inicio da criação 30/11/2025 17:13
 	http.HandleFunc("/GetAllImportStatus", purcharseRecord.GetAllImportStatussHandler)
@@ -125,13 +126,14 @@ func main() {
 
 	http.HandleFunc("/SearchS3ImagesDBPagination", awsS3.SearchS3ImagesDBPaginationHandler)
 	http.HandleFunc("/SearchS3ImagesDBFull", awsS3.SearchS3ImagesDBFullHandler)
-	http.HandleFunc("/UpdateDownloadStatusS3Image", awsS3.UpdateDownloadStatusS3ImageHandler)
+	http.HandleFunc("/UpdateStatusS3Image", awsS3.UpdateStatusS3ImageHandler)
+	http.HandleFunc("/UpdateMultipleStatusS3Images", awsS3.UpdateMultipleStatusS3ImagesHandler)
 
 	//API'S PUBLICAS
 	http.HandleFunc("/GetPurcharseRecordByStatus", purcharseRecord.GetPurcharseRecordStatusHandler)
 	http.HandleFunc("/UploadS3Files", awsS3.UploadS3FilesHandler)
-	http.HandleFunc("/UploadS3FilesUnzipHandler", awsS3.UploadS3FilesUnzipHandler)
-	http.HandleFunc("/UpdatePurcharseRecordMultiple", purcharseRecord.UpdatePurcharseRecordMultipleHandler)
+	http.HandleFunc("/UploadS3FilesUnzip", awsS3.UploadS3FilesUnzipHandler)
+	http.HandleFunc("/UploadS3MultiplesFilesUnzip", awsS3.UploadS3MultiplesFilesUnzipHandler)
 
 	//TESTE
 	http.HandleFunc("/teste", loginHandler)
