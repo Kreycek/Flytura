@@ -65,35 +65,36 @@
                
               </tr>
               <tr>
-                  <th class="fmtTableBorder"> {{ 'Ecra.Key' | translate }}</th>    
-                <th class="fmtTableBorder"> {{ 'Ecra.fileName' | translate }}</th>    
-                 <th class="fmtTableBorder">PDF</th>    
-                   <th class="fmtTableBorder">XML</th>    
-                  <th class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th>                                    
-                <th class="fmtTableBorder"> {{ 'Ecra.DtImport' | translate }} </th>   
-                 <th class="fmtTableBorder">  </th>   
-                  <th class="fmtTableBorder"> {{ 'Ecra.doDonwload' | translate }}  </th>  
+                  <th  class="fmtTableBorder"> {{ 'Ecra.Key' | translate }}</th>    
+                <th  class="fmtTableBorder"> {{ 'Ecra.fileName' | translate }}</th>    
+                 <th  style="text-align: center;" class="fmtTableBorder">PDF</th>    
+                   <th  style="text-align: center;" class="fmtTableBorder">XML</th>    
+                  <th  style="text-align: center;" class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th>                                    
+                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.DtImport' | translate }} </th>   
+                 <th  style="text-align: center;" class="fmtTableBorder">  </th>   
+                  <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.doDonwload' | translate }}  </th>  
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of dados">     
-                 <td> {{item.Key}} </td>         
+                 <td > {{item.Key}} </td>         
                 <td> {{item.PasteName}} </td>
-                 <td> <a href="{{item.PDFFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'pdf')" target="_blank"> <img src="../../../../assets/images/PDFLogo.png"/></a> 
+                 <td  style="text-align: center;"> <a href="{{item.PDFFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'pdf')" target="_blank"> <img src="../../../../assets/images/PDFLogo.png"/></a> 
                    @if(item.DownloadPDFDone) {
                        <i class="mdi mdi-check"></i>
                     }
                 </td>
-                  <td><a href="{{item.XMLFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'xml')" target="_blank"> <img src="../../../../assets/images/XMLLogo.png"></a> 
+                  <td  style="text-align: center;"><a href="{{item.XMLFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'xml')" target="_blank"> <img src="../../../../assets/images/XMLLogo.png"></a> 
                     @if(item.DownloadXMLDone) {
                        <i class="mdi mdi-check"></i>
                     }
                  
                   </td>
-                <td> {{item.CompanyName}} </td>        
-                <td> {{item.DtImport | date:'dd/MM/YYYY HH:MM'}} </td>   
-                <td>  <a href="{{item.ZipFileName}}"  (click)="donwloadJustOne(item);">Download </a></td>  
-                 <td> 
+                <td  style="text-align: center;"> {{item.CompanyName}} </td>        
+                <td  style="text-align: center;"> {{item.DtImport | date:'dd/MM/YYYY HH:MM'}} </td>   
+                <td style="text-align: center;"> 
+                   <a href="{{item.ZipFileName}}"  (click)="donwloadJustOne(item);">Download </a></td>  
+                 <td  style="text-align: center;"> 
                   @if (item.DownloadDone) {
                      {{ 'Ecra.yes' | translate }} 
                   }
