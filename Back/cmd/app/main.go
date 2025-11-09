@@ -4,10 +4,16 @@ import (
 	flytura "Flytura"
 	"Flytura/internal/auth"
 	"Flytura/internal/awsS3"
+	"Flytura/internal/db"
 	"Flytura/internal/purcharseRecord"
+	"context"
 	"fmt"
 	"io"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	airLine "Flytura/internal/airLine"
 	"Flytura/internal/perfil"
@@ -49,6 +55,11 @@ func getPublicIP() (string, error) {
 }
 
 func main() {
+
+	err := db.ConnectGlobalMongoDB(flytura.ConectionString)
+	if err != nil {
+		log.Fatalf("Erro ao conectar ao MongoDB: %v", err)
+	}
 
 	publicIP, err := getPublicIP()
 	if err != nil {
@@ -145,6 +156,35 @@ func main() {
 	// auth.CreateUser("rico", "654321")
 
 	// Inicia o servidor na porta 8080
-	log.Println("Servidor rodando na porta 8080...")
-	log.Fatal(http.ListenAndServe(":8080", handler))
+
+	go func() {
+		log.Println("Servidor iniciado na porta 8080")
+		if err := http.ListenAndServe(":8080", handler); err != nil {
+			log.Fatalf("Erro ao iniciar servidor: %v", err)
+		}
+	}()
+
+	// Canal para escutar sinais do sistema
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	<-stop
+	log.Println("Encerrando servidor...")
+
+	// Desconectar do MongoDB
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := db.MongoClient.Disconnect(ctx); err != nil {
+		log.Printf("Erro ao desconectar do MongoDB: %v", err)
+	}
+
+	// Testar se a conexão ainda está ativa
+	err = db.MongoClient.Ping(ctx, nil)
+	if err != nil {
+		log.Printf("Conexão encerrada corretamente: %v", err)
+	} else {
+		log.Println("⚠️ A conexão ainda está ativa!")
+	}
+
 }

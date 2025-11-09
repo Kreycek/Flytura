@@ -20,15 +20,15 @@ func GetAllPerfilsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	users, err := GetAllPerfil(client, flytura.DBName, flytura.PerfilTableName)
+	users, err := GetAllPerfil(db.MongoClient, flytura.DBName, flytura.PerfilTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return

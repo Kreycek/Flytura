@@ -26,12 +26,12 @@ func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Obter parâmetros de paginação
 	query := r.URL.Query()
@@ -46,7 +46,7 @@ func GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Obter usuários paginados
-	users, total, err := GetAllUsers(client, flytura.DBName, flytura.UserDBTableName, page, limit)
+	users, total, err := GetAllUsers(db.MongoClient, flytura.DBName, flytura.UserDBTableName, page, limit)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar perfis: %v", err), http.StatusInternalServerError)
 		return
@@ -83,12 +83,12 @@ func SearchUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
 	// Definir estrutura para receber os parâmetros
 	var request struct {
@@ -114,7 +114,7 @@ func SearchUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Buscar usuários com paginação
-	users, total, err := SearchUsers(client, flytura.DBName, flytura.UserDBTableName, request.Name, request.Email, request.Perfil, request.Page, request.Limit)
+	users, total, err := SearchUsers(db.MongoClient, flytura.DBName, flytura.UserDBTableName, request.Name, request.Email, request.Perfil, request.Page, request.Limit)
 	if err != nil {
 		http.Error(w, "Erro ao buscar usuários", http.StatusInternalServerError)
 		return
@@ -159,15 +159,15 @@ func VerifyExistUser(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Println("email", email)
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Obter a coleção de usuários
-	collection := db.GetCollection(client, flytura.DBName, flytura.UserDBTableName)
+	collection := db.GetCollection(db.MongoClient, flytura.DBName, flytura.UserDBTableName)
 	// filter := bson.D{
 	// 	{Key: "$or", Value: bson.A{
 	// 		bson.D{{Key: "email", Value: userName}},
@@ -207,12 +207,12 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
 	// Extrair o ID da URL
 	id := r.URL.Query().Get("id")
@@ -222,14 +222,14 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verifica se o ID fornecido é válido
-	_, err = primitive.ObjectIDFromHex(id)
+	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		http.Error(w, "ID inválido", http.StatusBadRequest)
 		return
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	user, err := GetUserByID(client, flytura.DBName, flytura.UserDBTableName, id)
+	user, err := GetUserByID(db.MongoClient, flytura.DBName, flytura.UserDBTableName, id)
 	if err != nil {
 		http.Error(w, "Erro ao buscar usuário", http.StatusInternalServerError)
 		return
@@ -270,12 +270,12 @@ func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
 		user.CreatedAt = time.Now()
 	}
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	if user.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -290,7 +290,7 @@ func InsertUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Inserir o usuário no MongoDB
-	err = InsertUser(client, flytura.DBName, flytura.UserDBTableName, user)
+	err = InsertUser(db.MongoClient, flytura.DBName, flytura.UserDBTableName, user)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao inserir usuário: %v", err), http.StatusInternalServerError)
 		return
@@ -363,16 +363,17 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB e atualizar o usuário
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
 
-		// http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// 	// http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection(flytura.UserDBTableName)
+	// collection := client.Database(flytura.DBName).Collection(flytura.UserDBTableName)
+	collection := db.MongoClient.Database(flytura.DBName).Collection(flytura.UserDBTableName)
 	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": user.ID}, update)
 	if err != nil {
 		flytura.FormataRetornoHTTP(w, "Erro ao atualizar usuário, Erro ao atualizar usuário", http.StatusInternalServerError)

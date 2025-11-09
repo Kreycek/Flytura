@@ -58,13 +58,13 @@ var (
 // 		return fmt.Errorf("erro ao enviar para S3: %w", errLdc)
 // 	}
 
-// 	clientDb, errConnectDB1 := db.ConnectMongoDB(flytura.ConectionString)
-// 	if errConnectDB1 != nil {
-// 		log.Println("Erro ao obter nome do arquivo:", errConnectDB1)
-// 		return fmt.Errorf("erro ao enviar para S3: %w", errConnectDB1)
+// // 	clientDb, errConnectDB1 := db.ConnectMongoDB(flytura.ConectionString)
+// // 	if errConnectDB1 != nil {
+// // 		log.Println("Erro ao obter nome do arquivo:", errConnectDB1)
+// // 		return fmt.Errorf("erro ao enviar para S3: %w", errConnectDB1)
 
-// 	}
-// 	defer db.CloseMongoDB(clientDb)
+// // 	}
+// // 	defer db.CloseMongoDB(clientDb)
 
 // 	airLineData, errAirLineName := airLine.GetAirLineFileName(clientDb, flytura.DBName, "airline", companyCode)
 // 	if errAirLineName != nil {

@@ -45,12 +45,12 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	client, errConnectDB1 := db.ConnectMongoDB(flytura.ConectionString)
-	if errConnectDB1 != nil {
-		log.Println("Erro ao obter nome do arquivo:", err)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, errConnectDB1 := db.ConnectMongoDB(flytura.ConectionString)
+	// if errConnectDB1 != nil {
+	// 	log.Println("Erro ao obter nome do arquivo:", err)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	nameWithoutExt := strings.TrimSuffix(fileHeader.Filename, filepath.Ext(fileHeader.Filename))
 
@@ -70,7 +70,7 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	airLineData, err := airLine.GetAirLineFileName(client, flytura.DBName, "airline", codeFile)
+	airLineData, err := airLine.GetAirLineFileName(db.MongoClient, flytura.DBName, "airline", codeFile)
 	if err != nil {
 		log.Println("Erro ao obter nome do arquivo:", err)
 		return
@@ -99,12 +99,12 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 
 	io.Copy(tempFile, file)
 
-	clients, err2 := db.ConnectMongoDB(flytura.ConectionString)
-	if err2 != nil {
-		http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(clients)
+	// clients, err2 := db.ConnectMongoDB(flytura.ConectionString)
+	// if err2 != nil {
+	// 	http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(clients)
 
 	Results := struct {
 		TotalEmpty         int64 `json:"totalEmpty"`
@@ -116,7 +116,7 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 		EmptySheet:         false,
 	}
 
-	totalEmptyRegister, totalRegister, emptySheet, errProcessExcel := ProcessPurcharseRecordExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, clients, flytura.DBName, flytura.PurcharseRecordTableName)
+	totalEmptyRegister, totalRegister, emptySheet, errProcessExcel := ProcessPurcharseRecordExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, db.MongoClient, flytura.DBName, flytura.PurcharseRecordTableName)
 	if errProcessExcel != nil {
 		http.Error(w, "Erro ao processar planilha", http.StatusInternalServerError)
 		return
@@ -153,15 +153,15 @@ func GetAllPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	purcharseRecordData, err := GetPurcharseRecord(client, flytura.DBName, flytura.PurcharseRecordTableName)
+	purcharseRecordData, err := GetPurcharseRecord(db.MongoClient, flytura.DBName, flytura.PurcharseRecordTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -189,12 +189,12 @@ func GetAllPurcharseRecordPaginationHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Obter parâmetros de paginação
 	query := r.URL.Query()
@@ -209,7 +209,7 @@ func GetAllPurcharseRecordPaginationHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Obter usuários paginados
-	data, total, err := GetAllPurcharseRecord(client, flytura.DBName, flytura.PurcharseRecordTableName, page, limit)
+	data, total, err := GetAllPurcharseRecord(db.MongoClient, flytura.DBName, flytura.PurcharseRecordTableName, page, limit)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar diários: %v", err), http.StatusInternalServerError)
 		return
@@ -246,12 +246,12 @@ func GetPurcharseRecordByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
 	// Extrair o ID da URL
 	id := r.URL.Query().Get("id")
@@ -261,14 +261,14 @@ func GetPurcharseRecordByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verifica se o ID fornecido é válido
-	_, err = primitive.ObjectIDFromHex(id)
+	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		http.Error(w, "ID inválido", http.StatusBadRequest)
 		return
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	costCenters, err := GetPurcharseRecordByID(client, flytura.DBName, flytura.PurcharseRecordTableName, id)
+	costCenters, err := GetPurcharseRecordByID(db.MongoClient, flytura.DBName, flytura.PurcharseRecordTableName, id)
 	if err != nil {
 		http.Error(w, "Erro ao buscar diários", http.StatusInternalServerError)
 		return
@@ -315,15 +315,15 @@ func InsertPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 		data.CreatedAt = time.Now()
 	}
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Inserir o usuário no MongoDB
-	err = InsertPurcharseRecord(client, flytura.DBName, flytura.PurcharseRecordTableName, data)
+	err = InsertPurcharseRecord(db.MongoClient, flytura.DBName, flytura.PurcharseRecordTableName, data)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao inserir fatura: %v", err), http.StatusInternalServerError)
 		return
@@ -391,16 +391,16 @@ func UpdatePurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB e atualizar o usuário
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
 
-		// http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// 	// http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection(flytura.PurcharseRecordTableName)
+	collection := db.MongoClient.Database(flytura.DBName).Collection(flytura.PurcharseRecordTableName)
 	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": data.ID}, update)
 	if err != nil {
 		flytura.FormataRetornoHTTP(w, "Erro ao atualizar fatura", http.StatusInternalServerError)
@@ -449,15 +449,15 @@ func VerifyExistPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Println("email", email)
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Obter a coleção de usuários
-	collection := db.GetCollection(client, flytura.DBName, flytura.PurcharseRecordTableName)
+	collection := db.GetCollection(db.MongoClient, flytura.DBName, flytura.PurcharseRecordTableName)
 	// filter := bson.D{
 	// 	{Key: "$or", Value: bson.A{
 	// 		bson.D{{Key: "email", Value: userName}},
@@ -504,12 +504,12 @@ func SearchPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
 	// Definir estrutura para receber os parâmetros
 	var request struct {
@@ -543,7 +543,7 @@ func SearchPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Buscar usuários com paginação
 	costCenters, total, err := SearchPurcharseRecordPagination(
-		client,
+		db.MongoClient,
 		flytura.DBName,
 		flytura.PurcharseRecordTableName,
 		request.Key,
@@ -594,15 +594,15 @@ func GetAllImportStatussHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Obter todos os usuários
-	purcharseRecordData, err := GetPurcharseRecord(client, flytura.DBName, flytura.StatusImportTableName)
+	purcharseRecordData, err := GetPurcharseRecord(db.MongoClient, flytura.DBName, flytura.StatusImportTableName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -630,12 +630,12 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprintf("erro ao conectar ao MongoDB: %v", err), http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Obter parâmetros da query string
 	query := r.URL.Query()
@@ -656,7 +656,7 @@ func GroupByCompanyNameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Chamada da função com filtros
-	purcharseRecordData, err := GroupByCompanyNameFiltered(client, flytura.DBName, flytura.PurcharseRecordTableName, startDate, endDate, statusParam, companyNameParam)
+	purcharseRecordData, err := GroupByCompanyNameFiltered(db.MongoClient, flytura.DBName, flytura.PurcharseRecordTableName, startDate, endDate, statusParam, companyNameParam)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("erro ao buscar usuários: %v", err), http.StatusInternalServerError)
 		return
@@ -678,12 +678,12 @@ Data Final da criação :  14/10/2025 22:12
 func GetPurcharseRecordStatusHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
 	// Extrair o ID da URL
 	companyCode := r.URL.Query().Get("companyCode")
@@ -705,15 +705,14 @@ func GetPurcharseRecordStatusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var error error
-	_, error = VerifyAccessValidTokenListSheet(client, flytura.DBName, flytura.TokenAccessTableName, token)
+	_, error = VerifyAccessValidTokenListSheet(db.MongoClient, flytura.DBName, flytura.TokenAccessTableName, token)
 	if error != nil {
 		http.Error(w, "Token inválido", http.StatusBadRequest)
-		log.Println("Token inválido", err)
 		return
 	}
 
 	// Buscar o usuário no banco de dados pelo ID
-	dataExcel, err := GetPurcharseRecordByStatus(client, flytura.DBName, flytura.PurcharseRecordTableName, companyCode, status)
+	dataExcel, err := GetPurcharseRecordByStatus(db.MongoClient, flytura.DBName, flytura.PurcharseRecordTableName, companyCode, status)
 	if err != nil {
 		http.Error(w, "Erro ao dados da planilha", http.StatusInternalServerError)
 		return
@@ -797,14 +796,16 @@ func UpdatePurcharseRecordMultipleHandler(w http.ResponseWriter, r *http.Request
 	fmt.Println("Header", records)
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection(flytura.PurcharseRecordTableName)
+	// collection := client.Database(flytura.DBName).Collection(flytura.PurcharseRecordTableName)
+
+	collection := db.MongoClient.Database(flytura.DBName).Collection(flytura.PurcharseRecordTableName)
 
 	token := r.Header.Get("token")
 
@@ -814,10 +815,10 @@ func UpdatePurcharseRecordMultipleHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	var error error
-	_, error = VerifyAccessValidTokenListSheet(client, flytura.DBName, flytura.TokenAccessTableName, token)
+	_, error = VerifyAccessValidTokenListSheet(db.MongoClient, flytura.DBName, flytura.TokenAccessTableName, token)
 	if error != nil {
 		http.Error(w, "Token inválido", http.StatusBadRequest)
-		log.Println("Token inválido", err)
+
 		return
 	}
 

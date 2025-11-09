@@ -9,6 +9,24 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var MongoClient *mongo.Client
+
+func ConnectGlobalMongoDB(uri string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	clienteOptions := options.Client().ApplyURI(uri)
+
+	client, err := mongo.Connect(ctx, clienteOptions)
+
+	if err != nil {
+		return fmt.Errorf("erro ao conectar com o MongoDB global %v", err)
+	}
+
+	MongoClient = client
+	return nil
+}
+
 func ConnectMongoDB(uri string) (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

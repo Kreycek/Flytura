@@ -29,15 +29,15 @@ func VerifyUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer db.CloseMongoDB(client)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
 
 	// Obter a coleção de usuários
-	collection := db.GetCollection(client, flytura.DBName, flytura.UserDBTableName)
+	collection := db.GetCollection(db.MongoClient, flytura.DBName, flytura.UserDBTableName)
 
 	filter := bson.D{
 		{Key: "$or", Value: bson.A{

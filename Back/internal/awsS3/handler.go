@@ -61,14 +61,14 @@ func UploadS3FilesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	clientDb, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
-		return
-	}
-	defer clientDb.Disconnect(context.Background())
+	// clientDb, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer clientDb.Disconnect(context.Background())
 
-	airLineData, errAirLineName := airLine.GetAirLineFileName(clientDb, flytura.DBName, "airline", companyCode)
+	airLineData, errAirLineName := airLine.GetAirLineFileName(db.MongoClient, flytura.DBName, "airline", companyCode)
 	if errAirLineName != nil {
 		log.Println("Erro ao obter nome do arquivo:", errAirLineName)
 	}
@@ -87,7 +87,7 @@ func UploadS3FilesHandler(w http.ResponseWriter, r *http.Request) {
 		ZipFileName:  "",
 	}
 
-	InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
+	InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
 
 	// Retornar resposta JSON
 	response := map[string]any{
@@ -195,14 +195,14 @@ func UploadS3FilesUnzipHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	clientDb, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
-		return
-	}
-	defer clientDb.Disconnect(context.Background())
+	// clientDb, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer clientDb.Disconnect(context.Background())
 
-	airLineData, errAirLineName := airLine.GetAirLineFileName(clientDb, flytura.DBName, "airline", companyCode)
+	airLineData, errAirLineName := airLine.GetAirLineFileName(db.MongoClient, flytura.DBName, "airline", companyCode)
 	if errAirLineName != nil {
 		log.Println("Erro ao obter nome do arquivo:", errAirLineName)
 	}
@@ -222,7 +222,7 @@ func UploadS3FilesUnzipHandler(w http.ResponseWriter, r *http.Request) {
 		ZipFileName:  zipFileName,
 	}
 
-	InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
+	InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
 
 	// Retornar resposta JSON
 	response := map[string]any{
@@ -344,14 +344,14 @@ func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) 
 			}
 		}
 
-		clientDb, err := db.ConnectMongoDB(flytura.ConectionString)
-		if err != nil {
-			fmt.Printf("Erro ao conectar ao MongoDB: %v\n", err)
-			continue
-		}
-		defer clientDb.Disconnect(context.Background())
+		// clientDb, err := db.ConnectMongoDB(flytura.ConectionString)
+		// if err != nil {
+		// 	fmt.Printf("Erro ao conectar ao MongoDB: %v\n", err)
+		// 	continue
+		// }
+		// defer clientDb.Disconnect(context.Background())
 
-		airLineData, errAirLineName := airLine.GetAirLineFileName(clientDb, flytura.DBName, "airline", companyCode)
+		airLineData, errAirLineName := airLine.GetAirLineFileName(db.MongoClient, flytura.DBName, "airline", companyCode)
 		if errAirLineName != nil {
 			fmt.Printf("Erro ao obter nome da companhia: %v\n", errAirLineName)
 			continue
@@ -372,7 +372,7 @@ func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) 
 			ZipFileName:  zipFileName,
 		}
 
-		InsertIMGS3(clientDb, flytura.DBName, "imagesDB", image)
+		InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
 		importedFiles = append(importedFiles, header.Filename)
 	}
 
@@ -411,12 +411,12 @@ func SearchS3ImagesDBPaginationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
 	// Definir estrutura para receber os parâmetros
 
@@ -476,7 +476,7 @@ func SearchS3ImagesDBPaginationHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Buscar imagens com paginação
 	imagesDb, total, err := SearchImagesDBPagination(
-		client,
+		db.MongoClient,
 		flytura.DBName,
 		flytura.ImagesDBTableName,
 		&companyCode,
@@ -529,12 +529,12 @@ func SearchS3ImagesDBFullHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	http.Error(w, "Erro ao conectar ao MongoDB", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
 	// Definir estrutura para receber os parâmetros
 
@@ -569,7 +569,7 @@ func SearchS3ImagesDBFullHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Buscar imagens com paginação
 	imagesDb, total, err := SearchImagesDBFull(
-		client,
+		db.MongoClient,
 		flytura.DBName,
 		flytura.ImagesDBTableName,
 		&companyCode,
@@ -640,16 +640,16 @@ func UpdateStatusS3ImageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB e atualizar o usuário
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
 
-		// http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// 	// http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
+	collection := db.MongoClient.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
 	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": data.ID}, update)
 	if err != nil {
 		flytura.FormataRetornoHTTP(w, "Erro ao atualizar dados da imagem", http.StatusInternalServerError)
@@ -714,14 +714,16 @@ func UpdateMultipleStatusS3ImagesHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Conectar ao MongoDB
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
+	// collection := client.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
+
+	collection := db.MongoClient.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
 
 	// Criar filtro e atualização
 	filter := bson.M{"_id": bson.M{"$in": objectIDs}}
@@ -811,16 +813,18 @@ func UpdateStatusPdfOrXmlHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Conectar ao MongoDB e atualizar o usuário
-	client, err := db.ConnectMongoDB(flytura.ConectionString)
-	if err != nil {
-		flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// client, err := db.ConnectMongoDB(flytura.ConectionString)
+	// if err != nil {
+	// 	flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
 
-		// http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-		return
-	}
-	defer client.Disconnect(context.Background())
+	// 	// http.Error(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
+	// 	return
+	// }
+	// defer client.Disconnect(context.Background())
 
-	collection := client.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
+	// collection := client.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
+
+	collection := db.MongoClient.Database(flytura.DBName).Collection(flytura.ImagesDBTableName)
 	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": data.ID}, update)
 	if err != nil {
 		flytura.FormataRetornoHTTP(w, "Erro ao atualizar dados da imagem", http.StatusInternalServerError)
