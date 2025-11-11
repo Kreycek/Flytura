@@ -54,7 +54,7 @@ func SearchOutPutInvoicesHandler(w http.ResponseWriter, r *http.Request) {
 	var _startDate *time.Time = nil
 	var _endDate *time.Time = nil
 
-	fmt.Println("Data 2", startDate)
+	// fmt.Println("Data 2", startDate)
 
 	if startDate != "" && endDate != "" {
 

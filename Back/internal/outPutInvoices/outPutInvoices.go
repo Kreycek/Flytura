@@ -38,12 +38,12 @@ func SearchOutPutInvoicesPagination(
 	if companyCode != nil && *companyCode != "" {
 		filter["companyCode"] = *companyCode
 	}
-	fmt.Println("page ", page)
-	fmt.Println("key ", *key)
-	fmt.Println("limit ", limit)
-	fmt.Println("startDate ", startDate)
-	fmt.Println("companyCode ", *companyCode)
-	fmt.Println("endDate ", endDate)
+	// fmt.Println("page ", page)
+	// fmt.Println("key ", *key)
+	// fmt.Println("limit ", limit)
+	// fmt.Println("startDate ", startDate)
+	// fmt.Println("companyCode ", *companyCode)
+	// fmt.Println("endDate ", endDate)
 
 	// fmt.Println("startDate", startDate)
 	// fmt.Println("endDate", endDate)
