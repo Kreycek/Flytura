@@ -12,6 +12,7 @@ import { PurcharseRecordComponent } from './modulos/companys/purcharseRecord/pur
 import { AddPurchaseRecordComponent } from './modulos/companys/add-purchase-record/add-purcharse-record.component';
 import { ModelsComponent } from './modulos/companys/models/models/models.component';
 import { InvoicesComponent } from './modulos/ferramentaGestao/invoices/invoices.component';
+import { OutPutInvoicesComponent } from './modulos/ferramentaGestao/out-put-invoices/out-put-invoices.component';
 
 export const routes: Routes = [
 
@@ -41,6 +42,10 @@ export const routes: Routes = [
                 path:'purcharseRecord',
                 component:PurcharseRecordComponent
             }, 
+            {
+                path:'outPutInvoices',
+                component:OutPutInvoicesComponent
+            },            
             {
                 path:'addPurchaseRecord',
                 component:AddPurchaseRecordComponent

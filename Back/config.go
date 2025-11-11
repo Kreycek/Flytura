@@ -2,6 +2,8 @@
 package flytura
 
 import (
+	"Flytura/internal/models"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -9,6 +11,8 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Variável global que contém a chave secreta para JWT
@@ -32,6 +36,7 @@ var StatusImportTableName = "statusImport"
 var PerfilTableName = "perfil"
 var ImagesDBTableName = "imagesDB"
 var Airline = "airline"
+var OutPutInvoices = "outPutInvoices"
 
 // var ConectionString = "mongodb://localhost:27017"
 
@@ -88,4 +93,47 @@ func FormataRetornoHTTPGeneric(w http.ResponseWriter, bodyName string, body any,
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(codHttp) // Código 200 OK
 	return json.NewEncoder(w).Encode(map[any]any{"users": body})
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 14/10/2025 22:24
+Data Final da criação :  14/10/2025 22:32
+*/
+func VerifyAccessValidTokenListSheet(client *mongo.Client, dbName, collectionName, token string) (map[string]any, error) {
+
+	collection := client.Database(dbName).Collection(collectionName)
+
+	// objectID, erroId := primitive.ObjectIDFromHex(excelId)
+	// if erroId != nil {
+	// 	log.Fatalf("Erro ao converter string para ObjectID: %v", erroId)
+	// }
+
+	filter := bson.M{
+		"token":  token,
+		"active": true,
+	}
+
+	// Variável para armazenar o usuário retornado
+	var tokenAccessSheet models.TokenAccessSheet
+
+	// Usar FindOne para pegar apenas um único registro
+	err := collection.FindOne(context.Background(), filter).Decode(&tokenAccessSheet)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("token não encontrado")
+		}
+		return nil, fmt.Errorf("erro ao buscar plano de contas: %v", err)
+	}
+
+	// Converter o _id para string
+
+	// Retornar o usuário como um mapa
+	_return := map[string]any{
+		"ID":   tokenAccessSheet.ID.Hex(), // Agora o campo ID é uma string
+		"Name": tokenAccessSheet.Name,
+		"Code": tokenAccessSheet.Token,
+	}
+
+	return _return, nil
 }

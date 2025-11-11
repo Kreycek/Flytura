@@ -40,10 +40,10 @@
         
     },
     "users":"Users",
-     "Management":"Management",
+    "Management":"Management",
     "DashBoard":"Dashboard",
-     "AirLineCompany":"Airline Company",
-     "DtStart":"Start date",
+    "AirLineCompany":"Airline Company",
+    "DtStart":"Start date",
     "DtEnd":"End date",
     "next":"Next",
     "before":"Before",
@@ -51,7 +51,7 @@
     "Key":"Key",
     "DtImport":"Import date",
     "putName":"Fill name",
-     "putLastName":"Enter last name",
+    "putLastName":"Enter last name",
     "putPassword":"Enter password",
     "confirmPassword":"Confirm password",
     "putPassaport":"Enter passaport",
@@ -89,7 +89,14 @@
     "sheetImportedAfter":"This spreadsheet has already been imported",
     "sheetEmpty":"The imported spreadsheet is empty",
     "sheetImportedProblemPart1":"Spreadsheet imported successfully but ",
-     "sheetImportedProblemPart2":" have blank keys "
+     "sheetImportedProblemPart2":" have blank keys ",
+     "report":"Report",
+     "total":"Total",
+     "subTotal":"Sub Total",
+     "otherValues":"Other values",
+    "DtProcess":"Processing Date",
+    "MonthProcess":"Processing Month",
+    "DtFly":"Flight date"
     
   }
 }

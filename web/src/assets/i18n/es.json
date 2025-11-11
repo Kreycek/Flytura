@@ -85,6 +85,13 @@
     "sheetImportedAfter":"Esta hoja de cálculo ya ha sido importada",
     "sheetEmpty":"La hoja de cálculo importada está vacía",
     "sheetImportedProblemPart1":"La hoja de cálculo se importó correctamente, pero ",
-     "sheetImportedProblemPart2":" tienen claves en blanco "
+    "sheetImportedProblemPart2":" tienen claves en blanco ",
+    "report":"Informe",
+     "total":"Total",
+     "subTotal":"Sub Total",
+     "otherValues":"Otros valores",
+    "DtProcess":"Fecha de procesamiento",
+    "MonthProcess":"Mes de procesamiento",
+    "DtFly":"Fecha de vuelo"
   }
 }

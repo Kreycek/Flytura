@@ -14,7 +14,7 @@ input[type="file"] {
 table.table-bordered th.fmtTableBorder {
     border-width: 1px; 
     border-bottom-color: #CED4DA;
-    font-size: 13px;
+    font-size: 9px;
 }
 
 /* Estilo do mat-datepicker quando aberto */

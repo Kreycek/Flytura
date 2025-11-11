@@ -8,11 +8,11 @@
           <i class="menu-arrow"></i>
         </a>
         <div class="collapse" id="UI5">
-          <ul class="nav flex-column sub-menu">
-           
-             <li class="nav-item"> <a class="nav-link" [ngClass]="{'menu-selected': selectedMenu === 'dashboard'}"  href="javascript:void(0)" (click)="navigateToPages('/aplicacao/center','dashboard')">{{ 'Ecra.DashBoard' | translate }}</a></li>            
-             <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" [ngClass]="{'menu-selected': selectedMenu === 'invoices'}" (click)="navigateToPages('/aplicacao/invoices','invoices')">{{ 'Ecra.invoices' | translate }}</a></li>            
+          <ul class="nav flex-column sub-menu">           
+            <li class="nav-item"> <a class="nav-link" [ngClass]="{'menu-selected': selectedMenu === 'dashboard'}"  href="javascript:void(0)" (click)="navigateToPages('/aplicacao/center','dashboard')">{{ 'Ecra.DashBoard' | translate }}</a></li>            
+            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" [ngClass]="{'menu-selected': selectedMenu === 'invoices'}" (click)="navigateToPages('/aplicacao/invoices','invoices')">{{ 'Ecra.invoices' | translate }}</a></li>            
             <li class="nav-item"> <a class="nav-link" href="javascript:void(0)"  [ngClass]="{'menu-selected': selectedMenu === 'usuario'}" (click)="navigateToPages('/aplicacao/usuario','usuario')">{{ 'Ecra.menu.management.users' | translate }}</a></li>            
+            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)"  [ngClass]="{'menu-selected': selectedMenu === 'report'}" (click)="navigateToPages('/aplicacao/outPutInvoices','report')">{{ 'Ecra.report' | translate }}</a></li>
           </ul>
         </div>
       </li>
@@ -24,7 +24,6 @@
         </a>
         <div class="collapse" id="UI6">
           <ul class="nav flex-column sub-menu">
-
             <li class="nav-item"> <a class="nav-link" [ngClass]="{'menu-selected': selectedMenu === 'purcharseRecord'}"  href="javascript:void(0)" (click)="navigateToPages('/aplicacao/purcharseRecord','purcharseRecord')">{{ 'Ecra.menu.account.purchaseRecord' | translate }}</a></li>            
           </ul>
         </div>

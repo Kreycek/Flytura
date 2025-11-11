@@ -5,6 +5,7 @@ import (
 	"Flytura/internal/auth"
 	"Flytura/internal/awsS3"
 	"Flytura/internal/db"
+	"Flytura/internal/outPutInvoices"
 	"Flytura/internal/purcharseRecord"
 	"context"
 	"fmt"
@@ -128,6 +129,15 @@ func main() {
 	*/
 	http.HandleFunc("/GetAllAirline", airLine.GetAllAirLineHandler)
 
+	//OUTPUTINVOICES
+	/*
+		Configuração criada por Ricardo Silva Ferreira
+		Inicio da criação 11/11/2025 11:50
+		Data Final da criação : 11/11/2025 11:55
+	*/
+
+	http.HandleFunc("/SearchOutPutInvoices", outPutInvoices.SearchOutPutInvoicesHandler)
+
 	//AMAZON S3f
 	/*
 		Configuração criada por Ricardo Silva Ferreira
@@ -146,6 +156,7 @@ func main() {
 	http.HandleFunc("/UploadS3Files", awsS3.UploadS3FilesHandler)
 	http.HandleFunc("/UploadS3FilesUnzip", awsS3.UploadS3FilesUnzipHandler)
 	http.HandleFunc("/UploadS3MultiplesFilesUnzip", awsS3.UploadS3MultiplesFilesUnzipHandler)
+	http.HandleFunc("/InsertOutPutInvoices", outPutInvoices.InsertOutPutInvoicesHandler)
 
 	//TESTE
 	http.HandleFunc("/teste", loginHandler)

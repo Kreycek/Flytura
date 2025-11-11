@@ -81,7 +81,14 @@
     "sheetImportedAfter":"Essa planilha já foi importada",
     "sheetEmpty":"A Planilha importada está vazia",
     "sheetImportedProblemPart1":"Planilha importada com sucesso porém ",
-     "sheetImportedProblemPart2":" estão com a chave em branco  "
+    "sheetImportedProblemPart2":" estão com a chave em branco  ",
+    "report":"Relatório",
+    "total":"Total",
+    "subTotal":"Sub Total",
+    "otherValues":"Outros valores",
+    "DtProcess":"Dt. Processamento",
+    "MonthProcess":"Mês de procesamento",
+    "DtFly":"Data do voo"
     
   }
 }
