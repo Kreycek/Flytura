@@ -1,0 +1,73 @@
+<app-modal-ok></app-modal-ok>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Flytura</title>
+
+  <style>
+   
+  </style>
+</head>
+<body>
+  <main>
+    <form (ngSubmit)="onLogin()">
+      <div class="container" id="container">
+        <div class="form-container sign-up-container" style="display: none;">
+         
+            <h1>Create Account</h1>
+            <div class="social-container">
+              <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+              <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <span>or use your email for registration</span>
+            <input type="text" placeholder="Name" />
+            <input type="email" placeholder="Email" />
+            <input type="password" placeholder="Password" />
+            <button>Sign Up</button>
+          
+        </div>
+        <div class="form-container sign-in-container" style="text-align: center;">
+         
+            <h3>Iniciar sesión</h3>
+            <p></p>
+            <div class="social-container" style="display: none;">
+              <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+              <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <span style="display: none;">or use your account</span>
+            <input type="email" [(ngModel)]="username" (keydown.space)="$event.preventDefault()" name="username" placeholder="Email" />
+            <input type="password" [(ngModel)]="password" (keydown.space)="$event.preventDefault()" name="password" placeholder="Password" />
+            <a href="#" style="display: none;">Esqueceu sua palavra chave?</a>
+            <button (click)="onLogin()">Iniciar sesión</button>
+          
+        </div>
+        <div class="overlay-container">
+          <div class="overlay">
+            <div class="overlay-panel overlay-left">
+              <h1>Flytura</h1>
+              <p>Flytura
+Para mantenerte conectado con nosotros, inicia sesión con tus datos personales.</p>
+              <button class="ghost" id="signIn" style="display: none;">Sign In</button>
+            </div>
+            <div class="overlay-panel overlay-right" style="display: none;">
+              <h1>Flytura</h1>
+              <p style="display: none;">Enter your personal details and start journey with us</p>
+              <button class="ghost" style="display: none;" [routerLink]="['/aplicacao']" id="signUp">Entrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </main>
+  <footer>
+    <p>
+      Created  by Flytura
+    
+    </p>
+  </footer>
+</body>
+</html>

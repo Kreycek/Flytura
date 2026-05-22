@@ -1,0 +1,36 @@
+<nav class="sidebar sidebar-offcanvas{{!activeMenu ? ' active' : ''}}" id="sidebar">
+    <ul class="nav">  
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#UI5" aria-expanded="false" aria-controls="UI5">
+          <i class="icon-columns menu-icon"></i>
+          <span class="menu-title">{{ 'Ecra.menu.management.management' | translate }}</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="UI5">
+          <ul class="nav flex-column sub-menu">           
+            <li class="nav-item"> <a class="nav-link" [ngClass]="{'menu-selected': selectedMenu === 'dashboard'}"  href="javascript:void(0)" (click)="navigateToPages('/aplicacao/center','dashboard')">{{ 'Ecra.DashBoard' | translate }}</a></li>            
+                        <li class="nav-item"> <a class="nav-link" [ngClass]="{'menu-selected': selectedMenu === 'section'}"  href="javascript:void(0)" (click)="navigateToPages('/aplicacao/section','section')">{{ 'Ecra.segment' | translate }}</a></li>    
+            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)" [ngClass]="{'menu-selected': selectedMenu === 'invoices'}" (click)="navigateToPages('/aplicacao/invoices','invoices')">{{ 'Ecra.invoices' | translate }}</a></li>            
+            <li class="nav-item" *ngIf="adm"> <a class="nav-link" href="javascript:void(0)"  [ngClass]="{'menu-selected': selectedMenu === 'usuario'}" (click)="navigateToPages('/aplicacao/usuario','usuario')">{{ 'Ecra.menu.management.users' | translate }}</a></li>            
+            <li class="nav-item"> <a class="nav-link" href="javascript:void(0)"  [ngClass]="{'menu-selected': selectedMenu === 'report'}" (click)="navigateToPages('/aplicacao/outPutInvoices','report')">{{ 'Ecra.report' | translate }}</a></li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#UI6" aria-expanded="false" aria-controls="UI6">
+          <i class="icon-columns menu-icon"></i>
+          <span class="menu-title">{{ 'Ecra.menu.account.account' | translate }}</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="UI6">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" [ngClass]="{'menu-selected': selectedMenu === 'purcharseRecord'}"  href="javascript:void(0)" (click)="navigateToPages('/aplicacao/purcharseRecord','purcharseRecord')">{{ 'Ecra.menu.account.purchaseRecord' | translate }}</a></li>            
+            <li class="nav-item"> <a class="nav-link" [ngClass]="{'menu-selected': selectedMenu === 'conciliation'}"  href="javascript:void(0)" (click)="navigateToPages('/aplicacao/conciliation','purcharseRecord')">{{ 'Ecra.menu.account.conciliation' | translate }}</a></li>            
+
+            
+          </ul>
+        </div>
+      </li>
+
+    </ul>
+  </nav>

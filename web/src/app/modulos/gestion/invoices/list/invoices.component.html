@@ -1,0 +1,167 @@
+<app-modal-ok></app-modal-ok>
+<app-modal-confirmation  #modal></app-modal-confirmation>
+<app-spinner [isLoading]="isLoading" ></app-spinner>
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+           <app-alert-more-columns [viewAlert]="viewMsgMoreColumns"></app-alert-more-columns>
+          <h4 class="card-title">{{ 'Ecra.invoices' | translate }}</h4>
+          <p class="card-description" style="display: none;"> Add class <code>.table-striped</code>
+          </p>
+   <div class="search-container" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+            <div class="row">             
+               <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                  <label for="searchKey" style="font-size: 12px">{{ 'Ecra.Key' | translate }}:</label>
+                  <input type="text" id="key" style="font-size: 12px" (keydown.space)="$event.preventDefault()" [(ngModel)]="searchKey" 
+                  class="form-control" placeholder="{{ 'Ecra.putKey' | translate }}">
+                </div>
+              </div>            
+         
+              <div class="col-lg-3 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                 
+                   <label for="searchRole" style="font-size: 12px">{{ 'Ecra.AirLineCompany' | translate }}:</label>
+                <select id="searchRole" [(ngModel)]="searchAirlineCode" class="form-select">
+                  <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>
+              
+                  <option *ngFor="let data of airLInes" [value]="data.code" style="font-size: 12px">{{data.name}}</option>
+                </select>
+                </div>
+            </div>
+
+              <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                     <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtStart' | translate }}:</label>
+                        <input 
+                              matInput [matDatepicker]="picker1" 
+                              placeholder="{{ 'Ecra.selectDate' | translate }}"
+                               class="form-control w-100"
+                               [(ngModel)]="searchAirlineDtInicio"
+                              (click)="picker1.open()">                        
+                              <mat-datepicker #picker1></mat-datepicker>
+
+                </div>
+            </div>
+              <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                  <div class="form-group">
+                      <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtEnd' | translate }}:</label>
+                          <input 
+                                matInput [matDatepicker]="picker2" 
+                                placeholder="{{ 'Ecra.selectDate' | translate }}"
+                                class="form-control w-100" [(ngModel)]="searchAirlineDtFim"
+                                (click)="picker2.open()">                        
+                                <mat-datepicker #picker2></mat-datepicker>
+                  </div>
+              </div>
+              <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div class="form-group">                    
+                   <label for="searchRole" style="font-size: 12px">{{ 'Ecra.billedFlytura' | translate }}:</label>
+                  
+                    <select id="searchRole" [(ngModel)]="searchBilledFlytura" class="form-select">                  
+                      <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>
+                      <option [value]="true" style="font-size: 12px">{{ 'Ecra.yes' | translate }}</option>
+                      <option [value]="false" style="font-size: 12px">{{ 'Ecra.no' | translate }}</option>
+                    </select>
+                </div>
+              </div>
+              <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div class="form-group">                    
+                   <label for="searchRole" style="font-size: 12px">{{ 'Ecra.doDonwload' | translate }} :</label>
+                  
+                    <select id="searchRole" [(ngModel)]="searchStatusDonwload" class="form-select">                  
+                      <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>
+                      <option [value]="true" style="font-size: 12px">{{ 'Ecra.yes' | translate }}</option>
+                      <option [value]="false" style="font-size: 12px">{{ 'Ecra.no' | translate }}</option>
+                    </select>
+                </div>
+              </div>
+              <div class="col-lg-2 col-md-12 text-md-right" style="text-align: left; margin-top: 27px;;">
+                <button style="font-size: 12px" class="btn btn-primary" (click)="search(1)">{{ 'Ecra.search' | translate }}</button>
+              </div>
+         
+            </div>
+   </div>
+
+     <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+          <table class="table table-bordered">
+            <thead> 
+               <tr>
+                <th class="fmtTableBorder" colspan="10" style="text-align: left;"> 
+                  <a href="javascript:void(0)"  (click)="donwloadAll();"> Download {{ 'Ecra.all' | translate }} </a>
+                 </th>  
+              </tr>
+              <tr>
+                  <td colspan="10" style="font-weight: bold; font-size: 14px; color: #ff0000;">{{ 'Ecra.recordFound' | translate }}: {{totalRegistros}}</td>
+              </tr>
+              <tr>
+                <th  class="fmtTableBorder"> {{ 'Ecra.Key' | translate }}</th>    
+                <th  class="fmtTableBorder"> {{ 'Ecra.fileName' | translate }}</th>    
+                <th  style="text-align: center;" class="fmtTableBorder">PDF</th>    
+                <th  style="text-align: center;" class="fmtTableBorder">XML</th>    
+                <th  style="text-align: center;" class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th>                                    
+                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.DtImport' | translate }} </th>   
+                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.billedFlytura' | translate }}</th>   
+                <th  style="text-align: center;" class="fmtTableBorder">  </th>   
+                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.doDonwload' | translate }}  </th>  
+                <th class="fmtTableBorder" *ngIf="this.adm"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of dados">     
+                 <td > {{item.Key}} </td>         
+                <td> {{item.PasteName}} </td>
+                 <td  style="text-align: center;"><a href="{{item.PDFFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'pdf')" target="_blank"> <img src="../../../../assets/images/PDFLogo.png"/></a> 
+                   @if(item.DownloadPDFDone) {
+                       <i class="mdi mdi-check"></i>
+                    }
+                </td>                
+                @if(item.XMLFileName) {
+                     <td  style="text-align: center;"><a href="{{item.XMLFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'xml')" target="_blank"> <img src="../../../../assets/images/XMLLogo.png"></a>                    
+                      @if(item.DownloadXMLDone) {
+                        <i class="mdi mdi-check"></i>
+                      }                 
+                    </td>
+                } @else {
+                    <td>
+                    </td>
+                }
+                <td  style="text-align: center;"> {{item.CompanyName}} </td>        
+                <td  style="text-align: center;"> {{item.DtImport | date:'dd/MM/YYYY HH:mm'}} </td>   
+                    <td  style="text-align: center;">  @if (item.BilledFlytura) {
+                     {{ 'Ecra.yes' | translate }} 
+                  }
+                  @else {
+                      {{ 'Ecra.no' | translate }} 
+                  } </td> 
+                <td style="text-align: center;"> 
+                   <a href="{{item.ZipFileName}}"  (click)="donwloadJustOne(item);">Download </a></td>  
+                 <td  style="text-align: center;"> 
+                  @if (item.DownloadDone) {
+                     {{ 'Ecra.yes' | translate }} 
+                  }
+                  @else {
+                      {{ 'Ecra.no' | translate }} 
+                  }
+                  
+                </td>        
+                 <td *ngIf="this.adm"> <i (click)="deleteItem(
+                                                                item.ID,
+                                                                item.FileName,
+                                                                this.moduloService.getFileNameS3(item.ZipFileName),
+                                                                this.moduloService.getFileNameS3(item.PDFFileName),
+                                                                this.moduloService.getFileNameS3(item.XMLFileName))" style="font-size: 20px; cursor: pointer; " 
+                 
+                    class="mdi mdi-delete-forever"></i></td>                     
+              </tr>             
+            </tbody>
+          </table>
+          <app-paginator
+          [totalPages]="totalPages"
+          [currentPage]="currentPage"          
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
+        </div>
+        </div>
+    </div>
+</div>

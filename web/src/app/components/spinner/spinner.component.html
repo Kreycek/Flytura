@@ -1,0 +1,13 @@
+
+<!-- overlay-processando.component.html -->
+<div class="overlay" *ngIf="isLoading" aria-hidden="false">
+  <div class="overlay-card" role="alert" aria-live="assertive" aria-label="Processando">
+    <div class="spinner-lg"></div>
+    <div class="overlay-text">Processando… aguarde</div>
+  </div>
+</div>
+
+<!-- Conteúdo da página -->
+<section class="page-content" [attr.aria-busy]="isLoading">
+  <!-- Seu conteúdo aqui -->
+</section>

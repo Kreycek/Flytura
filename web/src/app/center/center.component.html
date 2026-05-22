@@ -1,0 +1,26 @@
+
+<div class="col-lg-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Dashboard</h4>
+
+      <div id="geral">
+        <div class="grafProcessed">
+          <button class="btn btn-primary mb-2" (click)="toggleProcessed()">
+        {{ 'Ecra.graficProcessed' | translate }}
+      </button>
+      </div>
+        <div class="grafImportStatusData">
+      <button class="btn btn-primary mb-2" (click)="toggleImportaStatus()">
+       {{ 'Ecra.importedDataAndStatus' | translate }}
+      </button>
+      </div>
+      </div>
+
+    
+
+      <app-processed *ngIf="showProcessed"></app-processed>
+      <app-grafic-import-and-status *ngIf="showGraficDateImport"></app-grafic-import-and-status>
+    </div>
+  </div>
+</div>

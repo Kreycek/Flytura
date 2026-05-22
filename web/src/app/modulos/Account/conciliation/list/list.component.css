@@ -1,0 +1,133 @@
+
+table.table-bordered th.fmtTableBorder {
+    border-width: 1px; 
+    border-bottom-color: #CED4DA;
+    font-size: 13px;
+}
+
+table.table-bordered td {   
+    font-size: 12px;
+}
+
+/* Estilo do mat-datepicker quando aberto */
+::ng-deep .mat-datepicker-content {
+  background-color: #ffffff !important;  /* Fundo branco */
+  border-radius: 4px !important;  /* Bordas arredondadas */
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1) !important;  /* Sombra suave */
+  border: 1px solid #ccc !important;  /* Borda leve */
+}
+
+/* Estilo das opções do mat-datepicker */
+::ng-deep .mat-calendar-body-cell {
+  color: #333 !important;  /* Cor das células */
+  padding: 10px !important;  /* Preenchimento das células */
+}
+
+/* Estilo para as células selecionadas do mat-datepicker */
+::ng-deep .mat-calendar-body-selected {
+  background-color: #007bff !important;  /* Fundo azul para a data selecionada */
+  color: #fff !important;  /* Cor do texto da data selecionada */
+  border-radius: 50% !important;  /* Bordas arredondadas */
+}
+
+.scroll-top {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 5px;
+}
+
+
+
+/* Diminui o espaço entre as linhas */
+.search-container .row {
+  row-gap: 6px !important;   /* controla o espaçamento vertical */
+}
+
+/* Diminui o espaço entre campo e label */
+.search-container .form-group {
+  margin-bottom: 4px !important;
+}
+
+/* Deixa inputs mais baixos */
+.search-container input,
+.search-container select {
+  height: 32px !important;
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+}
+
+
+
+
+
+.actions-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+
+/* Botões */
+.action-btn {
+  flex: 0 0 auto;     /* <- ISSO É O QUE SALVA O TEXTO */
+  width: auto;        /* <- Evita esticar demais dentro da tabela */
+  padding: 8px 18px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap; /* <- NÃO deixa o texto quebrar/sumir */
+  
+}
+
+
+.action-btn-search {
+  flex: 0 0 auto;     /* <- ISSO É O QUE SALVA O TEXTO */
+  width: auto;        /* <- Evita esticar demais dentro da tabela */
+  padding: 8px 18px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap; /* <- NÃO deixa o texto quebrar/sumir */
+  
+}
+
+.add-btn {
+  background-color: #276E6E;
+  color: #fff;
+}
+
+.add-btn:hover {
+  background-color: #1f5959;
+}
+
+
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .actions-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-btn {
+    width: 25%;
+  }
+
+   .action-btn-search {
+    width: 100%;
+  }
+}

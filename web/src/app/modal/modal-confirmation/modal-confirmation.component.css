@@ -1,0 +1,74 @@
+/* Fundo escuro semi-transparente, mas menor */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.2); /* Mais transparente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* Caixa da modal com tamanho reduzido */
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px; /* Tamanho menor */
+    max-width: 80%; /* Para não ficar muito grande em telas pequenas */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  /* Título */
+  .modal-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  /* Botões */
+  .modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+  }
+  
+  .modal-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .modal-button.confirm {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .modal-button.cancel {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .modal-button:hover {
+    opacity: 0.8;
+  }
+  
+  /* Animação para suavizar a entrada */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

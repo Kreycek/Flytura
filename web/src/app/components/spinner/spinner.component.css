@@ -1,0 +1,47 @@
+
+/* overlay-processando.component.css */
+.overlay {
+  position: fixed;
+  inset: 0; /* top/right/bottom/left: 0 */
+  background: rgba(15, 23, 42, 0.35); /* semitransparente */
+  backdrop-filter: blur(1px);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.overlay-card {
+  background: #ffffff;
+  color: #1f2937;
+  min-width: 240px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.spinner-lg {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #0ea5e9; /* azul-ciano */
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.overlay-text {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Evitar scroll quando overlay ativo (aplique via classe no body se preferir) */
+body.overlay-active {
+  overflow: hidden;
+}

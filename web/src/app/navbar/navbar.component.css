@@ -1,0 +1,10 @@
+.nav-item.dropdown span {
+  white-space: nowrap; /* evita quebra dentro do span */
+}
+
+@media (max-width: 576px) {
+  .nav-item.dropdown {
+    flex-direction: column; /* empilha no mobile */
+    text-align: center;
+  }
+}

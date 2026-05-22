@@ -1,0 +1,53 @@
+1) Para start o container
+  1.1) docker run -d  --name clarion -p 27017:27017 -v clarionMongoDB:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=secret mongo:latest
+  1.2) caso o comando acima indique que ele já exista pode rodar o comando -> docker start clarion
+
+2) Cuidado com o caminho clarionMongoDB:/data/db, procure não trocar ou retirar a parte /data/db pois esse que o docker usa para gravar os dados do container
+
+3) Se quiser entrar diretamente no mongo DB via linha de comando digitar docker exec -it nomeContainer mongosh -u usuario -p senha
+
+4) Retirar um campo da estrutura mongoDB -> db.uscompanyer.updateMany({},{$unset: { "workNow": false } })
+
+5) Adicionar um campo da estrutura mongoDB -> db.company.updateMany({},{$set:{"workNow":false}})
+
+6) apaga o campo user quando o username for 'kreycek' -> db.usuarios.updateOne({ "username": "kreycek" },  { $unset: { "user": "" } })
+
+7) Inserir item db.user.insertOne({name:'Ricardo', lastName:'Silva Ferreira', email:'kreycek@gmail.com', user:'kreycek',passportNumber:'1234FVG', password:'$2a$10$.3BNGTrYkITOuIf7fKor0u1mUgskkHhOSEhz1EmAVv6hZ.Fq9W76S',perfil:[1,2,3],active:true})   
+
+8) Inserir vários registros ao mesmo tempo -> db.perfil.insertMany([{name:'Administrador',shortName:'Adm'},{name:'Usuário',shortName:'User'}, {name:'Contador',shortName:'Cont'}])
+
+9) Trazer numero de registros -> db.users.countDocuments({}) 
+
+10) Apagar todos os registros de uma coleção -> db.movement.deleteMany({})
+
+11) atualiza um campo especifico conforme uma condição  -> db.usuarios.updateOne({ "name": "Aero México" },{ $set: { "name": "AeroMéxico" } })
+
+12) Inserir compania aérea item 
+                  db.airline.insertOne({name:'Aeroméxico', code:'0001',fileName:'Aero-Mexico-0001', active:true, importSheetOnlyVerifyNumber: true,codeClient: "AM",qtdMinCharKey:13  }) 
+                  db.airline.insertOne({name:'Volaris', code:'0002',fileName:'Volaris-0002', active:true, importSheetOnlyVerifyNumber: false,codeClient: "Y4",qtdMinCharKey:0  }) 
+                  db.airline.insertOne({name:'Viva Aerobus', code:'0003',fileName:'VivaAerobus-0003', active:true, importSheetOnlyVerifyNumber: false,codeClient: "VB",qtdMinCharKey:0  }) 
+                  db.airline.insertOne({name:'American Airline', code:'0004',fileName:'American-Airline-0004', active:true, importSheetOnlyVerifyNumber: false,codeClient: "AA",qtdMinCharKey:0  }) 
+                  db.airline.insertOne({name:'Air Canada', code:'0005',fileName:'American-Canada-0005', active:true, importSheetOnlyVerifyNumber: false,codeClient: "",qtdMinCharKey:0  }) 
+                  db.airline.insertOne({name:'Delta Airline', code:'0006',fileName:'Delta-Airline-0006', active:true, importSheetOnlyVerifyNumber: false,codeClient: "DL",qtdMinCharKey:0  }) 
+                  db.airline.insertOne({name:'Copa Airlines', code:'0007',fileName:'Copa-0007', active:false, importSheetOnlyVerifyNumber: false,codeClient: "",qtdMinCharKey:0   }) 
+                  db.airline.insertOne({name:'Avianca', code:'0008',fileName:'Avianca-0008', active:false, importSheetOnlyVerifyNumber: false,codeClient: "",qtdMinCharKey:0   }) 
+                  db.airline.insertOne({name:'United Airlines', code:'0009',fileName:'UnitedAirlines-0009', active:false, importSheetOnlyVerifyNumber: false,codeClient: "UA",qtdMinCharKey:0  }) 
+
+13) Inserir import status
+                  db.statusImport.insertOne({name:'Fila', code:'0001' }) 
+                  db.statusImport.insertOne({name:'Erro', code:'0002' }) 
+                  db.statusImport.insertOne({name:'Concluído', code:'0003' }) 
+                  db.statusImport.insertOne({name:'Reserva cancelada', code:'0004' })
+                  db.statusImport.insertOne({name:'Fatura já emitida', code:'0005' })
+
+14) Apagar uma tabela do mongo db db.nomeDaColecao.drop();
+
+15) Excutar docker container  'docker start clarion'
+
+16) Entrar no container docker exec -it clarion mongosh -u admin -p secret
+
+17) Inserir import status
+                  db.tokenAccess.insertOne({name:'Fila', token:'XC45678@3TG34', active:true }) 
+                
+
+

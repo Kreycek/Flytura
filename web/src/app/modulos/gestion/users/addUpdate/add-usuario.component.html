@@ -1,0 +1,218 @@
+<app-modal-ok></app-modal-ok>
+<form [formGroup]="formulario" *ngIf="formulario">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">
+          
+          @if(idUser) {
+            {{ 'Ecra.edit' | translate }} {{ 'Ecra.UsuarioList.user' | translate }}
+          } @else {
+               {{ 'Ecra.new' | translate }}  {{ 'Ecra.UsuarioList.user' | translate }}
+          }
+          
+        </h4>
+        <p class="card-description" style="display: none;"> Basic form elements </p>
+      
+        <br>
+          <div class="form-group">
+            <label for="nome">{{ 'Ecra.activeUser' | translate }}<span class="required">*</span></label>
+            <input  type="checkbox"  formControlName="active" class="form-check-input">&nbsp;<label class="espacoLabel">Ativo</label>             
+          </div>          
+
+          <div class="form-group">
+            <label for="nome"> {{ 'Ecra.name' | translate }} <span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="nome"
+              id="nome"
+              (keydown.space)="$event.preventDefault()"
+              placeholder="{{ 'Ecra.putName' | translate }}"
+              [ngClass]="{'is-invalid': formulario.get('nome')?.invalid && formulario.get('nome')?.touched}"
+            />
+            <div class="invalid-feedback" *ngIf="formulario.get('nome')?.invalid && formulario.get('nome')?.touched">
+            {{ 'Ecra.UsuarioList.nameRequired' | translate }} 
+            </div>
+          </div>  
+          <div class="form-group">
+            <label for="sobrenome"> {{ 'Ecra.lastName' | translate }}  </label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="sobrenome"
+              id="sobrenome"
+              placeholder="{{ 'Ecra.putLastName' | translate }}"  
+              [ngClass]="{'is-invalid': formulario.get('sobrenome')?.invalid && formulario.get('sobrenome')?.touched}"           
+            />        
+          </div>  
+          <div class="form-group">
+            <label for="email">{{ 'Ecra.email' | translate }} <span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="email"
+              autocomplete="off" 
+              id="email"
+              (keydown.space)="$event.preventDefault()"
+               (blur)="fillUserName(formulario.get('email')?.value)"
+              placeholder="{{ 'Ecra.putEmail' | translate }}"
+              [ngClass]="{'is-invalid': formulario.get('email')?.invalid && formulario.get('email')?.touched}"
+            />
+            <div class="invalid-feedback" *ngIf="formulario.get('email')?.invalid && formulario.get('email')?.touched">
+               {{ 'Ecra.UsuarioList.emailValid' | translate }} 
+           
+            </div>
+          </div>
+           <div class="form-group">
+            <label for="userName">{{ 'Ecra.UsuarioList.userName' | translate }} <span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="userName"
+              autocomplete="off" 
+              id="userName"
+              (keydown.space)="$event.preventDefault()"            
+            
+              [ngClass]="{'is-invalid': formulario.get('userName')?.invalid && formulario.get('userName')?.touched}"
+            />
+           
+          </div>
+          <div class="form-group">
+            <label for="password">{{ 'Ecra.UsuarioList.password' | translate }} <span class="required">*</span></label>
+            <input
+              type="password"
+              class="form-control"
+              autocomplete="new-password"
+              formControlName="password"
+              id="password"
+              (keydown.space)="$event.preventDefault()"
+              placeholder="{{ 'Ecra.putPassword' | translate }}"
+              [ngClass]="{'is-invalid': formulario.get('password')?.invalid && formulario.get('password')?.touched}"  
+            />
+            <small *ngIf="formulario.get('password')?.invalid && formulario.get('password')?.touched" class="text-danger">
+                {{ 'Ecra.UsuarioList.passwordSixChar' | translate }} 
+           
+            </small>
+          </div>
+          <div class="form-group">
+            <label for="passwordConfirm">{{ 'Ecra.UsuarioList.passwordConfirm' | translate }}  <span class="required">*</span></label>
+            <input
+              type="password"
+              class="form-control"
+              autocomplete="new-password"
+              formControlName="passwordConfirm"
+              id="passwordConfirm"
+              (keydown.space)="$event.preventDefault()"
+              placeholder="{{ 'Ecra.confirmPassword' | translate }}"
+              [ngClass]="{'is-invalid': formulario.get('passwordConfirm')?.invalid && formulario.get('passwordConfirm')?.touched}"  
+            />
+            <div class="invalid-feedback" *ngIf="formulario.get('passwordConfirm')?.invalid && formulario.get('passwordConfirm')?.touched">
+             {{ 'Ecra.UsuarioList.passwordConfirm' | translate }} 
+            </div>
+            <small *ngIf="formulario.get('passwordConfirm')?.hasError('passwordsMismatch')" class="text-danger">
+              {{ 'Ecra.UsuarioList.passwordNotEqual' | translate }}
+            
+            </small>
+          </div>
+  
+          <div class="form-group">
+            <label for="passaporte">{{ 'Ecra.UsuarioList.passport' | translate }}</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="passaporte"
+              id="passaporte"
+              placeholder="{{ 'Ecra.putPassaport' | translate }}" />
+           
+          </div>
+          <div class="form-group">
+            <label for="telemovel">{{ 'Ecra.UsuarioList.mobile' | translate }}</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="mobile"
+              id="telemovel"
+              placeholder="{{ 'Ecra.putCelPhone' | translate }}"            
+            />           
+          </div> 
+      
+      </div>
+    </div>
+  </div>
+  
+  <!-- <div class="row d-flex"> -->
+
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">{{ 'Ecra.UsuarioList.profiles' | translate }} <span class="required">*</span></h4>                    
+
+          <ngContainer formArrayName="perfis">                     
+            <div class="form-group perfis-container">            
+              <div *ngFor="let perfil of perfisForm.controls; let i = index;let isLast = last ">
+                <ngContainer [formGroupName]="i">
+                    <input  type="checkbox"  formControlName="value" class="form-check-input">&nbsp;<label class="espacoLabel">{{ perfil.get("name")?.value }}</label> <span  *ngIf="!isLast">/</span>
+                  </ngContainer>
+              </div> 
+            </div> 
+          </ngContainer>
+          <div *ngIf="formulario.get('perfis')?.hasError('perfilNaoSelecionado') && formulario.get('perfis')?.touched">
+            <p style="color: red;">Por favor, selecione ao menos um perfil.</p>
+          </div>          
+        </div>
+      </div>
+    </div>             
+    <div class="col-12 grid-margin" style="display: none;">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Documentos</h4>                     
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group row"> 
+                  <div class="col-sm-9">                            
+                    <div style="width: 100%;" style="margin-bottom: 10px;"> Tipo</div>
+                    <select class="form-select">
+                      <option value="1">NIF</option>
+                      <option value="2">CNPJ</option>
+                    </select>
+                  </div>                          
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group row">  
+                  <div class="col-sm-9">
+                    <div style="width: 100%;" style="margin-bottom: 10px;"> País</div>
+                    <select class="form-select">
+                      <option value="1">Brasil</option>
+                      <option value="2">Portugal</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group row">
+                  <div class="col-sm-12">
+                    <div style="width: 100%;" style="margin-bottom: 10px;"> Documento</div>                             
+                    <input type="text" class="form-control" maxlength="22" />
+                  </div>
+                </div>
+              </div>                       
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <div style="float: none;">
+            <button type="submit" class="btn btn-primary me-2" [disabled]="formulario.invalid" (click)="gravar()">{{ 'Ecra.save' | translate }}</button>
+            <button class="btn btn-light" (click)="cancel()">{{ 'Ecra.cancel' | translate }}</button>
+          </div> 
+        </div>
+      </div>
+    </div>
+             
+            <!-- </div> -->
+</form>

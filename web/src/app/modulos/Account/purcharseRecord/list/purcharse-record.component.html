@@ -1,0 +1,268 @@
+
+<app-modal-ok></app-modal-ok>
+<app-models></app-models>
+<app-modal-msgs></app-modal-msgs>
+<app-modal-confirmation  #modal></app-modal-confirmation>
+<app-spinner [isLoading]="isLoading" ></app-spinner>
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+
+      <app-alert-more-columns [viewAlert]="false"></app-alert-more-columns>
+
+
+        <div class="card-body">
+          <h4 class="card-title">{{ 'Ecra.menu.account.purchaseRecord' | translate }}</h4>
+          <p class="card-description" style="display: none;"> Add class <code>.table-striped</code>
+          </p>
+
+          <div class="search-container" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px; ;;">
+            <div class="row">
+              <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                  <label for="searchKey" style="font-size: 12px">{{ 'Ecra.Key' | translate }}:</label>
+                  <input type="text" 
+                          id="key" 
+                          (keydown.space)="$event.preventDefault()" 
+                          (input)="verifyFieldsSearchFill()" 
+                          style="font-size: 12px" 
+                          [(ngModel)]="searchKey" 
+                          class="form-control" 
+                          placeholder="{{ 'Ecra.putKey' | translate }}">
+                </div>
+              </div>
+            
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12" >
+              <div class="form-group">
+                <label for="searchName" style="font-size: 12px">{{ 'Ecra.name' | translate }}:</label>
+                <input 
+                        type="text" 
+                        style="font-size: 12px"  
+                        maxlength="100" 
+                        id="searchName" 
+                         (input)="verifyFieldsSearchFill()" 
+                        [(ngModel)]="searchName" 
+                        class="form-control" 
+                        placeholder="{{ 'Ecra.putName' | translate }} ">
+              </div>
+            </div>
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                  <label for="searchLasName" style="font-size: 12px">{{ 'Ecra.lastName' | translate }}:</label>
+                  <input 
+                  type="text" 
+                  id="searchLastName" 
+                  style="font-size: 12px" 
+                  [(ngModel)]="searchLastName"
+                   (input)="verifyFieldsSearchFill()" 
+                  maxlength="100" 
+                  class="form-control" 
+                  placeholder="{{ 'Ecra.putLastName' | translate }} ">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">                 
+                  <label for="searchRole" style="font-size: 12px">{{ 'Ecra.AirLineCompany' | translate }}:</label>
+                  <select id="searchRole" (change)="verifyFieldsSearchFill()" [(ngModel)]="searchAirlineCode" class="form-select">
+                    <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>                  
+                    <option *ngFor="let data of airLInes" [value]="data.code" style="font-size: 12px">{{data.name}}</option>
+                  </select>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                    <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtStart' | translate }}:</label>
+                    <input 
+                        matInput [matDatepicker]="picker1" 
+                        placeholder="{{ 'Ecra.selectDate' | translate }}"
+                        class="form-control w-100"
+                        [(ngModel)]="searchAirlineDtInicio"
+                        (dateChange)="verifyFieldsSearchFill()"
+                        (click)="picker1.open()">                        
+                    <mat-datepicker #picker1></mat-datepicker>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                     <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtEnd' | translate }}:</label>
+                     <input 
+                        matInput 
+                        [matDatepicker]="picker2" 
+                        placeholder="{{ 'Ecra.selectDate' | translate }}"
+                        class="form-control w-100"
+                       (dateChange)="verifyFieldsSearchFill()"
+                        [(ngModel)]="searchAirlineDtFim"
+                        (click)="picker2.open()">                        
+                        <mat-datepicker #picker2></mat-datepicker>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">                 
+                  <label for="searchRole" style="font-size: 12px">{{ 'Ecra.Status' | translate }}:</label>
+                  <select id="searchRole" (change)="verifyFieldsSearchFill()" [(ngModel)]="searchStatus" class="form-select">
+                    <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>                  
+                    <option *ngFor="let data of statusImportData" [value]="data.name" style="font-size: 12px">{{data.name}}</option>
+                  </select>
+                </div>
+            </div>
+            @if (1!=1){
+                <div class="col-lg-2 col-md-5 col-sm-6 col-12" >
+                  <div class="form-group">
+                    <label for="statusMessage" style="font-size: 12px">{{ 'Ecra.statusMessage' | translate }}:</label>
+                    <input type="text" style="font-size: 12px" maxlength="50" id="statusMessage" [(ngModel)]="statusMessage" class="form-control" 
+                  >
+                  </div>
+                </div>
+            }
+
+             <div class="col-lg-10 col-md-5 col-sm-6 col-12" style="padding-top: 20px;" >
+            <div class="actions-container">
+          
+              <button style="font-size: 12px" class="action-btn-search add-btn"(click)="searchPurcharseRecord(1)">{{ 'Ecra.search' | translate }}</button>
+                 
+           
+                 <button class="action-btn-search add-btn" (click)="clearSearchFields();">                    
+                    {{ 'Ecra.clearFieldsSearch' | translate }}
+                </button>              
+            
+            
+               <button (click)="openModels();" class="action-btn-search add-btn blink-link" style="color:rgb(255, 255, 255)"   (click)="clearSearchFields();">                    
+                  {{ 'Ecra.donwloadSheet' | translate }}
+               </button>           
+            </div>
+            </div>
+            </div>           
+        </div>
+          
+        <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+          <table class="table table-bordered">
+            <thead>                          
+              <tr>
+                <th colspan="10" style="text-align: left;" >    
+                
+                  <div class="actions-container">
+                      <!-- Botão de selecionar Excel -->
+                      <button class="action-btn excel-btn" (click)="fileInput.click()">
+                        <span class="icon">⬆️</span>
+                        {{ 'Ecra.selectPlanSheet' | translate }}
+                      </button>
+
+                        <input 
+                          type="file" 
+                          #fileInput 
+                          (change)="onFileSelected($event)" 
+                          accept=".xlsx,.xls,.csv"
+                          hidden
+                        />
+
+                      <!-- Botão inserir registro manual -->
+                      <button class="action-btn add-btn" (click)="addPurcharseRecord()">
+                        <span class="icon">➕</span>
+                        {{ 'Ecra.insertManualRegister' | translate }}
+                      </button>
+
+                         <!-- GErar relatório excel -->
+                      <button 
+                            class="action-btn add-btn" 
+                            title="{{!fillOneFilter ? ('Ecra.fillOneFilter' | translate) : ''}}" 
+                            [disabled]="!fillOneFilter" 
+                            (click)="generateReportExcel()">
+                            <span class="icon">📊</span>
+                            {{ 'Ecra.generateReport' | translate }}
+                      </button>
+
+                    </div>
+
+               </th>                         
+              </tr> 
+              <tr>
+                <td colspan="10" style="font-weight: bold; font-size: 14px; color: #ff0000;">{{ 'Ecra.recordFound' | translate }}: {{totalRegistros}}</td>
+              </tr>             
+              <tr>
+                <th class="fmtTableBorder"> {{ 'Ecra.Key' | translate }} </th>              
+                 <th class="fmtTableBorder"> {{ 'Ecra.emissionDate' | translate }} </th>         
+                <th class="fmtTableBorder"> {{ 'Ecra.name' | translate }} </th>            
+                <th class="fmtTableBorder"> {{ 'Ecra.lastName' | translate }}</th>   
+                <th class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th> 
+                <th class="fmtTableBorder"> {{ 'Ecra.DtImport' | translate }} </th>   
+                  <th class="fmtTableBorder"> {{ 'Ecra.GO' | translate }} /  {{ 'Ecra.BACK' | translate }}</th>   
+                 <th class="fmtTableBorder" style="text-align: center;"> {{ 'Ecra.Status' | translate }}</th>      
+                <th class="fmtTableBorder" style="text-align: center;"> {{ 'Ecra.edit' | translate }} </th> 
+                 <th class="fmtTableBorder" *ngIf="adm" style="text-align: center;"> {{ 'Ecra.delete' | translate }} </th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of dados">              
+                <td> {{item.Key}} </td>
+                 <td> 
+                  @if( moduloService.isValidDate(item.EmissionDate)) {
+                      {{item.EmissionDate  | date:'dd/MM/YYYY':'UTC'}}
+                  }
+                 </td>
+                <td> {{item.Name}} </td>
+                <td> {{item.LastName}} </td>
+                <td> {{item.CompanyName}} </td>
+                <td> {{item.DtImportacao | date:'dd/MM/YYYY HH:mm'}} </td>              
+                <td> {{ ('Ecra.' +   item.DirectionOfDestination) | translate }}  </td>       
+                <td style="position: relative; z-index: 100; text-align: center;" 
+                      (mousemove)="mousemoveHandler($event, item, item.Status=='Erro', item.MessageReturn)" 
+                      (mouseleave)="hideCustomTooltip()">    
+                      <span [ngStyle]="{'color': item.Status=='Erro' ? 'red': '',  'cursor': item.Status=='Erro' ? 'pointer' : '' }">{{item.Status}}</span>
+                      <!-- Tooltip global -->
+                      <div *ngIf="tooltip.visible"
+                          [ngStyle]="{
+                            position: 'fixed',
+                            top: tooltip.top + 'px',
+                            left: tooltip.left + 'px',
+                            backgroundColor: '#333',
+                            color: '#fff',
+                            padding: '5px 10px',
+                            borderRadius: '5px',
+                            fontSize: '12px',
+                            whiteSpace: 'normal',
+                            maxWidth: tooltip.maxWidth,
+                            zIndex: 9999,
+                            boxShadow: '0px 2px 6px rgba(0,0,0,0.3)'
+                          }">
+                        {{tooltip.text}}
+                      </div>
+                </td>
+                <td style="text-align: center;">   
+               
+                  <i *ngIf="
+                    item.Status=='Erro' || 
+                    item.Status=='Fila' || 
+                    item.Status.toLowerCase()=='reserva cancelada'|| 
+                    item.Status.toLowerCase()=='fatura já emitida'|| 
+                    item.Status.toLowerCase()=='dados incorretos'" 
+                    (click)="updatePurcharseRecord(item.ID)" 
+                    style="font-size: 20px; cursor: pointer; " 
+                  title="{{ 'Ecra.edit' | translate }}" 
+                  class="mdi mdi-table-edit"></i>                
+                </td>      
+                
+                 <td style="text-align: center;" *ngIf="adm">                                        
+                  <i *ngIf="item.Status=='Erro' || 
+                    item.Status=='Fila' || 
+                    item.Status.toLowerCase()=='reserva cancelada'|| 
+                    item.Status.toLowerCase()=='fatura já emitida'|| 
+                    item.Status.toLowerCase()=='dados incorretos'" 
+                    (click)="deleteItem(item.ID)" 
+                    style="font-size: 20px; cursor: pointer; " 
+                  title="{{ 'Ecra.delete' | translate }}" 
+                  class="mdi mdi-delete-forever"></i>                
+                </td>      
+              </tr>             
+            </tbody>
+          </table>
+          <app-paginator
+          [totalPages]="totalPages"
+          [currentPage]="currentPage"          
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
+        </div>
+        </div>      
+
+    </div>
+  </div>
+  

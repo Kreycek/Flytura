@@ -1,0 +1,184 @@
+
+<app-modal-ok></app-modal-ok>
+<app-modal-confirmation  #modal></app-modal-confirmation>
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+
+           <app-alert-more-columns [viewAlert]="false"></app-alert-more-columns>
+          <h4 class="card-title">{{ 'Ecra.menu.account.conciliation' | translate }}</h4>
+          <p class="card-description" style="display: none;"> Add class <code>.table-striped</code>
+          </p>
+   <div class="search-container" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+            <div class="row">             
+              
+           
+              <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                     <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtStart' | translate }}:</label>
+                        <input 
+                              matInput [matDatepicker]="picker1" 
+                              placeholder="{{ 'Ecra.selectDate' | translate }}"
+                              class="form-control w-100"
+                              [(ngModel)]="searchDtInicio"
+                               (dateChange)="verifyFieldsSearchFill()"
+                              (click)="picker1.open()">                        
+                              <mat-datepicker #picker1></mat-datepicker>
+
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                     <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtEnd' | translate }}:</label>
+                        <input 
+                              matInput [matDatepicker]="picker2" 
+                              placeholder="{{ 'Ecra.selectDate' | translate }}"
+                              class="form-control w-100"
+                              [(ngModel)]="searchDtFim"
+                               (dateChange)="verifyFieldsSearchFill()"
+                              (click)="picker2.open()">                        
+                              <mat-datepicker #picker2></mat-datepicker>
+
+                </div>
+            </div>
+
+             <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                  <label for="searchOriginLocator" style="font-size: 12px">{{ 'Ecra.originLocator' | translate }}:</label>
+                  <input type="text"  (input)="verifyFieldsSearchFill()"  id="searchOriginLocator" style="font-size: 12px" (keydown.space)="$event.preventDefault()" [(ngModel)]="searchOriginLocator" 
+                  class="form-control" placeholder="{{ 'Ecra.originLocator' | translate }}">
+                </div>
+              </div>
+
+               <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                  <label for="searchReturnLocator" style="font-size: 12px">{{ 'Ecra.returnLocator' | translate }}:</label>
+                  <input type="text"  (input)="verifyFieldsSearchFill()"  id="searchReturnLocator" style="font-size: 12px" (keydown.space)="$event.preventDefault()" [(ngModel)]="searchReturnLocator" 
+                  class="form-control" placeholder="{{ 'Ecra.returnLocator' | translate }}">
+                </div>
+              </div>
+
+               <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                  <label for="searchOriginETicket" style="font-size: 12px">{{ 'Ecra.originETicket' | translate }}:</label>
+                  <input type="text"  (input)="verifyFieldsSearchFill()"  id="searchOriginETicket" style="font-size: 12px" (keydown.space)="$event.preventDefault()" [(ngModel)]="searchOriginETicket" 
+                  class="form-control" placeholder="{{ 'Ecra.originETicket' | translate }}">
+                </div>
+              </div>
+            
+                <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                  <label for="searchReturnETicket" style="font-size: 12px">{{ 'Ecra.returnETicket' | translate }}:</label>
+                  <input type="text"  (input)="verifyFieldsSearchFill()"  id="searchReturnETicket" style="font-size: 12px" (keydown.space)="$event.preventDefault()" [(ngModel)]="searchReturnETicket" 
+                  class="form-control" placeholder="{{ 'Ecra.returnETicket' | translate }}">
+                </div>
+              </div>
+
+             <div class="col-lg-3 col-md-12 text-md-right" style="text-align: left; margin-top: 20px;;">
+              <div class="actions-container">
+              <button style="font-size: 12px" class="action-btn-search add-btn" (click)="search(1)">{{ 'Ecra.search' | translate }}</button>
+
+                   <!-- GErar relatório excel -->
+                      <button 
+                          class="action-btn-search add-btn" 
+                          title="{{!fillOneFilter ? ('Ecra.fillOneFilter' | translate) : ''}}" 
+                          [disabled]="!fillOneFilter" 
+                          (click)="generateReportExcel()">
+                          <span class="icon">📊</span>
+                          {{ 'Ecra.generateReport' | translate }}
+                      </button>
+              </div>
+            </div>
+         
+            </div>
+   </div>
+
+   
+  
+
+     <div #scrollBottom class="table-responsive scroll-bottom" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+          <table class="table table-bordered"  style="min-width: 2000px;">
+            <thead>    
+               <tr>
+                <td colspan="22ls
+                " style="font-weight: bold; font-size: 14px; color: #ff0000;">{{ 'Ecra.recordFound' | translate }}: {{totalRegistros}}</td>
+              </tr>           
+              <tr>
+                <th class="fmtTableBorder"> {{ 'Ecra.protocol' | translate }}</th>    
+                <th class="fmtTableBorder"> {{ 'Ecra.emissionDate' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.originDate' | translate }}</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.returnDate' | translate }}</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.originLocator' | translate }}</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.returnLocator' | translate }}</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.originETicket' | translate }}</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.returnETicket' | translate }}</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.originAirline' | translate }}</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.returnAirline' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.travaler' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.travalerName' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.travalerLastName' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.bookingStatus' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.bookingStatusOld' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.CancelledReason' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.ReturnCancelledReason' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.CurrencyCode' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.AmountOrigin' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.AmountReturn' | translate }}</th>              
+                <th class="CustomerImportDate">{{ 'Ecra.CustomerImportDate' | translate }}</th>
+                <th class="CustomerImportDate">{{ 'Ecra.ServerImportDate' | translate }}</th>
+              
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of conciliation">     
+                 <td> {{item.Protocol}} </td>         
+                 <td style="text-align: center;"> {{item.EmissionDate | date:'dd/MM/yyyy HH:mm':'UTC'}} </td>
+                 <td style="text-align: center;"> 
+                    @if( moduloService.isValidDate(item.EmissionDate)) {
+                        {{item.OriginDate  | date:'dd/MM/YYYY':'UTC'}}
+                    }                
+                </td>
+
+                 <td style="text-align: center;"> 
+                    @if( moduloService.isValidDate(item.ReturnDate)) {
+                        {{item.ReturnDate  | date:'dd/MM/YYYY':'UTC'}}
+                    }                
+                </td>
+                <td style="text-align: center;"> {{item.OriginLocator}} </td>
+                <td style="text-align: center;"> {{item.ReturnLocator}} </td> 
+                <td style="text-align: center;"> {{item.OriginETicket}} </td>
+                <td style="text-align: center;"> {{item.ReturnETicket}} </td>       
+                <td style="text-align: center;"> {{item.OriginAirline}} </td>       
+                <td style="text-align: center;"> {{item.ReturnAirline}} </td>
+                <td style="text-align: center;"> {{item.TravelerName}} </td>
+                <td style="text-align: center;"> {{item.TravelerFirstName}} </td>
+                <td style="text-align: center;"> {{item.TravelerLastName}} </td>       
+                <td style="text-align: center;"> {{item.BookingStatus}} </td>
+                <td style="text-align: center;"> {{item.BookingStatusOld}} </td>
+                <td style="text-align: center;"> {{item.OriginCancelledReason}} </td>
+                <td style="text-align: center;"> {{item.ReturnCancelledReason}} </td>
+                <td style="text-align: center;"> {{item.CurrencyCode}} </td>
+                <td style="text-align: center;">{{ item.AmountOrigin | number:'1.2-2':'pt' }} </td>
+                <td style="text-align: center;">{{item.AmountReturn  | number:'1.2-2':'pt'}} </td>                
+                 <td style="text-align: center;"> 
+                    @if( moduloService.isValidDate(item.CreatedAtLocalCountry)) {
+                        {{item.CreatedAtLocalCountry  | date:'dd/MM/YYYY':'UTC'}}
+                    }                
+                </td>
+                 <td style="text-align: center;"> 
+                    @if( moduloService.isValidDate(item.CreatedAtContractedCountry)) {
+                        {{item.CreatedAtContractedCountry  | date:'dd/MM/YYYY':'UTC'}}
+                    }                
+                </td>
+              </tr>             
+            </tbody>
+          </table>
+          <app-paginator
+          [totalPages]="totalPages"
+          [currentPage]="currentPage"          
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
+        </div>
+        </div>
+    </div>
+</div>

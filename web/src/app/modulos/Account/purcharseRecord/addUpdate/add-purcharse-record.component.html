@@ -1,0 +1,100 @@
+<app-modal-ok></app-modal-ok>  
+<form [formGroup]="formulario" *ngIf="formulario">
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">
+          @if (id) {
+             {{ 'Ecra.edit' | translate }}
+          }   
+          @else {
+             {{ 'Ecra.new' | translate }}            
+          }
+          {{ 'Ecra.purchaseRecord' | translate }}          
+        </h4>
+        <p class="card-description" style="display: none;"> Basic form elements </p>        
+        <br>
+          <div class="form-group" style="display: none;">
+            <label for="nome"> {{ 'Ecra.active' | translate }}? <span class="required">*</span></label>
+            <input  type="checkbox"  formControlName="active" class="form-check-input">            
+          </div>
+           <div class="form-group">
+            <label for="AirLineCompany"> {{ 'Ecra.AirLineCompany' | translate }} <span class="required">*</span></label>
+              <select 
+                id="companyCode" 
+                formControlName="companyCode" 
+                class="form-select"             
+                [ngClass]="{'is-invalid': formulario.get('companyCode')?.invalid && formulario.get('companyCode')?.touched}">              
+                    <option value="" style="font-size: 12px">{{ 'Ecra.selected' | translate }}</option>
+                    <option *ngFor="let data of airLInes" [value]="data.code" style="font-size: 12px">{{data.name}}</option>
+              </select>
+            <div class="invalid-feedback" *ngIf="formulario.get('companyCode')?.invalid && formulario.get('companyCode')?.touched">
+           {{ 'Ecra.requiredFieldAirLineCompany' | translate }} 
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Key"> {{ 'Ecra.Key' | translate }} <span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="key"
+              id="key"
+              (keydown.space)="$event.preventDefault()"
+              placeholder="{{ 'Ecra.putKey' | translate }}"
+              [ngClass]="{'is-invalid': formulario.get('key')?.invalid && formulario.get('key')?.touched}"
+            />
+            <div class="invalid-feedback" *ngIf="formulario.get('key')?.invalid && formulario.get('key')?.touched">
+            {{ 'Ecra.requiredFieldKey' | translate }}
+            </div>
+          </div>  
+          <div class="form-group">
+            <label for="name">{{ 'Ecra.name' | translate }} <span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              id="name"
+              placeholder="{{ 'Ecra.putName' | translate }} "   
+              [ngClass]="{'is-invalid': formulario.get('name')?.invalid && formulario.get('name')?.touched}"/>
+              <div class="invalid-feedback" *ngIf="formulario.get('name')?.invalid && formulario.get('name')?.touched">
+                {{ 'Ecra.requiredFieldName' | translate }}
+              </div>
+          </div>
+          <div class="form-group">
+              <label for="lastName">{{ 'Ecra.lastName' | translate }}<span class="required">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="lastName"
+                id="lastName"
+                placeholder="{{ 'Ecra.putLastName' | translate }}"   
+                [ngClass]="{'is-invalid': formulario.get('lastName')?.invalid && formulario.get('lastName')?.touched}"          
+              />
+              <div class="invalid-feedback" *ngIf="formulario.get('lastName')?.invalid && formulario.get('lastName')?.touched">
+                {{ 'Ecra.requiredFieldLastName' | translate }}
+              </div>
+          </div>       
+          
+           <div class="form-group">
+              <label for="lastName">{{ 'Ecra.Status' | translate }}<span class="required">*</span></label>
+             <select id="searchRole"  formControlName="status" class="form-select">
+                              
+                    <option *ngFor="let data of statusImportData" [value]="data.code" style="font-size: 12px">{{data.name}}</option>
+                  </select>
+                </div>       
+
+
+      </div>
+    </div>
+  </div>
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <div style="float: none;">
+            <button type="submit" class="btn btn-primary me-2" (click)="gravar()">{{ 'Ecra.save' | translate }}</button>
+            <button class="btn btn-light" (click)="cancel()">{{ 'Ecra.cancel' | translate }}</button>
+          </div> 
+        </div>
+      </div>
+    </div>
+</form>

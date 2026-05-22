@@ -1,0 +1,4 @@
+
+1) Instalando o Delve para debugar 
+        go install github.com/go-delve/delve/cmd/dlv@latest
+2) BigQuery instalar as variáveis de ambiente, o arquivo de configuração está em /home/ec2-user/onflyConciliationBigQueryConfig.json

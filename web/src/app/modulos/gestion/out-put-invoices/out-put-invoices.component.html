@@ -1,0 +1,149 @@
+
+<app-modal-ok></app-modal-ok>
+<app-modal-confirmation  #modal></app-modal-confirmation>
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+
+           <app-alert-more-columns [viewAlert]="false"></app-alert-more-columns>
+          <h4 class="card-title">{{ 'Ecra.report' | translate }}</h4>
+          <p class="card-description" style="display: none;"> Add class <code>.table-striped</code>
+          </p>
+   <div class="search-container" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+            <div class="row">             
+              
+            <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div class="form-group">
+                  <label for="searchKey" style="font-size: 12px">{{ 'Ecra.Key' | translate }}:</label>
+                  <input type="text"  (input)="verifyFieldsSearchFill()"  id="key" style="font-size: 12px" (keydown.space)="$event.preventDefault()" [(ngModel)]="searchKeyCode" 
+                  class="form-control" placeholder="{{ 'Ecra.putKey' | translate }}">
+                </div>
+              </div>
+              <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                 
+                   <label for="searchRole" style="font-size: 12px">{{ 'Ecra.AirLineCompany' | translate }}:</label>
+                <select (change)="verifyFieldsSearchFill()" id="searchRole" [(ngModel)]="searchCompanyCode" class="form-select">
+                  <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>
+              
+                  <option *ngFor="let data of airLines" [value]="data.code" style="font-size: 12px">{{data.name}}</option>
+                </select>
+                </div>
+            </div>
+
+              <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                     <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtStart' | translate }}:</label>
+                        <input 
+                              matInput [matDatepicker]="picker1" 
+                              placeholder="{{ 'Ecra.selectDate' | translate }}"
+                              class="form-control w-100"
+                              [(ngModel)]="searchDtInicio"
+                               (dateChange)="verifyFieldsSearchFill()"
+                              (click)="picker1.open()">                        
+                              <mat-datepicker #picker1></mat-datepicker>
+
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-5 col-sm-6 col-12">
+                <div class="form-group">
+                     <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtEnd' | translate }}:</label>
+                        <input 
+                              matInput [matDatepicker]="picker2" 
+                              placeholder="{{ 'Ecra.selectDate' | translate }}"
+                              class="form-control w-100"
+                              [(ngModel)]="searchDtFim"
+                               (dateChange)="verifyFieldsSearchFill()"
+                              (click)="picker2.open()">                        
+                              <mat-datepicker #picker2></mat-datepicker>
+
+                </div>
+            </div>
+
+             <div class="col-lg-3 col-md-12 text-md-right" style="text-align: left; margin-top: 20px;;">
+              <div class="actions-container">
+              <button style="font-size: 12px" class="action-btn-search add-btn" (click)="search(1)">{{ 'Ecra.search' | translate }}</button>
+
+                   <!-- GErar relatório excel -->
+                      <button 
+                          class="action-btn-search add-btn" 
+                          title="{{!fillOneFilter ? ('Ecra.fillOneFilter' | translate) : ''}}" 
+                          [disabled]="!fillOneFilter" 
+                          (click)="generateReportExcel()">
+                          <span class="icon">📊</span>
+                          {{ 'Ecra.generateReport' | translate }}
+                      </button>
+              </div>
+            </div>
+         
+            </div>
+   </div>
+
+   
+  
+
+     <div #scrollBottom class="table-responsive scroll-bottom" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+          <table class="table table-bordered"  style="min-width: 2000px;">
+            <thead>    
+               <tr>
+                <td colspan="20" style="font-weight: bold; font-size: 14px; color: #ff0000;">{{ 'Ecra.recordFound' | translate }}: {{totalRegistros}}</td>
+              </tr>           
+              <tr>
+                <th class="fmtTableBorder"> {{ 'Ecra.Key' | translate }}</th>    
+                <th class="fmtTableBorder"> {{ 'Ecra.Status' | translate }}</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.DtProcess' | translate }}</th> 
+                <th class="fmtTableBorder">{{ 'Ecra.MonthProcess' | translate }}</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.DtFly' | translate }}</th>    
+                <th class="fmtTableBorder">RFC</th>    
+                <th class="fmtTableBorder">T. Base</th>    
+                <th class="fmtTableBorder">IVA</th>    
+                <th class="fmtTableBorder">TAX</th>    
+                <th class="fmtTableBorder">Rate</th>    
+                <th class="fmtTableBorder">Factor Type</th>    
+                <th class="fmtTableBorder">{{ 'Ecra.subTotal' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.total' | translate }}</th>
+                <th class="fmtTableBorder">Ruta</th>
+                <th class="fmtTableBorder">{{ 'Ecra.AirLineCompany' | translate }}</th>
+                <th class="fmtTableBorder">Tua</th>
+                <th class="fmtTableBorder">{{ 'Ecra.otherValues' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.segment' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.ticket' | translate }}</th>
+                <th class="fmtTableBorder" *ngIf="this.adm"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of outPutInvoices">     
+                 <td> {{item.Key}} </td>         
+                 <td> {{item.Status}} </td>
+                 <td style="text-align: center;"> {{item.DtProcess | date:'dd/MM/yyyy HH:mm':'UTC' }}</td>
+                 <td style="text-align: center;"> {{configService.months[item.MonthProcess-1].name}} </td>
+                 <td style="text-align: center;"> {{item.DtFly}} </td>      
+                 <td style="text-align: center;"> {{item.RFC}} </td>      
+                 <td >{{item.TransferredBaseValue | number:'1.2-2' }}</td>
+                 <td>{{item.IVAValue  | number:'1.2-2'}}</td>    
+                 <td>{{item.Tax}}</td>   
+                 <td>{{item.Rate}}</td>    
+                 <td>{{item.FactorType}}</td> 
+                 <td>{{item.SubTotalValue  | number:'1.2-2'}}</td> 
+                 <td>{{item.TotalValue  | number:'1.2-2'}}</td>                  
+                 <td>{{item.Ruta}}</td>
+                 <td>{{item.CompanyName}}</td>
+                 <td>{{item.TUA  | number:'1.2-2'}}</td>
+                 <td>{{item.OtherValues  | number:'1.2-2'}}</td>
+                 <td>{{item.Segment}}</td>
+                 <td>{{item.Ticket}}</td>
+                 <td *ngIf="this.adm"> <i (click)="deleteItem(item.ID)" style="font-size: 20px; cursor: pointer; " 
+                 
+                    class="mdi mdi-delete-forever"></i></td>
+              </tr>             
+            </tbody>
+          </table>
+          <app-paginator
+          [totalPages]="totalPages"
+          [currentPage]="currentPage"          
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
+        </div>
+        </div>
+    </div>
+</div>

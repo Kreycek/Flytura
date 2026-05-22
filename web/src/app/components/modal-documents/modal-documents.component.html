@@ -1,0 +1,20 @@
+<div class="modal-backdrop" *ngIf="isVisible">
+    <div class="modal-content">
+      <p class="modal-title" [innerHTML]="message"></p>
+
+  
+      <!-- Lista com barra de rolagem -->
+      <div *ngIf="list && list.length>0" class="modal-list">
+        <ul>
+          <li *ngFor="let item of list">
+            <strong>{{ item.cod }}</strong> - {{ item.description }}
+          </li>
+        </ul>
+      </div>
+  
+      <div class="modal-buttons">
+        <button class="modal-button confirm" (click)="confirm()">Ok</button>
+      </div>
+    </div>
+  </div>
+  

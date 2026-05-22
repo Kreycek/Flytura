@@ -1,0 +1,4 @@
+Linux / macOS
+export GOOGLE_APPLICATION_CREDENTIALS="C:/Projetos/Flytura/Back/internal/integration/bigQueryOnfly/arquivo.json"
+Windows (PowerShell)
+setx GOOGLE_APPLICATION_CREDENTIALS "C:\Projetos\Flytura\Back\internal\integration\bigQueryOnfly\arquivo.json"
