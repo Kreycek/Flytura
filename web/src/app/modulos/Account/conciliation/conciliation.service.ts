@@ -38,7 +38,7 @@ Data Final da criação :  22/05/2026 15:38
         "&originLocator="+originLocator+ 
         "&returnLocator="+returnLocator+ 
         "&originETicket="+originETicket+ 
-        "&returnETicket="+returnETicket+ 
+        "&returnETicket="+returnETicket+  
         "&startDate="+startDate+ 
         "&endDate="+endDate , {
       headers: new HttpHeaders({
