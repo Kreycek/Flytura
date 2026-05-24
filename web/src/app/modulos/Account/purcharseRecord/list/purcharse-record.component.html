@@ -203,7 +203,11 @@
                 <td> {{item.LastName}} </td>
                 <td> {{item.CompanyName}} </td>
                 <td> {{item.DtImportacao | date:'dd/MM/YYYY HH:mm'}} </td>              
-                <td> {{ ('Ecra.' +   item.DirectionOfDestination) | translate }}  </td>       
+                <td> 
+                  @if(item.DirectionOfDestination) {
+                     {{ ('Ecra.' +   item.DirectionOfDestination) | translate }} 
+                  }
+                  </td>       
                 <td style="position: relative; z-index: 100; text-align: center;" 
                       (mousemove)="mousemoveHandler($event, item, item.Status=='Erro', item.MessageReturn)" 
                       (mouseleave)="hideCustomTooltip()">    

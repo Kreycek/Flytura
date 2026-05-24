@@ -337,8 +337,6 @@ func ImportConciliationDataOnflys() {
 				pr.LastName = data.TravelerLastName
 				pr.Status = "Fila"
 
-				pr.CompanyCode = codAirline
-				pr.CompanyName = nameAirline
 				pr.Active = true
 				pr.OriginData = "BigQuery Integration"
 				pr.EmissionDate = data.EmissionDate
@@ -353,32 +351,43 @@ func ImportConciliationDataOnflys() {
 				}
 
 				if flytura.Normalize(data.OriginAirline) != "aeromexico" {
+
+					pr.CompanyCode = codAirline
+					pr.CompanyName = nameAirline
 					pr.DirectionOfDestination = "GO"
 					pr.Key = data.OriginLocator
-
 					insertPurchardRecordByBigQuery(data.OriginLocator, pr)
+
 					if data.OriginLocator != data.ReturnLocator {
+						codAirlineReturn, nameAirlineReturn := airLine.SearchAirlineByName(airlines, data.ReturnAirline)
+						pr.CompanyCode = codAirlineReturn
+						pr.CompanyName = nameAirlineReturn
 						if data.ReturnLocator != "" {
 							pr.DirectionOfDestination = "BACK"
 							pr.Key = data.ReturnLocator
 							insertPurchardRecordByBigQuery(data.ReturnLocator, pr)
 						}
-
 					}
+
 				} else {
+
 					// fmt.Println("Airline ", data.OriginAirline, data.OriginETicket)
 					pr.DirectionOfDestination = "GO"
 					pr.Key = data.OriginETicket
-
+					pr.CompanyCode = codAirline
+					pr.CompanyName = nameAirline
 					insertPurchardRecordByBigQuery(data.OriginETicket, pr)
+
 					if data.OriginETicket != data.ReturnETicket {
 						if data.ReturnETicket != "" {
+							codAirlineReturn, nameAirlineReturn := airLine.SearchAirlineByName(airlines, data.ReturnAirline)
+							pr.CompanyCode = codAirlineReturn
+							pr.CompanyName = nameAirlineReturn
 							pr.Key = data.ReturnETicket
 							pr.DirectionOfDestination = "BACK"
 							insertPurchardRecordByBigQuery(data.ReturnETicket, pr)
 						}
 					}
-
 				}
 			}
 
@@ -501,7 +510,7 @@ func SearchConciliationPagination(
 		filter["returnLocator"] = bson.M{"$regex": returnLocator, "$options": "i"}
 	}
 
-	fmt.Println("Origem e ticket ", originETicket)
+	// fmt.Println("Origem e ticket ", originETicket)
 	if originETicket != "" {
 		filter["originETicket"] = bson.M{"$regex": originETicket, "$options": "i"}
 	}

@@ -317,6 +317,8 @@ func ProcessPurcharseRecordExcel(
 			CompanyCode:    companyCode,
 			CompanyName:    companyName,
 			IdUserInserted: idUserInserted,
+			//Abaixo como vem da planilha vamos considerar sempre como IDA
+			DirectionOfDestination: "GO",
 		}
 
 		// Preenche com segurança e remove espaços internos extras da chave

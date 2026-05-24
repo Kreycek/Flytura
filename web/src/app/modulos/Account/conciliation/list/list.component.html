@@ -132,7 +132,7 @@
             <tbody>
               <tr *ngFor="let item of conciliation">     
                  <td> {{item.Protocol}} </td>         
-                 <td style="text-align: center;"> {{item.EmissionDate | date:'dd/MM/yyyy HH:mm':'UTC'}} </td>
+                 <td style="text-align: center;"> {{item.EmissionDate | date:'dd/MM/yyyy':'UTC'}} </td>
                  <td style="text-align: center;"> 
                     @if( moduloService.isValidDate(item.EmissionDate)) {
                         {{item.OriginDate  | date:'dd/MM/YYYY':'UTC'}}
@@ -160,16 +160,17 @@
                 <td style="text-align: center;"> {{item.CurrencyCode}} </td>
                 <td style="text-align: center;">{{ item.AmountOrigin | number:'1.2-2':'pt' }} </td>
                 <td style="text-align: center;">{{item.AmountReturn  | number:'1.2-2':'pt'}} </td>                
+                  <td style="text-align: center;"> 
+                    @if( moduloService.isValidDate(item.CreatedAtContractedCountry)) {
+                        {{item.CreatedAtContractedCountry  | date:'dd/MM/YYYY HH:mm':'UTC'}}
+                    }                
+                </td>
                  <td style="text-align: center;"> 
                     @if( moduloService.isValidDate(item.CreatedAtLocalCountry)) {
-                        {{item.CreatedAtLocalCountry  | date:'dd/MM/YYYY':'UTC'}}
+                        {{item.CreatedAtLocalCountry  | date:'dd/MM/YYYY HH:mm':'UTC'}}
                     }                
                 </td>
-                 <td style="text-align: center;"> 
-                    @if( moduloService.isValidDate(item.CreatedAtContractedCountry)) {
-                        {{item.CreatedAtContractedCountry  | date:'dd/MM/YYYY':'UTC'}}
-                    }                
-                </td>
+               
               </tr>             
             </tbody>
           </table>
