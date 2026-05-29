@@ -550,7 +550,10 @@ func SearchConciliationPagination(
 		options.Find().
 			SetSkip(int64((page-1)*limit)).
 			SetLimit(int64(limit)).
-			SetSort(bson.D{{Key: "emissionDate", Value: -1}}),
+			SetSort(bson.D{
+				{Key: "emissionDate", Value: -1},
+				{Key: "_id", Value: -1},
+			}),
 	)
 	if err != nil {
 		return nil, 0, err

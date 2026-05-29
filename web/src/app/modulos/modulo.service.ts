@@ -329,6 +329,7 @@ import * as XLSX from 'xlsx';
     const dados = apiData.map(item => ({
             "Protocol": item.Protocol,
             "EmissionDate":  (item.EmissionDate && item.EmissionDate!='0001-01-01T00:00:00Z') ? item.EmissionDate : '',
+            "OriginDate": (item.OriginDate && item.ReturnDate!='0001-01-01T00:00:00Z') ? item.OriginDate : '',
             "ReturnDate": (item.ReturnDate && item.ReturnDate!='0001-01-01T00:00:00Z') ? item.ReturnDate : '',
             "OriginLocator": item.OriginLocator,            
             "ReturnLocator":item.ReturnLocator,
@@ -345,7 +346,7 @@ import * as XLSX from 'xlsx';
             'ReturnCancelledReason':item.ReturnCancelledReason,
             'CurrencyCode':item.CurrencyCode,
             'AmountOrigin':item.AmountOrigin,
-            'AmountReturn':item.AmountReturnn,
+            'AmountReturn':item.AmountReturn,
             'CreatedAtLocalCountry':item.CreatedAtLocalCountry,
             'CreatedAtContractedCountry':item.CreatedAtContractedCountry
           }));
@@ -353,6 +354,7 @@ import * as XLSX from 'xlsx';
           const colunas = [
             "Protocol", 
             "EmissionDate", 
+            "OriginDate",
             "ReturnDate", 
             "OriginLocator", 
             "ReturnLocator",

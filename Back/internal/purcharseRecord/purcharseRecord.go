@@ -489,7 +489,8 @@ func SearchPurcharseRecordPagination(
 		options.Find().
 			SetSkip(int64((page-1)*limit)).
 			SetLimit(limit).
-			SetSort(bson.D{{Key: "createdAt", Value: -1}}),
+			SetSort(bson.D{{Key: "createdAt", Value: -1},
+				{Key: "_id", Value: -1}}),
 	)
 
 	if err != nil {
