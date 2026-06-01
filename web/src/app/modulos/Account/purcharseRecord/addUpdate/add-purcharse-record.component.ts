@@ -184,7 +184,7 @@ export class AddPurchaseRecordComponent {
         return response.code===formValues.companyCode
       })[0];    
 
-      if(this.totalCharPermit>0 && formValues.key.length<this.totalCharPermit) {
+      if(this.totalCharPermit>0 && formValues.key.length<this.totalCharPermit && !this.id) {
             const resultado = await this.modal.openModal(
               this.translate.instant('Ecra.keyMinCharLength') +
                 this.totalCharPermit.toString() + 
@@ -211,7 +211,8 @@ export class AddPurchaseRecordComponent {
           companyName:string,
           fileName:string,
           status:string,
-          idUserInserted:string
+          idUserInserted:string,
+          idUserUpdate:string
           
         } ={
           id:null,
@@ -221,13 +222,15 @@ export class AddPurchaseRecordComponent {
           active:formValues.active,
           companyCode:formValues.companyCode,
           companyName:companyData ? companyData.name : '',
-          fileName:this.fileName ? this.fileName : 'Criado Manualmente',
+          fileName:this.fileName ? this.fileName : !this.id ? 'Criado Manualmente' : 'Alterado Manualmente',
           status:si.name,
-          idUserInserted: this.decoded.idUser
+          idUserInserted: '',
+          idUserUpdate:''
           
         }     
    
-        if(this.id) {    
+        if(this.id) {   
+          objGravar.idUserUpdate= this.decoded.idUser
           if(this.keyOrigin!=formValues.key) {                         
                 this.purcharseRecordService.verifyExistPurchaseRecordData({key:objGravar.key}).subscribe((async (response:any)=>{
                 if(response.message) {              
@@ -245,7 +248,7 @@ export class AddPurchaseRecordComponent {
           }           
         }  
         else {
-    
+           objGravar.idUserInserted= this.decoded.idUser
           this.purcharseRecordService.verifyExistPurchaseRecordData({key:objGravar.key}).subscribe((async (response:any)=>{
             if(response.message) {              
                 const resultado = await this.modal.openModal( this.translate.instant('Ecra.existValueFieldKey'),true); 

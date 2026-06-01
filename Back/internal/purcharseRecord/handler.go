@@ -556,16 +556,16 @@ func UpdatePurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	// Criar o objeto de atualização
 	update := bson.M{
 		"$set": bson.M{
-
-			"key":          data.Key,
-			"name":         data.Name,
-			"lastName":     data.LastName,
-			"companyCode":  data.CompanyCode,
-			"companyName":  data.CompanyName,
-			"fileName":     data.FileName,
-			"status":       data.Status,
-			"idUserUpdate": data.ID.Hex(),
-			"active":       data.Active,
+			"key":            data.Key,
+			"name":           data.Name,
+			"lastName":       data.LastName,
+			"companyCode":    data.CompanyCode,
+			"companyName":    data.CompanyName,
+			"fileName":       data.FileName,
+			"status":         data.Status,
+			"idUserInserted": data.IdUserInserted,
+			"idUserUpdate":   data.IdUserUpdate,
+			"active":         data.Active,
 		},
 	}
 
@@ -1062,65 +1062,68 @@ type RequestModelPurcharseRecord struct {
 Função criada por Ricardo Silva Ferreira
 Inicio da criação 21/10/2025 16:19
 Data Final da criação : 21/10/2025 16:21
-*/
-func UpdatePurcharseRecordMultipleHandler(w http.ResponseWriter, r *http.Request) {
-	// Validar o token de autenticação
-
-	// Decodificar o JSON recebido como array
+*/func UpdatePurcharseRecordMultipleHandler(w http.ResponseWriter, r *http.Request) {
+	// Decode JSON
 	var records []RequestModelPurcharseRecord
 	if err := json.NewDecoder(r.Body).Decode(&records); err != nil {
 		flytura.FormataRetornoHTTP(w, "Erro ao decodificar JSON", http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("Header", records)
-
-	// Conectar ao MongoDB
-	// client, err := db.ConnectMongoDB(flytura.ConectionString)
-	// if err != nil {
-	// 	flytura.FormataRetornoHTTP(w, "Erro ao conectar ao banco de dados", http.StatusInternalServerError)
-	// 	return
-	// }
-	// defer client.Disconnect(context.Background())
-
-	// collection := client.Database(flytura.DBName).Collection(flytura.PurcharseRecordTableName)
-
 	collection := db.MongoClient.Database(flytura.DBName).Collection(flytura.PurcharseRecordTableName)
 
+	// Validate token
 	token := r.Header.Get("token")
-
 	if token == "" {
 		http.Error(w, "Token não fornecido", http.StatusUnauthorized)
 		return
 	}
 
-	var error error
-	_, error = VerifyAccessValidTokenListSheet(db.MongoClient, flytura.DBName, flytura.TokenAccessTableName, token)
-	if error != nil {
+	if _, err := VerifyAccessValidTokenListSheet(
+		db.MongoClient,
+		flytura.DBName,
+		flytura.TokenAccessTableName,
+		token,
+	); err != nil {
 		http.Error(w, "Token inválido", http.StatusBadRequest)
-
 		return
 	}
 
-	// Contador de atualizações
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var updatedCount int64
-	//Retira os espaços das string
 	re := regexp.MustCompile(`\s+`)
 
 	for _, data := range records {
 
-		// if data.UpdatedAt.IsZero() {
-		fmt.Println(data)
 		nowUTC := time.Now().UTC()
-
 		dh, err := flytura.DiffHours(nowUTC, flytura.Fuso1, flytura.Fuso2)
 		if err != nil {
-			panic(err)
+			fmt.Println("erro diffHours:", err)
+			continue
 		}
-		dtUpdatedAt := nowUTC.Add(-time.Duration(dh) * time.Hour)
-		// }
 
-		fmt.Println("key ", data.Key)
+		dtUpdatedAt := nowUTC.Add(-time.Duration(dh) * time.Hour)
+
+		cleanKey := re.ReplaceAllString(data.Key, "")
+
+		// 🔥 filtro que ignora espaços no banco
+		filter := bson.M{
+			"$expr": bson.M{
+				"$eq": bson.A{
+					bson.M{
+						"$replaceAll": bson.M{
+							"input":       "$key",
+							"find":        " ",
+							"replacement": "",
+						},
+					},
+					cleanKey,
+				},
+			},
+		}
+
 		update := bson.M{
 			"$set": bson.M{
 				"status":        data.Status,
@@ -1129,19 +1132,26 @@ func UpdatePurcharseRecordMultipleHandler(w http.ResponseWriter, r *http.Request
 			},
 		}
 
-		result, err := collection.UpdateOne(context.Background(), bson.M{"key": re.ReplaceAllString(data.Key, "")}, update)
-		if err == nil {
-			updatedCount += result.ModifiedCount
-		} else {
-			fmt.Println("key err ", err)
+		result, err := collection.UpdateOne(ctx, filter, update)
+		if err != nil {
+			fmt.Println("erro ao atualizar:", err)
+			continue
 		}
+
+		updatedCount += result.ModifiedCount
 	}
 
+	// Response
 	if updatedCount == 0 {
 		flytura.FormataRetornoHTTP(w, "Nenhuma fatura foi atualizada", http.StatusOK)
-	} else {
-		flytura.FormataRetornoHTTP(w, fmt.Sprintf("%d faturas atualizadas com sucesso", updatedCount), http.StatusOK)
+		return
 	}
+
+	flytura.FormataRetornoHTTP(
+		w,
+		fmt.Sprintf("%d faturas atualizadas com sucesso", updatedCount),
+		http.StatusOK,
+	)
 }
 
 /*

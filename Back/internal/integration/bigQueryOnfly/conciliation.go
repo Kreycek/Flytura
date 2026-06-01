@@ -212,8 +212,9 @@ func ImportConciliationDataOnflys() {
 			return_cancelled_reason
         FROM 
 			conciliation.gold_flytura 
-			--where emission_date='2026-05-14'
-			where (emission_date>='2026-05-01' and emission_date<=@today) 
+			--where emission_date='2026-06-01'
+			where (emission_date>='2026-05-19' and emission_date<='2026-05-26') 
+			--where (emission_date>='2026-05-01' and emission_date<=@today) 
 			--where emission_date=@today
 			--AND origin_airline IN UNNEST(@companies)
         
@@ -267,8 +268,8 @@ func ImportConciliationDataOnflys() {
 		data.EmissionDate = convertToTimeDate(row, "emission_date")
 		data.OriginDate = convertToTimeDate(row, "origin_date")
 		data.ReturnDate = convertToTimeDate(row, "return_date")
-		data.OriginLocator = convertToString(row, "origin_locator")
-		data.ReturnLocator = convertToString(row, "return_locator")
+		data.OriginLocator = strings.ReplaceAll(convertToString(row, "origin_locator"), " ", "")
+		data.ReturnLocator = strings.ReplaceAll(convertToString(row, "return_locator"), " ", "")
 		data.OriginETicket = strings.ReplaceAll(convertToString(row, "origin_e_ticket"), "-", "")
 		data.ReturnETicket = strings.ReplaceAll(convertToString(row, "return_e_ticket"), "-", "")
 		data.OriginAirline = convertToString(row, "origin_airline")
@@ -303,10 +304,18 @@ func ImportConciliationDataOnflys() {
 		// fmt.Println("traveler_first_name:", row["traveler_first_name"])
 		// fmt.Println("traveler_last_name:", row["traveler_last_name"])
 		// fmt.Println("Traveler:", data.TravelerName)
-		// fmt.Println("OriginLocator:", data.OriginLocator)
-		// fmt.Println("ReturnLocator:", data.ReturnLocator)
-		// fmt.Println("OriginETicket:", data.OriginETicket)
-		// fmt.Println("ReturnETicket:", data.ReturnETicket)
+
+		// if strings.Contains(data.TravelerName, "RAMIREZ") {
+		// 	fmt.Println(" ")
+		// 	fmt.Println("TravelerName:", data.TravelerName)
+		// 	fmt.Println("OriginLocator:", data.OriginLocator)
+		// 	fmt.Println("ReturnLocator:", data.ReturnLocator)
+		// 	fmt.Println("OriginETicket:", data.OriginETicket)
+		// 	fmt.Println(" ")
+		// 	fmt.Println(" ")
+
+		// }
+
 		// fmt.Println("Amount Origin:", row["onfly_amount_origin"])
 		// fmt.Println("Amount Return:", row["onfly_amount_return"])
 		// fmt.Println("Currency:", row["currency_code"])
@@ -318,13 +327,6 @@ func ImportConciliationDataOnflys() {
 
 		codAirline, nameAirline := airLine.SearchAirlineByName(airlines, data.OriginAirline)
 
-		// if data.OriginCancelledReason != "" {
-		// 	fmt.Println("Achou ", data.OriginLocator)
-		// 	fmt.Println("OriginStatus ", data.BookingStatus)
-		// 	fmt.Println("codAirline ", codAirline)
-		// 	fmt.Println("nameAirline ", nameAirline)
-		// 	fmt.Println("OriginAirline", data.OriginAirline)
-		// }
 		if flytura.Normalize(data.BookingStatus) == "emitted" {
 
 			if codAirline == "0001" || codAirline == "0002" || codAirline == "0003" {
@@ -356,7 +358,9 @@ func ImportConciliationDataOnflys() {
 					pr.CompanyName = nameAirline
 					pr.DirectionOfDestination = "GO"
 					pr.Key = data.OriginLocator
-					insertPurchardRecordByBigQuery(data.OriginLocator, pr)
+					if pr.Key != "" {
+						insertPurchardRecordByBigQuery(pr.Key, pr)
+					}
 
 					if data.OriginLocator != data.ReturnLocator {
 						codAirlineReturn, nameAirlineReturn := airLine.SearchAirlineByName(airlines, data.ReturnAirline)
@@ -365,7 +369,7 @@ func ImportConciliationDataOnflys() {
 						if data.ReturnLocator != "" {
 							pr.DirectionOfDestination = "BACK"
 							pr.Key = data.ReturnLocator
-							insertPurchardRecordByBigQuery(data.ReturnLocator, pr)
+							insertPurchardRecordByBigQuery(pr.Key, pr)
 						}
 					}
 
@@ -373,10 +377,12 @@ func ImportConciliationDataOnflys() {
 
 					// fmt.Println("Airline ", data.OriginAirline, data.OriginETicket)
 					pr.DirectionOfDestination = "GO"
-					pr.Key = data.OriginETicket
 					pr.CompanyCode = codAirline
 					pr.CompanyName = nameAirline
-					insertPurchardRecordByBigQuery(data.OriginETicket, pr)
+					pr.Key = data.OriginETicket
+					if data.OriginETicket != "" {
+						insertPurchardRecordByBigQuery(pr.Key, pr)
+					}
 
 					if data.OriginETicket != data.ReturnETicket {
 						if data.ReturnETicket != "" {
