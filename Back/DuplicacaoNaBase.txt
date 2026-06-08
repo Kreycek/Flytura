@@ -1,0 +1,60 @@
+------------------------Ver todos so duplicados--------------------------------
+
+db.conciliation.aggregate([
+  {
+    $group: {
+      _id: {
+        originLocator: { $trim: { input: { $ifNull: ["$originLocator", ""] } } },
+        returnLocator: { $trim: { input: { $ifNull: ["$returnLocator", ""] } } },
+        originETicket: { $trim: { input: { $ifNull: ["$originETicket", ""] } } },
+        returnETicket: { $trim: { input: { $ifNull: ["$returnETicket", ""] } } }
+      },
+      count: { $sum: 1 }
+    }
+  },
+  {
+    $match: {
+      count: { $gt: 1 }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      originLocator: "$_id.originLocator",
+      returnLocator: "$_id.returnLocator",
+      originETicket: "$_id.originETicket",
+      returnETicket: "$_id.returnETicket",
+      count: 1
+    }
+  }
+])
+
+
+
+------------------------Remover todos os duplicados mais recentes--------------------------------
+db.conciliation.aggregate([
+  {
+    $sort: { createdAtLocalCountry: 1 } // mais antigo primeiro
+  },
+  {
+    $group: {
+      _id: {
+        originLocator: { $trim: { input: { $ifNull: ["$originLocator", ""] } } },
+        returnLocator: { $trim: { input: { $ifNull: ["$returnLocator", ""] } } },
+        originETicket: { $trim: { input: { $ifNull: ["$originETicket", ""] } } },
+        returnETicket: { $trim: { input: { $ifNull: ["$returnETicket", ""] } } }
+      },
+      ids: { $push: "$_id" },
+      count: { $sum: 1 }
+    }
+  },
+  {
+    $match: { count: { $gt: 1 } }
+  }
+]).forEach(group => {
+  const idsParaRemover = group.ids.slice(1)
+
+  db.conciliation.deleteMany({
+    _id: { $in: idsParaRemover }
+  })
+})

@@ -171,6 +171,12 @@ func insertPurchardRecordByBigQuery(key string, pr models.PurcharseRecord) {
 	}
 }
 
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 09/05/2026 10:07
+Data Final da criação 09/05/2026 114:30
+*/
+
 func ImportConciliationDataOnflys() {
 
 	today := time.Now().Format("2006-01-02")
@@ -213,8 +219,8 @@ func ImportConciliationDataOnflys() {
         FROM 
 			conciliation.gold_flytura 
 			--where emission_date='2026-06-01'
-			where (emission_date>='2026-05-19' and emission_date<='2026-05-26') 
-			--where (emission_date>='2026-05-01' and emission_date<=@today) 
+			--where (emission_date>='2026-05-19' and emission_date<='2026-05-26') 
+			where (emission_date>='2026-05-01' and emission_date<=@today) 
 			--where emission_date=@today
 			--AND origin_airline IN UNNEST(@companies)
         
@@ -268,10 +274,13 @@ func ImportConciliationDataOnflys() {
 		data.EmissionDate = convertToTimeDate(row, "emission_date")
 		data.OriginDate = convertToTimeDate(row, "origin_date")
 		data.ReturnDate = convertToTimeDate(row, "return_date")
-		data.OriginLocator = strings.ReplaceAll(convertToString(row, "origin_locator"), " ", "")
-		data.ReturnLocator = strings.ReplaceAll(convertToString(row, "return_locator"), " ", "")
-		data.OriginETicket = strings.ReplaceAll(convertToString(row, "origin_e_ticket"), "-", "")
-		data.ReturnETicket = strings.ReplaceAll(convertToString(row, "return_e_ticket"), "-", "")
+
+		data.OriginLocator = strings.ReplaceAll(strings.ReplaceAll(convertToString(row, "origin_locator"), "-", ""), " ", "")
+		data.ReturnLocator = strings.ReplaceAll(strings.ReplaceAll(convertToString(row, "return_locator"), "-", ""), " ", "")
+		data.OriginETicket = strings.ReplaceAll(strings.ReplaceAll(convertToString(row, "origin_e_ticket"), "-", ""), " ", "")
+		data.ReturnETicket = strings.ReplaceAll(strings.ReplaceAll(convertToString(row, "return_e_ticket"), "-", ""), " ", "")
+
+		// fmt.Println("Tamanho", len(strings.ReplaceAll("9572288797433 ", " ", "")))
 		data.OriginAirline = convertToString(row, "origin_airline")
 		data.ReturnAirline = convertToString(row, "return_airline")
 		data.TravelerName = convertToString(row, "traveler_name")
@@ -305,16 +314,19 @@ func ImportConciliationDataOnflys() {
 		// fmt.Println("traveler_last_name:", row["traveler_last_name"])
 		// fmt.Println("Traveler:", data.TravelerName)
 
-		// if strings.Contains(data.TravelerName, "RAMIREZ") {
-		// 	fmt.Println(" ")
-		// 	fmt.Println("TravelerName:", data.TravelerName)
-		// 	fmt.Println("OriginLocator:", data.OriginLocator)
-		// 	fmt.Println("ReturnLocator:", data.ReturnLocator)
-		// 	fmt.Println("OriginETicket:", data.OriginETicket)
-		// 	fmt.Println(" ")
-		// 	fmt.Println(" ")
+		if strings.Contains(data.Protocol, "04300M") {
+			fmt.Println(" ")
+			fmt.Println("TravelerName:", data.TravelerName)
+			fmt.Println("OriginLocator:", data.OriginLocator)
+			fmt.Println("ReturnLocator:", data.ReturnLocator)
+			fmt.Println("OriginETicket:", data.OriginETicket)
+			fmt.Println("OriginETicket:", data.ReturnETicket)
+			fmt.Println("OriginAirline:", data.OriginAirline)
+			fmt.Println("ReturnAirline:", data.ReturnAirline)
+			fmt.Println(" ")
+			fmt.Println(" ")
 
-		// }
+		}
 
 		// fmt.Println("Amount Origin:", row["onfly_amount_origin"])
 		// fmt.Println("Amount Return:", row["onfly_amount_return"])
@@ -352,51 +364,47 @@ func ImportConciliationDataOnflys() {
 					pr.CreatedAt = nowUTC.Add(-time.Duration(dh) * time.Hour)
 				}
 
-				if flytura.Normalize(data.OriginAirline) != "aeromexico" {
-
-					pr.CompanyCode = codAirline
-					pr.CompanyName = nameAirline
-					pr.DirectionOfDestination = "GO"
-					pr.Key = data.OriginLocator
-					if pr.Key != "" {
-						insertPurchardRecordByBigQuery(pr.Key, pr)
+				if flytura.Normalize(data.ReturnAirline) != "" &&
+					flytura.Normalize(data.ReturnAirline) == "aeromexico" &&
+					flytura.Normalize(data.OriginAirline) != "" &&
+					flytura.Normalize(data.OriginAirline) != "aeromexico" {
+					if data.OriginETicket != "" {
+						insertRegister(data.OriginETicket, pr, data.ReturnAirline, airlines, "GO")
+					}
+					if data.OriginETicket != data.ReturnETicket && data.ReturnETicket != "" {
+						insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
 					}
 
-					if data.OriginLocator != data.ReturnLocator {
-						codAirlineReturn, nameAirlineReturn := airLine.SearchAirlineByName(airlines, data.ReturnAirline)
-						pr.CompanyCode = codAirlineReturn
-						pr.CompanyName = nameAirlineReturn
-						if data.ReturnLocator != "" {
-							pr.DirectionOfDestination = "BACK"
-							pr.Key = data.ReturnLocator
-							insertPurchardRecordByBigQuery(pr.Key, pr)
-						}
+					if data.OriginLocator != "" {
+						insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
+					}
+					if data.OriginLocator != data.ReturnLocator && data.ReturnLocator != "" {
+						insertRegister(data.ReturnLocator, pr, data.OriginAirline, airlines, "BACK")
 					}
 
 				} else {
 
-					// fmt.Println("Airline ", data.OriginAirline, data.OriginETicket)
-					pr.DirectionOfDestination = "GO"
-					pr.CompanyCode = codAirline
-					pr.CompanyName = nameAirline
-					pr.Key = data.OriginETicket
-					if data.OriginETicket != "" {
-						insertPurchardRecordByBigQuery(pr.Key, pr)
-					}
+					if flytura.Normalize(data.OriginAirline) != "aeromexico" {
+						if data.OriginLocator != "" {
+							insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
+						}
+						if data.OriginLocator != data.ReturnLocator && data.ReturnLocator != "" {
+							insertRegister(data.ReturnLocator, pr, data.ReturnAirline, airlines, "BACK")
+						}
+					} else {
 
-					if data.OriginETicket != data.ReturnETicket {
-						if data.ReturnETicket != "" {
-							codAirlineReturn, nameAirlineReturn := airLine.SearchAirlineByName(airlines, data.ReturnAirline)
-							pr.CompanyCode = codAirlineReturn
-							pr.CompanyName = nameAirlineReturn
-							pr.Key = data.ReturnETicket
-							pr.DirectionOfDestination = "BACK"
-							insertPurchardRecordByBigQuery(data.ReturnETicket, pr)
+						if data.OriginETicket != "" {
+							insertRegister(data.OriginETicket, pr, nameAirline, airlines, "GO")
+						}
+
+						if data.OriginETicket != data.ReturnETicket {
+							if data.ReturnETicket != "" {
+								insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
+							}
 						}
 					}
 				}
 			}
-
 		}
 
 		exist, erro := VeryExistKey(
@@ -426,6 +434,15 @@ func ImportConciliationDataOnflys() {
 
 }
 
+func insertRegister(key string, pr models.PurcharseRecord, airLineName string, airLines []any, direction string) {
+	codAirlineReturn, nameAirlineReturn := airLine.SearchAirlineByName(airLines, airLineName)
+	pr.CompanyCode = codAirlineReturn
+	pr.CompanyName = nameAirlineReturn
+	pr.Key = key
+	pr.DirectionOfDestination = direction
+	insertPurchardRecordByBigQuery(key, pr)
+}
+
 /*
 Função criada por Ricardo Silva Ferreira
 Inicio da criação 10/05/2026 14:56
@@ -433,7 +450,7 @@ Data Final da criação 10/05/2026 14:57
 */
 func VeryExistKey(
 	client *mongo.Client,
-	dbName, collectionName,
+	dbName, collectionName string,
 	originLocator string,
 	returnLocator string,
 	originETicket string,
@@ -441,24 +458,49 @@ func VeryExistKey(
 ) (bool, error) {
 
 	collection := client.Database(dbName).Collection(collectionName)
+
 	filter := bson.M{
-		"originLocator": originLocator,
-		"returnLocator": returnLocator,
-		"originETicket": originETicket,
-		"returnETicket": returnETicket,
+		"$expr": bson.M{
+			"$and": []bson.M{
+				{
+					"$eq": []interface{}{
+						bson.M{"$trim": bson.M{"input": "$originLocator"}},
+						originLocator,
+					},
+				},
+				{
+					"$eq": []interface{}{
+						bson.M{"$trim": bson.M{"input": "$returnLocator"}},
+						returnLocator,
+					},
+				},
+				{
+					"$eq": []interface{}{
+						bson.M{"$trim": bson.M{"input": "$originETicket"}},
+						originETicket,
+					},
+				},
+				{
+					"$eq": []interface{}{
+						bson.M{"$trim": bson.M{"input": "$returnETicket"}},
+						returnETicket,
+					},
+				},
+			},
+		},
 	}
-	// Variável para armazenar o usuário retornado
+
 	var excelData models.Conciliation
-	exist := true
-	// Usar FindOne para pegar apenas um único registro
+
 	err := collection.FindOne(context.Background(), filter).Decode(&excelData)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			exist = false
+			return false, nil
 		}
+		return false, err
 	}
-	// Converter o _id para string
-	return exist, nil
+
+	return true, nil
 }
 
 /*

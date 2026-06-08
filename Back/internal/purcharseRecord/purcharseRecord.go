@@ -1021,23 +1021,32 @@ func GetPurcharseRecordByStatus(client *mongo.Client, dbName, collectionName, co
 Função criada por Ricardo Silva Ferreira
 Inicio da criação 21/10/2025 21:09
 Data Final da criação : 21/10/2025 21:10
+Data: 06/06/2026 23:10 ignorar espaços
 */
 func VeryExistKey(client *mongo.Client, dbName, collectionName, key string) (bool, error) {
 
 	collection := client.Database(dbName).Collection(collectionName)
-	filter := bson.M{"key": key}
-	// Variável para armazenar o usuário retornado
+
+	filter := bson.M{
+		"$expr": bson.M{
+			"$eq": []interface{}{
+				bson.M{"$trim": bson.M{"input": "$key"}},
+				key,
+			},
+		},
+	}
+
 	var excelData models.PurcharseRecord
-	exist := true
-	// Usar FindOne para pegar apenas um único registro
+
 	err := collection.FindOne(context.Background(), filter).Decode(&excelData)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			exist = false
+			return false, nil
 		}
+		return false, err
 	}
-	// Converter o _id para string
-	return exist, nil
+
+	return true, nil
 }
 
 /*
