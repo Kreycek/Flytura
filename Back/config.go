@@ -5,17 +5,25 @@ import (
 	"Flytura/internal/models"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"math/big"
 	"net/http"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
 
+	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/civil"
+	"github.com/extrame/xls"
 	"github.com/golang-jwt/jwt"
+	"github.com/xuri/excelize/v2"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/text/unicode/norm"
 )
@@ -52,8 +60,10 @@ var LogsTableName = "logs"
 var Fuso1 string = "Europe/Lisbon"
 var Fuso2 string = "America/Mexico_City"
 
-// Abaixo número máximo de colunas permitidas na planilha
+// Abaixo número máximo de colunas permitidas na planilha purcharseRecord
 var NumberMaxColunsSheet = 3
+
+var NumberMaxColunsSheetOutPutInvoices = 19
 
 /*
 Função criada por Ricardo Silva Ferreira
@@ -323,6 +333,19 @@ func AccentAgnosticSpaceInsensitivePattern(s string) string {
 
 /*
 Função criada por Ricardo Silva Ferreira
+Inicio da criação 26/11/2025 13:47
+Data Final da criação :  26/11/2025 13:47
+*/
+
+func CriarArquivoTemporarioExcel(extensao string, nameFile string) string {
+	if extensao == ".xls" {
+		return nameFile + "-*.xls"
+	}
+	return nameFile + "-*.xlsx"
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
 Inicio da criação 22/05/2026 16:45
 Data Final da criação :  22/05/2026 16:45
 */
@@ -344,4 +367,311 @@ func Normalize(input string) string {
 	result = strings.ReplaceAll(result, " ", "")
 
 	return result
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 01/03/2023 19:05
+Data Final da criação : 01/03/2023 19:06
+Local: Brasil
+*/
+func GetXlsColSafe(r *xls.Row, idx int) string {
+	if r == nil {
+		return ""
+	}
+	// LastCol geralmente é a contagem de colunas válidas (0..LastCol-1)
+	if idx >= 0 && idx < r.LastCol() {
+		return r.Col(idx)
+	}
+	return ""
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 01/03/2023 19:05
+Data Final da criação : 01/03/2023 19:06
+Local: Brasil
+*/
+// safeCell retorna a célula idx de uma []string (excelize GetRows)
+// Se a coluna não existir, devolve "".
+func SafeCell(row []string, idx int) string {
+	if idx >= 0 && idx < len(row) {
+		return strings.TrimSpace(row[idx])
+	}
+	return ""
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 01/03/2023 19:05
+Data Final da criação : 01/03/2023 19:06
+Local: Brasil
+*/
+func CompressSpaces(s string) string {
+
+	// compressSpaces remove espaços repetidos no meio da string.
+	var reSpaces = regexp.MustCompile(`\s+`)
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return s
+	}
+	return reSpaces.ReplaceAllString(s, "")
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 10/05/2026 18:00
+Data Final da criação 10/05/2026 18:00
+*/
+func ConvertToString(row map[string]bigquery.Value, fieldName string) string {
+
+	result := ""
+	if v, ok := row[fieldName].(string); ok {
+		result = v
+	}
+
+	return result
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 10/05/2026 18:00
+Data Final da criação 10/05/2026 18:00
+*/
+func ConvertToTimeDate(row map[string]bigquery.Value, fieldName string) time.Time {
+
+	if d, ok := row[fieldName].(civil.Date); ok {
+		t := time.Date(
+			d.Year,
+			time.Month(d.Month),
+			d.Day,
+			0, 0, 0, 0,
+			time.UTC,
+		)
+
+		return t
+	} else {
+		return time.Time{}
+	}
+
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 10/05/2026 19:40
+Data Final da criação 10/05/2026 19:40
+*/
+func ConvertToDecimal128(
+	row map[string]bigquery.Value,
+	fieldName string,
+) primitive.Decimal128 {
+
+	v, exists := row[fieldName]
+	if !exists || v == nil {
+		return primitive.NewDecimal128(0, 0)
+	}
+
+	switch value := v.(type) {
+
+	// ✅ BigQuery NUMERIC / BIGNUMERIC
+	case *big.Rat:
+		d128, err := primitive.ParseDecimal128(
+			value.FloatString(2),
+		)
+		if err != nil {
+			return primitive.NewDecimal128(0, 0)
+		}
+		return d128
+
+	// ✅ JSON / Excel como string ("3402.66" ou "3402,66")
+	case string:
+		value = strings.TrimSpace(value)
+		if value == "" {
+			return primitive.NewDecimal128(0, 0)
+		}
+
+		value = strings.Replace(value, ",", ".", 1)
+
+		d128, err := primitive.ParseDecimal128(value)
+		if err != nil {
+			return primitive.NewDecimal128(0, 0)
+		}
+		return d128
+
+	// ✅ Caso venha como número (menos comum, mas acontece)
+	case float64:
+		d128, err := primitive.ParseDecimal128(
+			strconv.FormatFloat(value, 'f', -1, 64),
+		)
+		if err != nil {
+			return primitive.NewDecimal128(0, 0)
+		}
+		return d128
+
+	default:
+		// tipo inesperado → não quebra o fluxo
+		return primitive.NewDecimal128(0, 0)
+	}
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 12/05/2026 18:47
+Data Final da criação 12/05/2026 18:47
+*/
+func ConvertToFloat64(row map[string]bigquery.Value, fieldName string) float64 {
+	if v, ok := row[fieldName]; ok {
+		switch value := v.(type) {
+
+		case float64:
+			return value
+
+		case int64:
+			return float64(value)
+
+		case string:
+			// remove possíveis separadores de milhar
+			clean := strings.ReplaceAll(value, ",", "")
+			f, err := strconv.ParseFloat(clean, 64)
+			if err == nil {
+				return f
+			}
+		}
+	}
+
+	return 0
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 10/06/2026 10:34
+Data Final da criação 10/06/2026 10:35
+*/
+func ConvertStringToTimeDate(value string) (time.Time, error) {
+	value = strings.TrimSpace(value)
+
+	if value == "" {
+		return time.Time{}, errors.New("data vazia")
+	}
+
+	t, err := time.Parse("2006-01-02", value)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return t, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 10/06/2026 10:34
+Data Final da criação 10/06/2026 10:34
+*/
+func ConvertToInt(value string) (int, error) {
+	value = strings.TrimSpace(value)
+
+	if value == "" {
+		return 0, errors.New("valor vazio")
+	}
+
+	i, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, err
+	}
+
+	return i, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 10/06/2026 10:39
+Data Final da criação 10/06/2026 10:39
+*/
+func ConvertStringToFloat64(value string) (float64, error) {
+	value = strings.TrimSpace(value)
+
+	if value == "" {
+		return 0, errors.New("valor vazio")
+	}
+
+	// remove separador de milhar (ex: 1,234.56)
+	clean := strings.ReplaceAll(value, ",", "")
+
+	f, err := strconv.ParseFloat(clean, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return f, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 10/06/2026 13:18
+Data Final da criação 10/06/2026 13:18
+*/
+func ConvertNumberToDate(value string) time.Time {
+
+	f, err := strconv.ParseFloat(value, 64)
+
+	if err != nil {
+		if value != "" && CompressSpaces(value) != "" {
+			dt, err := ConvertStringToTimeDate(CompressSpaces(value)) // pode ficar vazio sem erro
+			if err != nil {
+				return time.Time{}
+			} else {
+				return dt
+			}
+		}
+	} else {
+		t, err := excelize.ExcelDateToTime(f, false)
+		if err != nil {
+			if value != "" && CompressSpaces(value) != "" {
+				dt, err := ConvertStringToTimeDate(CompressSpaces(value)) // pode ficar vazio sem erro
+				if err != nil {
+					return time.Time{}
+				} else {
+					return dt
+				}
+			}
+		} else {
+			return t
+		}
+
+	}
+
+	return time.Time{}
+
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 10/06/2026 13:22
+Data Final da criação 10/06/2026 13:25
+*/
+
+func ConvertMonthToNumber(month string) (int, error) {
+	month = strings.TrimSpace(strings.ToLower(month))
+
+	months := map[string]int{
+		"janeiro": 1, "jan": 1,
+		"fevereiro": 2, "fev": 2,
+		"março": 3, "mar": 3,
+		"marco": 3, // sem acento
+		"abril": 4, "abr": 4,
+		"maio": 5, "mai": 5,
+		"junho": 6, "jun": 6,
+		"julho": 7, "jul": 7,
+		"agosto": 8, "ago": 8,
+		"setembro": 9, "set": 9,
+		"outubro": 10, "out": 10,
+		"novembro": 11, "nov": 11,
+		"dezembro": 12, "dez": 12,
+	}
+
+	if val, ok := months[month]; ok {
+		return val, nil
+	}
+
+	return 0, errors.New("mês inválido")
 }

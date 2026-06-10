@@ -150,7 +150,16 @@
      "CustomerImportDate":"Fecha de importación del cliente ",
      "ServerImportDate":"Fecha de importación del servidor",
      "BACK":"Volta",
-     "GO":"Ida"
+     "GO":"Ida",
+     "FlightOrigin":"Origem do voo",  
+     "FlightDestination":"Destino do voo",  
+     "OriginCountryCode":"Código do país de origem",  
+     "OriginCity":"Cidade de origem",  
+     "DestinationCountryCode":"Código do país de destino",  
+     "DestinationCity":"Cidade de destino",  
+     "OriginAirlineCommercial":"Comercial da Companhia Aérea de Origem",  
+     "ReturnAirlineCommercial":"Comercial da Companhia Aérea de Retorno",  
+     "UserImport":"Importador"
     
   }
 }

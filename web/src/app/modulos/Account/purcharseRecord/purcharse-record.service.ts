@@ -81,10 +81,7 @@ export class PurcharseRecordService {
   }
 
   
-  importarPlanilha(formData:FormData): Observable<any> {
-    return this.http.post(this.configService.apiUrl + "/UploadPurcharseRecord", formData);
-
-  }
+ 
 
 
   AgregateByImportDateAndStatus( status?: string | null,

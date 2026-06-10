@@ -6,9 +6,13 @@ import (
 	"Flytura/internal/models"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -354,4 +358,86 @@ func GroupByCompanySumSectionHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(purcharseRecordData); err != nil {
 		log.Printf("erro ao codificar resposta JSON: %v", err)
 	}
+}
+
+/*
+	Função criada por Ricardo Silva Ferreira
+	Inicio da criação 10/06/2026 11:14
+	Data Final da criação : 10/06/2026 13:59
+*/
+
+func UploadExcelOutputInvoicesRecordHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseMultipartForm(10 << 20) // 10MB
+	file, fileHeader, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "Erro ao receber arquivo", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	idUserInserted := r.FormValue("idUserInserted")
+	userNameImport := r.FormValue("userName")
+
+	// client, errConnectDB1 := db.ConnectMongoDB(flytura.ConectionString)
+	// if errConnectDB1 != nil {
+	// 	log.Println("Erro ao obter nome do arquivo:", err)
+	// 	return
+	// }
+	// defer db.CloseMongoDB(client)
+
+	// nameWithoutExt := strings.TrimSuffix(fileHeader.Filename, filepath.Ext(fileHeader.Filename))
+
+	// parts := strings.Split(nameWithoutExt, "-")
+
+	// fmt.Println("Nome do arquivo sem extensão:", parts[1])
+	// sheetName := parts[0]
+
+	extensao := strings.ToLower(filepath.Ext(fileHeader.Filename))
+
+	tempFile, errTempFile := os.CreateTemp("", flytura.CriarArquivoTemporarioExcel(extensao, "outPutInvoicesExcel"))
+	if errTempFile != nil {
+		http.Error(w, "Erro ao salvar arquivo", http.StatusInternalServerError)
+		return
+	}
+
+	defer os.Remove(tempFile.Name())
+
+	io.Copy(tempFile, file)
+
+	Results := struct {
+		NoSheet            bool   `json:"noSheet"`
+		EmptySheet         bool   `json:"emptySheet"`
+		MinTotalColuns     bool   `json:"minTotalColuns"`
+		TotalRecordsImport int    `json:"totalRecordsImport"`
+		ErrProcessExcel    string `json:"errProcessExcel"`
+	}{
+		NoSheet:            false,
+		EmptySheet:         false,
+		MinTotalColuns:     false,
+		TotalRecordsImport: 0,
+		ErrProcessExcel:    "",
+	}
+
+	noSheet,
+		emptySheet,
+		minTotalColuns,
+		totalRecordsImport,
+		errProcessExcel := ProcessOutputInvoicesExcel(tempFile.Name(), fileHeader.Filename, idUserInserted, userNameImport, db.MongoClient, flytura.DBName, flytura.OutPutInvoicesTableName)
+
+	if errProcessExcel != nil {
+		http.Error(w, errProcessExcel.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// fmt.Println("vazio", emptySheet)
+
+	Results.EmptySheet = emptySheet
+	Results.NoSheet = noSheet
+	Results.MinTotalColuns = minTotalColuns
+	Results.TotalRecordsImport = totalRecordsImport
+
+	// Retornar a resposta com os dados dos usuários
+
+	flytura.FormataRetornoHTTP(w, Results, http.StatusOK)
+
 }

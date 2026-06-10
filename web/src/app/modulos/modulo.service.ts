@@ -348,7 +348,15 @@ import * as XLSX from 'xlsx';
             'AmountOrigin':item.AmountOrigin,
             'AmountReturn':item.AmountReturn,
             'CreatedAtLocalCountry':item.CreatedAtLocalCountry,
-            'CreatedAtContractedCountry':item.CreatedAtContractedCountry
+            'CreatedAtContractedCountry':item.CreatedAtContractedCountry,
+            "FlightOrigin":item.FlightOrigin,
+            "FlightDestination":item.FlightDestination,
+            "OriginCountryCode":item.OriginCountryCode,
+            "OriginCity":item.OriginCity,
+            "DestinationCountryCode":item.DestinationCountryCode,
+            "DestinationCity":item.DestinationCity,
+            "OriginAirlineCommercial":item.OriginAirlineCommercial,
+            "ReturnAirlineCommercial":item.ReturnAirlineCommercial
           }));
 
           const colunas = [
@@ -373,7 +381,16 @@ import * as XLSX from 'xlsx';
             'AmountOrigin',
             'AmountReturn',
             'CreatedAtLocalCountry',
-            'CreatedAtContractedCountry'];
+            'CreatedAtContractedCountry',
+            "FlightOrigin",
+            "FlightDestination",
+            "OriginCountryCode",
+            "OriginCity",
+            "DestinationCountryCode",
+            "DestinationCity",
+            "OriginAirlineCommercial",
+            "ReturnAirlineCommercial"
+          ];
           // Converte JSON para uma worksheet Excel
           const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dados, { header: colunas });
 
@@ -401,4 +418,14 @@ import * as XLSX from 'xlsx';
     saveAs(blob, `${fileName}.xlsx`);
   }
 
+  
+  /*
+  Função criada por Ricardo Silva Ferreira
+  Inicio da criação 01/01/2026 09:09
+  Data Final da criação :  01/01/2026 09:09
+  */
+   importSheet(formData:FormData, apiName:string): Observable<any> {
+    return this.http.post(this.configService.apiUrl + apiName, formData);
+
+  }
 }

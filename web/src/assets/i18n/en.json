@@ -147,7 +147,16 @@
      "CustomerImportDate":"Customer import date ",
      "ServerImportDate":"Server date",
      "BACK":"Back",
-     "GO":"Go"
+     "GO":"Go",
+     "FlightOrigin":"Origin of the flight",  
+     "FlightDestination":"Flight destination",  
+     "OriginCountryCode":"Country of origin code",  
+     "OriginCity":"City of origin",  
+     "DestinationCountryCode":"destination country code",  
+     "DestinationCity":"Destination city",  
+     "OriginAirlineCommercial":"Commercial from the Originating Airline",  
+     "ReturnAirlineCommercial":"Return Airline Commercial",  
+     "UserImport":"Importer"
     
     }    
   }

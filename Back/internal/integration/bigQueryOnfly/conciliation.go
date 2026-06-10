@@ -9,143 +9,15 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/big"
-	"strconv"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"cloud.google.com/go/civil"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/api/iterator"
 )
-
-/*
-Função criada por Ricardo Silva Ferreira
-Inicio da criação 10/05/2026 18:00
-Data Final da criação 10/05/2026 18:00
-*/
-func convertToString(row map[string]bigquery.Value, fieldName string) string {
-
-	result := ""
-	if v, ok := row[fieldName].(string); ok {
-		result = v
-	}
-
-	return result
-}
-
-/*
-Função criada por Ricardo Silva Ferreira
-Inicio da criação 10/05/2026 18:00
-Data Final da criação 10/05/2026 18:00
-*/
-func convertToTimeDate(row map[string]bigquery.Value, fieldName string) time.Time {
-
-	if d, ok := row[fieldName].(civil.Date); ok {
-		t := time.Date(
-			d.Year,
-			time.Month(d.Month),
-			d.Day,
-			0, 0, 0, 0,
-			time.UTC,
-		)
-
-		return t
-	} else {
-		return time.Time{}
-	}
-
-}
-
-/*
-Função criada por Ricardo Silva Ferreira
-Inicio da criação 10/05/2026 19:40
-Data Final da criação 10/05/2026 19:40
-*/
-func convertToDecimal128(
-	row map[string]bigquery.Value,
-	fieldName string,
-) primitive.Decimal128 {
-
-	v, exists := row[fieldName]
-	if !exists || v == nil {
-		return primitive.NewDecimal128(0, 0)
-	}
-
-	switch value := v.(type) {
-
-	// ✅ BigQuery NUMERIC / BIGNUMERIC
-	case *big.Rat:
-		d128, err := primitive.ParseDecimal128(
-			value.FloatString(2),
-		)
-		if err != nil {
-			return primitive.NewDecimal128(0, 0)
-		}
-		return d128
-
-	// ✅ JSON / Excel como string ("3402.66" ou "3402,66")
-	case string:
-		value = strings.TrimSpace(value)
-		if value == "" {
-			return primitive.NewDecimal128(0, 0)
-		}
-
-		value = strings.Replace(value, ",", ".", 1)
-
-		d128, err := primitive.ParseDecimal128(value)
-		if err != nil {
-			return primitive.NewDecimal128(0, 0)
-		}
-		return d128
-
-	// ✅ Caso venha como número (menos comum, mas acontece)
-	case float64:
-		d128, err := primitive.ParseDecimal128(
-			strconv.FormatFloat(value, 'f', -1, 64),
-		)
-		if err != nil {
-			return primitive.NewDecimal128(0, 0)
-		}
-		return d128
-
-	default:
-		// tipo inesperado → não quebra o fluxo
-		return primitive.NewDecimal128(0, 0)
-	}
-}
-
-/*
-Função criada por Ricardo Silva Ferreira
-Inicio da criação 12/05/2026 18:47
-Data Final da criação 12/05/2026 18:47
-*/
-func convertToFloat64(row map[string]bigquery.Value, fieldName string) float64 {
-	if v, ok := row[fieldName]; ok {
-		switch value := v.(type) {
-
-		case float64:
-			return value
-
-		case int64:
-			return float64(value)
-
-		case string:
-			// remove possíveis separadores de milhar
-			clean := strings.ReplaceAll(value, ",", "")
-			f, err := strconv.ParseFloat(clean, 64)
-			if err == nil {
-				return f
-			}
-		}
-	}
-
-	return 0
-}
 
 /*
 Função criada por Ricardo Silva Ferreira
@@ -215,12 +87,20 @@ func ImportConciliationDataOnflys() {
 			origin_status_old,
 			currency_code,
 			origin_cancelled_reason,
-			return_cancelled_reason
+			return_cancelled_reason,
+			flight_origin,
+			flight_destination,
+			origin_country_code,
+			origin_city,
+			destination_country_code,
+			destination_city,
+			origin_airline_commercial,
+			return_airline_commercial
         FROM 
 			conciliation.gold_flytura 
 			--where emission_date='2026-06-01'
-			--where (emission_date>='2026-05-19' and emission_date<='2026-05-26') 
-			where (emission_date>='2026-05-01' and emission_date<=@today) 
+			--where (emission_date>='2026-04-01' and emission_date<='2026-05-26') 
+			where (emission_date>='2026-04-30' and emission_date<=@today) 
 			--where emission_date=@today
 			--AND origin_airline IN UNNEST(@companies)
         
@@ -270,30 +150,40 @@ func ImportConciliationDataOnflys() {
 		}
 
 		var data models.Conciliation
-		data.Protocol = convertToString(row, "protocol")
-		data.EmissionDate = convertToTimeDate(row, "emission_date")
-		data.OriginDate = convertToTimeDate(row, "origin_date")
-		data.ReturnDate = convertToTimeDate(row, "return_date")
+		data.Protocol = flytura.ConvertToString(row, "protocol")
+		data.EmissionDate = flytura.ConvertToTimeDate(row, "emission_date")
+		data.OriginDate = flytura.ConvertToTimeDate(row, "origin_date")
+		data.ReturnDate = flytura.ConvertToTimeDate(row, "return_date")
 
-		data.OriginLocator = strings.ReplaceAll(strings.ReplaceAll(convertToString(row, "origin_locator"), "-", ""), " ", "")
-		data.ReturnLocator = strings.ReplaceAll(strings.ReplaceAll(convertToString(row, "return_locator"), "-", ""), " ", "")
-		data.OriginETicket = strings.ReplaceAll(strings.ReplaceAll(convertToString(row, "origin_e_ticket"), "-", ""), " ", "")
-		data.ReturnETicket = strings.ReplaceAll(strings.ReplaceAll(convertToString(row, "return_e_ticket"), "-", ""), " ", "")
+		data.OriginLocator = strings.ReplaceAll(strings.ReplaceAll(flytura.ConvertToString(row, "origin_locator"), "-", ""), " ", "")
+		data.ReturnLocator = strings.ReplaceAll(strings.ReplaceAll(flytura.ConvertToString(row, "return_locator"), "-", ""), " ", "")
+		data.OriginETicket = strings.ReplaceAll(strings.ReplaceAll(flytura.ConvertToString(row, "origin_e_ticket"), "-", ""), " ", "")
+		data.ReturnETicket = strings.ReplaceAll(strings.ReplaceAll(flytura.ConvertToString(row, "return_e_ticket"), "-", ""), " ", "")
 
 		// fmt.Println("Tamanho", len(strings.ReplaceAll("9572288797433 ", " ", "")))
-		data.OriginAirline = convertToString(row, "origin_airline")
-		data.ReturnAirline = convertToString(row, "return_airline")
-		data.TravelerName = convertToString(row, "traveler_name")
-		data.TravelerFirstName = convertToString(row, "traveler_first_name")
-		data.TravelerLastName = convertToString(row, "traveler_last_name")
-		data.AmountOrigin = convertToFloat64(row, "onfly_amount_origin")
-		data.AmountReturn = convertToFloat64(row, "onfly_amount_return")
-		data.BookingStatus = convertToString(row, "origin_status")
-		data.BookingStatusOld = convertToString(row, "origin_status_old")
-		data.CurrencyCode = convertToString(row, "currency_code")
-		data.OriginCancelledReason = convertToString(row, "origin_cancelled_reason")
-		data.ReturnCancelledReason = convertToString(row, "return_cancelled_reason")
+		data.OriginAirline = flytura.ConvertToString(row, "origin_airline")
+		data.ReturnAirline = flytura.ConvertToString(row, "return_airline")
+		data.TravelerName = flytura.ConvertToString(row, "traveler_name")
+		data.TravelerFirstName = flytura.ConvertToString(row, "traveler_first_name")
+		data.TravelerLastName = flytura.ConvertToString(row, "traveler_last_name")
+		data.AmountOrigin = flytura.ConvertToFloat64(row, "onfly_amount_origin")
+		data.AmountReturn = flytura.ConvertToFloat64(row, "onfly_amount_return")
+		data.BookingStatus = strings.ReplaceAll(strings.ReplaceAll(flytura.ConvertToString(row, "origin_status"), "-", ""), " ", "")
+		data.BookingStatusOld = flytura.ConvertToString(row, "origin_status_old")
+		data.CurrencyCode = flytura.ConvertToString(row, "currency_code")
+		data.OriginCancelledReason = flytura.ConvertToString(row, "origin_cancelled_reason")
+		data.ReturnCancelledReason = flytura.ConvertToString(row, "return_cancelled_reason")
 		data.Active = true
+
+		//ESSA PARTE FOI ACRESCENTADA DIA 09/06/2026 16:46
+		data.FlightOrigin = flytura.ConvertToString(row, "flight_origin")
+		data.FlightDestination = flytura.ConvertToString(row, "flight_destination")
+		data.OriginCountryCode = flytura.ConvertToString(row, "origin_country_code")
+		data.OriginCity = flytura.ConvertToString(row, "origin_city")
+		data.DestinationCountryCode = flytura.ConvertToString(row, "destination_country_code")
+		data.DestinationCity = flytura.ConvertToString(row, "destination_city")
+		data.OriginAirlineCommercial = flytura.ConvertToString(row, "origin_airline_commercial")
+		data.ReturnAirlineCommercial = flytura.ConvertToString(row, "return_airline_commercial")
 
 		nowUTC := time.Now().UTC()
 		dh, err := flytura.DiffHours(nowUTC, flytura.Fuso1, flytura.Fuso2)
@@ -302,6 +192,11 @@ func ImportConciliationDataOnflys() {
 			data.CreatedAtContractedCountry = nowUTC
 		} else {
 			data.CreatedAtContractedCountry = nowUTC.Add(-time.Duration(dh) * time.Hour)
+		}
+		// fmt.Println("FlightOrigin", data.Protocol)
+		if strings.ReplaceAll(data.Protocol, " ", "") == "040S2Z" {
+			fmt.Println("TravelerName", data.TravelerName)
+			fmt.Println("OriginCountryCode ", data.OriginCountryCode)
 		}
 
 		data.CreatedAtLocalCountry = nowUTC
@@ -314,19 +209,19 @@ func ImportConciliationDataOnflys() {
 		// fmt.Println("traveler_last_name:", row["traveler_last_name"])
 		// fmt.Println("Traveler:", data.TravelerName)
 
-		if strings.Contains(data.Protocol, "04300M") {
-			fmt.Println(" ")
-			fmt.Println("TravelerName:", data.TravelerName)
-			fmt.Println("OriginLocator:", data.OriginLocator)
-			fmt.Println("ReturnLocator:", data.ReturnLocator)
-			fmt.Println("OriginETicket:", data.OriginETicket)
-			fmt.Println("OriginETicket:", data.ReturnETicket)
-			fmt.Println("OriginAirline:", data.OriginAirline)
-			fmt.Println("ReturnAirline:", data.ReturnAirline)
-			fmt.Println(" ")
-			fmt.Println(" ")
+		// if strings.Contains(data.Protocol, "04300M") {
+		// 	fmt.Println(" ")
+		// 	fmt.Println("TravelerName:", data.TravelerName)
+		// 	fmt.Println("OriginLocator:", data.OriginLocator)
+		// 	fmt.Println("ReturnLocator:", data.ReturnLocator)
+		// 	fmt.Println("OriginETicket:", data.OriginETicket)
+		// 	fmt.Println("OriginETicket:", data.ReturnETicket)
+		// 	fmt.Println("OriginAirline:", data.OriginAirline)
+		// 	fmt.Println("ReturnAirline:", data.ReturnAirline)
+		// 	fmt.Println(" ")
+		// 	fmt.Println(" ")
 
-		}
+		// }
 
 		// fmt.Println("Amount Origin:", row["onfly_amount_origin"])
 		// fmt.Println("Amount Return:", row["onfly_amount_return"])
@@ -337,74 +232,167 @@ func ImportConciliationDataOnflys() {
 
 		// fmt.Println("data.OriginAirline ", data.OriginAirline)
 
-		codAirline, nameAirline := airLine.SearchAirlineByName(airlines, data.OriginAirline)
+		originCodAirline, _ := airLine.SearchAirlineByName(airlines, data.OriginAirline)
+		returnCodAirline, _ := airLine.SearchAirlineByName(airlines, data.ReturnAirline)
+
+		processOriginAirline := (originCodAirline == "0001" || originCodAirline == "0002" || originCodAirline == "0003")
+		processReturnCodAirline := (returnCodAirline == "0001" || returnCodAirline == "0002" || returnCodAirline == "0003")
 
 		if flytura.Normalize(data.BookingStatus) == "emitted" {
 
-			if codAirline == "0001" || codAirline == "0002" || codAirline == "0003" {
+			var pr models.PurcharseRecord
 
-				var pr models.PurcharseRecord
+			// name, lastName := flytura.SplitNameLastName(data.TravelerName)
 
-				// name, lastName := flytura.SplitNameLastName(data.TravelerName)
+			pr.Name = data.TravelerFirstName
+			pr.LastName = data.TravelerLastName
+			pr.Status = "Fila"
 
-				pr.Name = data.TravelerFirstName
-				pr.LastName = data.TravelerLastName
-				pr.Status = "Fila"
+			pr.Active = true
+			pr.OriginData = "BigQuery Integration"
+			pr.EmissionDate = data.EmissionDate
 
-				pr.Active = true
-				pr.OriginData = "BigQuery Integration"
-				pr.EmissionDate = data.EmissionDate
+			if pr.CreatedAt.IsZero() {
+				nowUTC := time.Now().UTC()
+				dh, err := flytura.DiffHours(nowUTC, flytura.Fuso1, flytura.Fuso2)
+				if err != nil {
+					panic(err)
+				}
+				pr.CreatedAt = nowUTC.Add(-time.Duration(dh) * time.Hour)
+			}
 
-				if pr.CreatedAt.IsZero() {
-					nowUTC := time.Now().UTC()
-					dh, err := flytura.DiffHours(nowUTC, flytura.Fuso1, flytura.Fuso2)
-					if err != nil {
-						panic(err)
-					}
-					pr.CreatedAt = nowUTC.Add(-time.Duration(dh) * time.Hour)
+			origin := flytura.Normalize(data.OriginAirline)
+			ret := flytura.Normalize(data.ReturnAirline)
+
+			isOriginAM := origin == "aeromexico"
+			isReturnAM := ret == "aeromexico"
+			isOriginEmpty := origin == ""
+			isReturnEmpty := ret == ""
+
+			switch {
+			case isOriginAM && isReturnAM:
+				if data.OriginETicket == data.ReturnETicket {
+					insertRegister(data.OriginETicket, pr, data.OriginAirline, airlines, "GO")
+				} else {
+					insertRegister(data.OriginETicket, pr, data.OriginAirline, airlines, "GO")
+					insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
 				}
 
-				if flytura.Normalize(data.ReturnAirline) != "" &&
-					flytura.Normalize(data.ReturnAirline) == "aeromexico" &&
-					flytura.Normalize(data.OriginAirline) != "" &&
-					flytura.Normalize(data.OriginAirline) != "aeromexico" {
-					if data.OriginETicket != "" {
-						insertRegister(data.OriginETicket, pr, data.ReturnAirline, airlines, "GO")
-					}
-					if data.OriginETicket != data.ReturnETicket && data.ReturnETicket != "" {
-						insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
-					}
+			case isOriginAM && !isReturnAM:
+				insertRegister(data.OriginETicket, pr, data.OriginAirline, airlines, "GO")
+				if processReturnCodAirline {
+					insertRegister(data.OriginLocator, pr, data.ReturnAirline, airlines, "BACK")
+				}
 
-					if data.OriginLocator != "" {
+			case !isOriginAM && isReturnAM:
+				if processOriginAirline {
+					insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
+				}
+				insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
+
+			case !isOriginAM && !isReturnAM:
+				if data.OriginLocator == data.ReturnLocator {
+					if processOriginAirline {
 						insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
 					}
-					if data.OriginLocator != data.ReturnLocator && data.ReturnLocator != "" {
-						insertRegister(data.ReturnLocator, pr, data.OriginAirline, airlines, "BACK")
-					}
-
 				} else {
-
-					if flytura.Normalize(data.OriginAirline) != "aeromexico" {
-						if data.OriginLocator != "" {
-							insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
-						}
-						if data.OriginLocator != data.ReturnLocator && data.ReturnLocator != "" {
-							insertRegister(data.ReturnLocator, pr, data.ReturnAirline, airlines, "BACK")
-						}
-					} else {
-
-						if data.OriginETicket != "" {
-							insertRegister(data.OriginETicket, pr, nameAirline, airlines, "GO")
-						}
-
-						if data.OriginETicket != data.ReturnETicket {
-							if data.ReturnETicket != "" {
-								insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
-							}
-						}
+					if processOriginAirline {
+						insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
+					}
+					if processReturnCodAirline {
+						insertRegister(data.ReturnLocator, pr, data.ReturnAirline, airlines, "BACK")
 					}
 				}
+
+			case isOriginAM && isReturnEmpty:
+				if processOriginAirline {
+					insertRegister(data.OriginETicket, pr, data.OriginAirline, airlines, "GO")
+				}
+
+			case isOriginEmpty && isReturnAM:
+				if processReturnCodAirline {
+					insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
+				}
+
+			case !isOriginAM && isReturnEmpty:
+				if processOriginAirline {
+					insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
+				}
+
+			case isOriginEmpty && !isReturnAM:
+				if processReturnCodAirline {
+					insertRegister(data.ReturnLocator, pr, data.ReturnAirline, airlines, "BACK")
+				}
 			}
+
+			// if flytura.Normalize(data.OriginAirline) == "aeromexico" &&
+			// 	flytura.Normalize(data.ReturnAirline) == "aeromexico" &&
+			// 	data.OriginETicket == data.ReturnETicket {
+			// 	insertRegister(data.OriginETicket, pr, data.OriginAirline, airlines, "GO")
+
+			// } else if flytura.Normalize(data.OriginAirline) == "aeromexico" &&
+			// 	flytura.Normalize(data.ReturnAirline) == "aeromexico" &&
+			// 	data.OriginETicket != data.ReturnETicket {
+			// 	insertRegister(data.OriginETicket, pr, data.OriginAirline, airlines, "GO")
+			// 	insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
+
+			// } else if flytura.Normalize(data.OriginAirline) == "aeromexico" &&
+			// 	flytura.Normalize(data.ReturnAirline) != "aeromexico" {
+			// 	insertRegister(data.OriginETicket, pr, data.OriginAirline, airlines, "GO")
+			// 	if processReturnCodAirline {
+			// 		insertRegister(data.OriginLocator, pr, data.ReturnAirline, airlines, "BACK")
+			// 	}
+
+			// } else if flytura.Normalize(data.OriginAirline) != "aeromexico" &&
+			// 	flytura.Normalize(data.ReturnAirline) == "aeromexico" {
+			// 	if processOriginAirline {
+			// 		insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
+			// 	}
+
+			// 	insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
+
+			// } else if flytura.Normalize(data.OriginAirline) != "aeromexico" &&
+			// 	flytura.Normalize(data.ReturnAirline) != "aeromexico" &&
+			// 	data.OriginLocator == data.ReturnLocator {
+			// 	if processOriginAirline {
+			// 		insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
+			// 	}
+
+			// } else if flytura.Normalize(data.OriginAirline) != "aeromexico" &&
+			// 	flytura.Normalize(data.ReturnAirline) != "aeromexico" &&
+			// 	data.OriginLocator != data.ReturnLocator {
+			// 	if processOriginAirline {
+			// 		insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
+			// 	}
+			// 	if processReturnCodAirline {
+			// 		insertRegister(data.ReturnLocator, pr, data.ReturnAirline, airlines, "BACK")
+			// 	}
+
+			// } else if flytura.Normalize(data.OriginAirline) == "aeromexico" &&
+			// 	flytura.Normalize(data.ReturnAirline) == "" {
+			// 	if processOriginAirline {
+			// 		insertRegister(data.OriginETicket, pr, data.OriginAirline, airlines, "GO")
+			// 	}
+
+			// } else if flytura.Normalize(data.OriginAirline) == "" &&
+			// 	flytura.Normalize(data.ReturnAirline) == "aeromexico" {
+			// 	if processReturnCodAirline {
+			// 		insertRegister(data.ReturnETicket, pr, data.ReturnAirline, airlines, "BACK")
+			// 	}
+
+			// } else if flytura.Normalize(data.OriginAirline) != "aeromexico" &&
+			// 	flytura.Normalize(data.ReturnAirline) == "" {
+			// 	if processOriginAirline {
+			// 		insertRegister(data.OriginLocator, pr, data.OriginAirline, airlines, "GO")
+			// 	}
+
+			// } else if flytura.Normalize(data.OriginAirline) == "" &&
+			// 	flytura.Normalize(data.ReturnAirline) != "aeromexico" {
+			// 	if processReturnCodAirline {
+			// 		insertRegister(data.ReturnLocator, pr, data.ReturnAirline, airlines, "BACK")
+			// 	}
+			// }
+
 		}
 
 		exist, erro := VeryExistKey(
@@ -642,6 +630,14 @@ func SearchConciliationPagination(
 			"BookingStatus":              data.BookingStatus,
 			"BookingStatusOld":           data.BookingStatusOld,
 			"CancelledReason":            data.CancelledReason,
+			"FlightOrigin":               data.FlightOrigin,
+			"FlightDestination":          data.FlightDestination,
+			"OriginCountryCode":          data.OriginCountryCode,
+			"OriginCity":                 data.OriginCity,
+			"DestinationCountryCode":     data.DestinationCountryCode,
+			"DestinationCity":            data.DestinationCity,
+			"OriginAirlineCommercial":    data.OriginAirlineCommercial,
+			"ReturnAirlineCommercial":    data.ReturnAirlineCommercial,
 		})
 	}
 
@@ -754,6 +750,14 @@ func SearchConciliationExcel(
 			"CreatedAtLocalCountry":      data.CreatedAtLocalCountry,
 			"BookingStatus":              data.BookingStatus,
 			"BookingStatusOld":           data.BookingStatusOld,
+			"FlightOrigin":               data.FlightOrigin,
+			"FlightDestination":          data.FlightDestination,
+			"OriginCountryCode":          data.OriginCountryCode,
+			"OriginCity":                 data.OriginCity,
+			"DestinationCountryCode":     data.DestinationCountryCode,
+			"DestinationCity":            data.DestinationCity,
+			"OriginAirlineCommercial":    data.OriginAirlineCommercial,
+			"ReturnAirlineCommercial":    data.ReturnAirlineCommercial,
 		})
 	}
 

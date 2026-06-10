@@ -21,38 +21,53 @@ import { jwtDecode } from 'jwt-decode';
 import { EnumPerfil } from '../../Enum/perfil';
 import { AlertMoreColumnsComponent } from "../../../components/alert-more-columns/alert-more-columns.component";
 import { ModuloService } from '../../modulo.service';
+import { SpinnerComponent } from '../../../components/spinner/spinner.component';
 registerLocaleData(localePt, 'pt');
 
 
 
 @Component({
   selector: 'app-out-put-invoices',
-  imports: [CommonModule, FormsModule, MatDatepickerModule, TranslateModule, MatNativeDateModule, ModalOkComponent, PaginatorComponent, TranslateModule, ModalConfirmationComponent, AlertMoreColumnsComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    MatDatepickerModule, 
+    TranslateModule, 
+    MatNativeDateModule, 
+    ModalOkComponent, 
+    PaginatorComponent, 
+    TranslateModule, 
+    ModalConfirmationComponent, 
+    AlertMoreColumnsComponent,
+    SpinnerComponent
+  ],
   templateUrl: './out-put-invoices.component.html',
   styleUrl: './out-put-invoices.component.css',
    providers: [{ provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },{ provide: LOCALE_ID, useValue: 'pt' }]
 })
 
 export class OutPutInvoicesComponent {
-
+ @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild(ModalOkComponent) modalOk!: ModalOkComponent; 
   
      @ViewChild(ModalConfirmationComponent) modalConfirm!: ModalConfirmationComponent; 
-    searchKeyCode:string='';
-    searchDtInicio:string='';
-    searchDtFim:string='';
-    searchCompanyCode='';   
-    outPutInvoices:any[]=[];
-    airLines:any[]=[];
-    msgNotFound=false;
-    totalRegistros: number = 0;
-    totalPages: number = 1;    
-    currentPage: number = 1;
-    limit: number = 0;  
-    dados:any;   
-    objPesquisar:any= { };
-    adm:boolean=true;
-      fillOneFilter=false;
+        searchKeyCode:string='';
+        searchDtInicio:string='';
+        searchDtFim:string='';
+        searchCompanyCode='';   
+        outPutInvoices:any[]=[];
+        airLines:any[]=[];
+        msgNotFound=false;
+        totalRegistros: number = 0;
+        totalPages: number = 1;    
+        currentPage: number = 1;
+        limit: number = 0;  
+        dados:any;   
+        objPesquisar:any= { };
+        adm:boolean=true;
+        fillOneFilter=false;
+        isLoading:boolean=false;
+        decoded:any
     
     /**
      *
@@ -109,9 +124,10 @@ export class OutPutInvoicesComponent {
       const token = localStorage.getItem('token'); // ou onde você armazenou o JWT
       
           if (token) {
-            const decoded = jwtDecode<any>(token);
-            if(decoded && decoded.perfis && decoded.perfis.length>0) {
-                this.adm=decoded.perfis.some((data:any)=> data===EnumPerfil.ADM)
+            this.decoded = jwtDecode<any>(token);
+            console.log('decode ',this.decoded);
+            if(this.decoded && this.decoded.perfis && this.decoded.perfis.length>0) {
+                this.adm=this.decoded.perfis.some((data:any)=> data===EnumPerfil.ADM)
             }
           }
 
@@ -257,5 +273,68 @@ export class OutPutInvoicesComponent {
 
         
         }
+
+
+        
+  
+  onFileSelected(event: any) {
+      const file: File = event.target.files[0];
+     
+      if (file) {
+              const formData = new FormData();
+              formData.append('file', file);
+              formData.append('idUserInserted', this.decoded.idUser);
+              formData.append('userName', this.decoded.name);
+              this.isLoading=true;
+
+          this.moduloService.importSheet(formData, "/UploadExcelOutputInvoicesRecord").subscribe({
+            next: async (returnSheet: any) => {
+              if (returnSheet.message) {
+                console.log('returnSheet.message ',returnSheet.message);
+                // Caso 1: Planilha vazia
+                  this.isLoading=false;
+                  this.fileInput.nativeElement.value = '';
+                   const resultado = await this.modalOk.openModal(this.translate.instant('Ecra.sheetImportedOk'), true);
+                  if (resultado) {
+                    this.fileInput.nativeElement.value = '';
+                  }
+                 this.search(1); 
+              }
+            },
+            error: async (err: any) => {
+              console.error('Erro do servidor:', err);
+              if (err.error?.status === "500") {
+                 this.isLoading=false;
+                const resultado = await this.modalOk.openModal(                
+                   this.translate.instant('Ecra.correctSheetName')
+                   .replace("{0}", err.error?.codFile)
+                   .replace("{1}", err.error?.sheetName)
+                   .replace("{2}", err.error?.codFile)
+                   .replace("{3}", err.error?.nameAirLine)
+                   .replace("{4}", err.error?.codFile)
+                    .replace("{5}", err.error?.fileName)
+                  , true);
+                if (resultado) {
+                    
+                  this.fileInput.nativeElement.value = '';
+                }
+              }
+              else if (err.status === 500) {
+                   this.isLoading=false;
+                const resultado = await this.modalOk.openModal(                
+                    this.translate.instant(err.error.replace("\n","")), 
+                    true);
+                     if (resultado) {
+                      
+                  this.fileInput.nativeElement.value = '';
+                }
+              }
+            }
+          });
+        } 
+    }
+
+
+   
     
 }

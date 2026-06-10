@@ -117,48 +117,31 @@ func ReturnSheetErrorLine(rows [][]string) (string, string, string) {
 	Data Final da criação : 01/03/2023 19:06
 	Local: Brasil
 */
-func getXlsColSafe(r *xls.Row, idx int) string {
-	if r == nil {
-		return ""
-	}
-	// LastCol geralmente é a contagem de colunas válidas (0..LastCol-1)
-	if idx >= 0 && idx < r.LastCol() {
-		return r.Col(idx)
-	}
-	return ""
-}
+// func getXlsColSafe(r *xls.Row, idx int) string {
+// 	if r == nil {
+// 		return ""
+// 	}
+// 	// LastCol geralmente é a contagem de colunas válidas (0..LastCol-1)
+// 	if idx >= 0 && idx < r.LastCol() {
+// 		return r.Col(idx)
+// 	}
+// 	return ""
+// }
 
-/*
-Função criada por Ricardo Silva Ferreira
-Inicio da criação 01/03/2023 19:05
-Data Final da criação : 01/03/2023 19:06
-Local: Brasil
-*/
-// safeCell retorna a célula idx de uma []string (excelize GetRows)
-// Se a coluna não existir, devolve "".
-func safeCell(row []string, idx int) string {
-	if idx >= 0 && idx < len(row) {
-		return strings.TrimSpace(row[idx])
-	}
-	return ""
-}
-
-/*
-Função criada por Ricardo Silva Ferreira
-Inicio da criação 01/03/2023 19:05
-Data Final da criação : 01/03/2023 19:06
-Local: Brasil
-*/
-func compressSpaces(s string) string {
-
-	// compressSpaces remove espaços repetidos no meio da string.
-	var reSpaces = regexp.MustCompile(`\s+`)
-	s = strings.TrimSpace(s)
-	if s == "" {
-		return s
-	}
-	return reSpaces.ReplaceAllString(s, "")
-}
+// /*
+// Função criada por Ricardo Silva Ferreira
+// Inicio da criação 01/03/2023 19:05
+// Data Final da criação : 01/03/2023 19:06
+// Local: Brasil
+// */
+// // safeCell retorna a célula idx de uma []string (excelize GetRows)
+// // Se a coluna não existir, devolve "".
+// func safeCell(row []string, idx int) string {
+// 	if idx >= 0 && idx < len(row) {
+// 		return strings.TrimSpace(row[idx])
+// 	}
+// 	return ""
+// }
 
 //
 // Função principal refatorada
@@ -221,9 +204,9 @@ func ProcessPurcharseRecordExcel(
 				rows = append(rows, []string{"", "", ""})
 				continue
 			}
-			c0 := strings.TrimSpace(getXlsColSafe(r, 0))
-			c1 := strings.TrimSpace(getXlsColSafe(r, 1))
-			c2 := strings.TrimSpace(getXlsColSafe(r, 2))
+			c0 := strings.TrimSpace(flytura.GetXlsColSafe(r, 0))
+			c1 := strings.TrimSpace(flytura.GetXlsColSafe(r, 1))
+			c2 := strings.TrimSpace(flytura.GetXlsColSafe(r, 2))
 			rows = append(rows, []string{c0, c1, c2})
 		}
 
@@ -260,9 +243,9 @@ func ProcessPurcharseRecordExcel(
 		// preenchendo com "" onde faltar.
 		normalized := make([][]string, 0, len(rows))
 		for _, r := range rows {
-			a := safeCell(r, 0)
-			b := safeCell(r, 1)
-			c := safeCell(r, 2)
+			a := flytura.SafeCell(r, 0)
+			b := flytura.SafeCell(r, 1)
+			c := flytura.SafeCell(r, 2)
 			normalized = append(normalized, []string{a, b, c})
 		}
 		rows = normalized
@@ -322,7 +305,7 @@ func ProcessPurcharseRecordExcel(
 		}
 
 		// Preenche com segurança e remove espaços internos extras da chave
-		obj.Key = compressSpaces(row[0])
+		obj.Key = flytura.CompressSpaces(row[0])
 
 		// fmt.Println("obj.Key ", obj.Key)
 		obj.Name = strings.TrimSpace(row[1])     // pode ficar vazio sem erro

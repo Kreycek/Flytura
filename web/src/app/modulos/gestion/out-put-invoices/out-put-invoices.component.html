@@ -1,6 +1,7 @@
 
 <app-modal-ok></app-modal-ok>
 <app-modal-confirmation  #modal></app-modal-confirmation>
+<app-spinner [isLoading]="isLoading" ></app-spinner>
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -64,7 +65,16 @@
               <div class="actions-container">
               <button style="font-size: 12px" class="action-btn-search add-btn" (click)="search(1)">{{ 'Ecra.search' | translate }}</button>
 
-                   <!-- GErar relatório excel -->
+                
+
+                    
+              </div>
+            </div>
+
+                <div class="col-lg-10 col-md-5 col-sm-6 col-12" style="padding-top: 20px;" >
+                 <div class="actions-container">
+
+                     <!-- GErar relatório excel -->
                       <button 
                           class="action-btn-search add-btn" 
                           title="{{!fillOneFilter ? ('Ecra.fillOneFilter' | translate) : ''}}" 
@@ -73,8 +83,22 @@
                           <span class="icon">📊</span>
                           {{ 'Ecra.generateReport' | translate }}
                       </button>
+    <!-- Botão de selecionar Excel -->
+                      <button class="action-btn-search action-btn excel-btn" (click)="fileInput.click()">
+                        <span class="icon">⬆️</span>
+                        {{ 'Ecra.selectPlanSheet' | translate }}
+                      </button>
+
+                        <input 
+                          type="file" 
+                          #fileInput 
+                          (change)="onFileSelected($event)" 
+                          accept=".xlsx,.xls,.csv"
+                          hidden
+                        />
+                        </div>
+
               </div>
-            </div>
          
             </div>
    </div>
@@ -86,7 +110,7 @@
           <table class="table table-bordered"  style="min-width: 2000px;">
             <thead>    
                <tr>
-                <td colspan="20" style="font-weight: bold; font-size: 14px; color: #ff0000;">{{ 'Ecra.recordFound' | translate }}: {{totalRegistros}}</td>
+                <td colspan="21" style="font-weight: bold; font-size: 14px; color: #ff0000;">{{ 'Ecra.recordFound' | translate }}: {{totalRegistros}}</td>
               </tr>           
               <tr>
                 <th class="fmtTableBorder"> {{ 'Ecra.Key' | translate }}</th>    
@@ -108,6 +132,7 @@
                 <th class="fmtTableBorder">{{ 'Ecra.otherValues' | translate }}</th>
                 <th class="fmtTableBorder">{{ 'Ecra.segment' | translate }}</th>
                 <th class="fmtTableBorder">{{ 'Ecra.ticket' | translate }}</th>
+                <th class="fmtTableBorder">{{ 'Ecra.UserImport' | translate }}</th>
                 <th class="fmtTableBorder" *ngIf="this.adm"></th>
               </tr>
             </thead>
@@ -132,6 +157,7 @@
                  <td>{{item.OtherValues  | number:'1.2-2'}}</td>
                  <td>{{item.Segment}}</td>
                  <td>{{item.Ticket}}</td>
+                 <td>{{item.UserNameimport}}</td>
                  <td *ngIf="this.adm"> <i (click)="deleteItem(item.ID)" style="font-size: 20px; cursor: pointer; " 
                  
                     class="mdi mdi-delete-forever"></i></td>

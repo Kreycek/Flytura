@@ -155,7 +155,7 @@ export class PurcharseRecordComponent {
               formData.append('idUserInserted', this.decoded.idUser);
               this.isLoading=true;
 
-          this.purcharseRecordService.importarPlanilha(formData).subscribe({
+          this.moduloService.importSheet(formData, "/UploadExcelPurcharseRecord").subscribe({
             next: async (returnSheet: any) => {
               if (returnSheet.message) {
                 // Caso 1: Planilha vazia

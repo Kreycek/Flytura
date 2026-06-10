@@ -123,7 +123,15 @@
                 <th class="fmtTableBorder">{{ 'Ecra.ReturnCancelledReason' | translate }}</th>
                 <th class="fmtTableBorder">{{ 'Ecra.CurrencyCode' | translate }}</th>
                 <th class="fmtTableBorder">{{ 'Ecra.AmountOrigin' | translate }}</th>
-                <th class="fmtTableBorder">{{ 'Ecra.AmountReturn' | translate }}</th>              
+                <th class="fmtTableBorder">{{ 'Ecra.AmountReturn' | translate }}</th>        
+                <th class="fmtTableBorder">{{ 'Ecra.FlightOrigin' | translate }}</th>  
+                <th class="fmtTableBorder">{{ 'Ecra.FlightDestination' | translate }}</th>  
+                <th class="fmtTableBorder">{{ 'Ecra.OriginCountryCode' | translate }}</th>  
+                <th class="fmtTableBorder">{{ 'Ecra.OriginCity' | translate }}</th>  
+                <th class="fmtTableBorder">{{ 'Ecra.DestinationCountryCode' | translate }}</th>  
+                <th class="fmtTableBorder">{{ 'Ecra.DestinationCity' | translate }}</th>  
+                <th class="fmtTableBorder">{{ 'Ecra.OriginAirlineCommercial' | translate }}</th>  
+                <th class="fmtTableBorder">{{ 'Ecra.ReturnAirlineCommercial' | translate }}</th>        
                 <th class="CustomerImportDate">{{ 'Ecra.CustomerImportDate' | translate }}</th>
                 <th class="CustomerImportDate">{{ 'Ecra.ServerImportDate' | translate }}</th>
               
@@ -150,16 +158,24 @@
                 <td style="text-align: center;"> {{item.ReturnETicket}} </td>       
                 <td style="text-align: center;"> {{item.OriginAirline}} </td>       
                 <td style="text-align: center;"> {{item.ReturnAirline}} </td>
-                <td style="text-align: left;"> {{item.TravelerName}} </td>
-                <td style="text-align: left;"> {{item.TravelerFirstName}} </td>
-                <td style="text-align: left;"> {{item.TravelerLastName}} </td>       
+                <td style="text-align: left;">   {{item.TravelerName}} </td>
+                <td style="text-align: left;">   {{item.TravelerFirstName}} </td>
+                <td style="text-align: left;">   {{item.TravelerLastName}} </td>       
                 <td style="text-align: center;"> {{item.BookingStatus}} </td>
                 <td style="text-align: center;"> {{item.BookingStatusOld}} </td>
                 <td style="text-align: center;"> {{item.OriginCancelledReason}} </td>
                 <td style="text-align: center;"> {{item.ReturnCancelledReason}} </td>
                 <td style="text-align: center;"> {{item.CurrencyCode}} </td>
-                <td style="text-align: center;">{{ item.AmountOrigin | number:'1.2-2':'pt' }} </td>
-                <td style="text-align: center;">{{item.AmountReturn  | number:'1.2-2':'pt'}} </td>                
+                <td style="text-align: center;"> {{item.AmountOrigin | number:'1.2-2':'pt' }} </td>
+                <td style="text-align: center;"> {{item.AmountReturn  | number:'1.2-2':'pt'}} </td>   
+                <td style="text-align: center;"> {{item.FlightOrigin}} </td>
+                <td style="text-align: center;"> {{item.FlightDestination}} </td>
+                <td style="text-align: center;"> {{item.OriginCountryCode}} </td>
+                <td style="text-align: center;"> {{item.OriginCity}} </td>
+                <td style="text-align: center;"> {{item.DestinationCountryCode}} </td>
+                <td style="text-align: center;"> {{item.DestinationCity}} </td>
+                <td style="text-align: center;"> {{item.OriginAirlineCommercial}} </td>
+                <td style="text-align: center;"> {{item.ReturnAirlineCommercial}} </td>             
                   <td style="text-align: center;"> 
                     @if( moduloService.isValidDate(item.CreatedAtContractedCountry)) {
                         {{item.CreatedAtContractedCountry  | date:'dd/MM/YYYY HH:mm':'UTC'}}

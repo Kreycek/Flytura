@@ -24,13 +24,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func criarArquivoTemporario(extensao string) string {
-	if extensao == ".xls" {
-		return "upload-*.xls"
-	}
-	return "upload-*.xlsx"
-}
-
 /*
 Função criada por Ricardo Silva Ferreira
 Inicio da criação 03/09/2025 22:05
@@ -119,7 +112,7 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 
 	extensao := strings.ToLower(filepath.Ext(fileHeader.Filename))
 
-	tempFile, errTempFile := os.CreateTemp("", criarArquivoTemporario(extensao))
+	tempFile, errTempFile := os.CreateTemp("", flytura.CriarArquivoTemporarioExcel(extensao, "purcharseRecordExcel"))
 	if errTempFile != nil {
 		http.Error(w, "Erro ao salvar arquivo", http.StatusInternalServerError)
 		return

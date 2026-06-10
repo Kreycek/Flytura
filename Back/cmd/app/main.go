@@ -288,7 +288,7 @@ func main() {
 		Inicio da criação 05/09/2025 14:06
 		Data Final da criação : 09/09/2025 14:10
 	*/
-	http.HandleFunc("/api/UploadPurcharseRecord", purcharseRecord.UploadPurcharseRecordHandler)
+	http.HandleFunc("/api/UploadExcelPurcharseRecord", purcharseRecord.UploadPurcharseRecordHandler)
 	// Não permite pesquisar por parametro apenas traz todos os registro para paginação inicialmente a primeira página
 	http.HandleFunc("/api/GetAllPurcharseRecordPagination", purcharseRecord.GetAllPurcharseRecordPaginationHandler)
 	// Obtem todos sem paginação
@@ -343,6 +343,13 @@ func main() {
 	http.HandleFunc("/api/SearchOutPutInvoicesInforme", outPutInvoices.SearchOutPutInvoicesInformeHandler)
 
 	http.HandleFunc("/api/GroupByCompanySumSection", outPutInvoices.GroupByCompanySumSectionHandler)
+
+	/*
+		Configuração criada por Ricardo Silva Ferreira
+		Inicio da criação 10/06/2026 11:32
+		Data Final da criação : 10/06/2026 11:36
+	*/
+	http.HandleFunc("/api/UploadExcelOutputInvoicesRecord", outPutInvoices.UploadExcelOutputInvoicesRecordHandler)
 
 	//Inserido em 20/11/2025 17:26
 	r := mux.NewRouter()

@@ -157,6 +157,15 @@
      "CustomerImportDate":"Valor de retorno",
      "ServerImportDate":"Valor de retorno",
      "BACK":"Volver",
-     "GO":"Partida"
+     "GO":"Partida",
+     "FlightOrigin":"Origen del vuelo",  
+     "FlightDestination":"Destino del vuelo",  
+     "OriginCountryCode":"Código de país de origen",  
+     "OriginCity":"Ciudad de origen",  
+     "DestinationCountryCode":"Código del país de destino",  
+     "DestinationCity":"Ciudad de destino",  
+     "OriginAirlineCommercial":"Anuncio comercial de la aerolínea de origen",  
+     "ReturnAirlineCommercial":"Comercial de aerolínea de regreso",  
+     "UserImport":"Importador"
   }
 }

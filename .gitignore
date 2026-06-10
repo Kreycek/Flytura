@@ -2,3 +2,4 @@ node_modules
 F_SALE_1393518336526.pdf
 Back/cmd/app/app
 Back/internal/integration/bigQueryOnfly/arquivo.json
+Back/bigQuery/arquivo.json
