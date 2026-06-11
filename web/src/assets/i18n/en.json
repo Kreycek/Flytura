@@ -156,7 +156,9 @@
      "DestinationCity":"Destination city",  
      "OriginAirlineCommercial":"Commercial from the Originating Airline",  
      "ReturnAirlineCommercial":"Return Airline Commercial",  
-     "UserImport":"Importer"
+     "UserImport":"Importer",
+     "selectInvoicesUpload":"Select invoices",
+     "manualImport":"Importación manual"
     
     }    
   }

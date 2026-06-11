@@ -12,6 +12,8 @@ export class ConfigService {
     // public apiUrl = 'http://localhost:8080'; 
     public apiUrl = ''; 
 
+    public bucketOnflyS3="https://flytura-bucket.s3.us-east-1.amazonaws.com/invoices/"
+
     constructor() {
       
 

@@ -144,13 +144,4 @@ button[disabled] {
   background-color: #133f70;
 }
 
-/* Registro manual */
-.add-btn {
-  background-color: #276E6E;
-  color: #fff;
-}
-
-.add-btn:hover {
-  background-color: #1f5959;
-}
 

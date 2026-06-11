@@ -159,7 +159,9 @@
      "DestinationCity":"Cidade de destino",  
      "OriginAirlineCommercial":"Comercial da Companhia Aérea de Origem",  
      "ReturnAirlineCommercial":"Comercial da Companhia Aérea de Retorno",  
-     "UserImport":"Importador"
+     "UserImport":"Importador",
+     "selectInvoicesUpload":"Selecionar notas",
+     "manualImport":"Importação manual"
     
   }
 }

@@ -1,0 +1,113 @@
+/* Fundo escuro semi-transparente, mas menor */
+.modal-backdrop {
+  position: fixed;
+  top: 10%;        /* 🔥 menos espaço fixo em cima */
+  left: 0;
+  width: 100vw;
+  height: 90vh;   /* 🔥 mais área disponível */
+
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: flex-start; /* 🔥 evita centralização estranha */
+  justify-content: center;
+
+  padding-top: 10px; /* 🔥 respiro extra */
+
+  z-index: 998;
+}
+  
+  /* Caixa da modal com tamanho reduzido */
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  min-height: 80%;
+  max-width: 100%;
+
+  max-height: 100%;   /* ✅ usa o espaço do backdrop */
+  overflow-y: auto;   /* ✅ scroll quando precisar */
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  text-align: left;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Para telas maiores (ex: desktop) */
+@media (min-width: 1024px) {
+  .modal-content {
+    width: 30%;
+    max-width: 30%;
+  }
+}
+
+  
+  /* Título */
+  .modal-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  /* Botões */
+  .modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+  }
+  
+  .modal-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .modal-button.confirm {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .modal-button.cancel {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .modal-button:hover {
+    opacity: 0.8;
+  }
+  
+  /* Animação para suavizar a entrada */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  
+  .action-btn {
+    width: 25%;
+  }
+
+   .action-btn-search {
+    width: 100%;
+  }
+
+
+
+
+/* Excel */
+.excel-btn {
+  background-color: #164E8C;
+  color: #fff;
+}
+
+.excel-btn:hover {
+  background-color: #133f70;
+}

@@ -95,7 +95,7 @@ export class OutPutInvoicesComponent {
 
       this.fillOneFilter = campos.some(v => v !== null && v != '');
 
-      console.log('this.existeAlgumPreenchido',this.fillOneFilter);
+
 
     }
 
@@ -287,7 +287,7 @@ export class OutPutInvoicesComponent {
               formData.append('userName', this.decoded.name);
               this.isLoading=true;
 
-          this.moduloService.importSheet(formData, "/UploadExcelOutputInvoicesRecord").subscribe({
+          this.moduloService.importFile(formData, "/UploadExcelOutputInvoicesRecord").subscribe({
             next: async (returnSheet: any) => {
               if (returnSheet.message) {
                 console.log('returnSheet.message ',returnSheet.message);

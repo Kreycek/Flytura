@@ -73,8 +73,7 @@ export class AddPurchaseRecordComponent {
           }
 
           this.route.paramMap.subscribe(params => {
-              const id = params.get('id');  // Substitua 'id' pelo nome do parâmetro
-              // console.log('params',params);
+              const id = params.get('id');  // Substitua 'id' pelo nome do parâmetro             
               this.queryStringKey=params?.get('key')
               this.queryStringNombre=params.get('nombre')
               this.queryStringApellido=params.get('apellido')
@@ -88,8 +87,8 @@ export class AddPurchaseRecordComponent {
                 this.statusImportData=response.filter((rsi:any)=>{
                   return rsi.name!='Concluído'
                 });
-                //  console.log('this.statusImportData',this.statusImportData);
-            
+
+              this.statusImportData=this.configService.sortByKey(this.statusImportData,'name');  
 
               if(id) {           
                 
@@ -97,12 +96,13 @@ export class AddPurchaseRecordComponent {
 
                 if(this.statusImportData) {
 
-                this.purcharseRecordService.getPurchaseRecordDataById(id??'0').subscribe((response:any)=>{       
-                  //  console.log('dados',response);
+                this.purcharseRecordService.getPurchaseRecordDataById(id??'0').subscribe((response:any)=>{  
 
                    const si=this.statusImportData.filter((si:any)=>{
                     return si.name==response.Status
                    })[0]
+
+                   
 
                     this.keyOrigin=response.Key;
                     this.fileName=response.FileName;  
@@ -146,7 +146,7 @@ export class AddPurchaseRecordComponent {
          objGravar.id=this.id  
             this.purcharseRecordService.updatePurchaseRecordData(objGravar).pipe(
             tap(async (response:any) => {                
-            // console.log('teteeeee',response)
+           
               const resultado = await this.modal.openModal(this.translate.instant('Ecra.' + response.message),true); 
               if (resultado) {
                 this.redirectSearch();

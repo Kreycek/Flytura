@@ -67,45 +67,128 @@ export class InvoicesService {
   }
 
 
-    /*
-      Função criada por Ricardo Silva Ferreira
-      Inicio da criação 02/12/2025 14:54
-      Data Final da criação : 02/12/2025 14:54
-      Obs: Agrupa varios arquivos zipados por compania aerea, ou seja cria um arquivo fatcuras.zip e dentro outros zips
-          separados por companhia aérea
-    */
-  
-async downloadGroupedZip(items: any[]) {
+  /*
+    Função criada por Ricardo Silva Ferreira
+    Inicio da criação 02/12/2025 14:54
+    Data Final da criação : 02/12/2025 14:54
+    Obs: Agrupa varios arquivos zipados por compania aerea, ou seja cria um arquivo fatcuras.zip e dentro outros zips
+        separados por companhia aérea
+    OBS: 11/06/2026 10:01-> Alem do processo normal de agrupar agora no campo nome do arquivo verifica se tem mais de um arquivo e
+    adiciona dentro do zip
+  */
+
+  async downloadGroupedZip(items: any[]) {
   const mainZip = new JSZip();
 
-  // Agrupar por CompanyName
-  const grouped: Record<string, string[]> = items.reduce((acc, item) => {
-    if (!acc[item.CompanyName]) acc[item.CompanyName] = [];
-    acc[item.CompanyName].push(item.ZipFileName);
-    return acc;
-  }, {} as Record<string, string[]>);
+  const grouped: Record<string, { type: 'pdf' | 'zip', url: string }[]> =
+    items.reduce((acc, item) => {
+      if (!acc[item.CompanyName]) acc[item.CompanyName] = [];
 
-  // Para cada empresa, criar uma pasta dentro do ZIP principal
-  for (const [companyName, urls] of Object.entries(grouped) as [string, string[]][]) {
+      // ✅ CASO 1: FileName com ";"
+      if (item.FileName && item.FileName.includes(';')) {
+        const files = item.FileName.split(';');
+
+        files.forEach((file: string) => {
+          if (file.toLowerCase().endsWith('.pdf')) {
+            const url = `https://flytura-bucket.s3.us-east-1.amazonaws.com/invoices/${file}`;
+            acc[item.CompanyName].push({ type: 'pdf', url });
+          }
+        });
+      }
+
+      // ✅ CASO 2: FileName único PDF
+      else if (item.FileName && item.FileName.toLowerCase().endsWith('.pdf')) {
+        const url = item.PDFFileName;
+        if (url) {
+          acc[item.CompanyName].push({ type: 'pdf', url });
+        }
+      }
+
+      // ✅ CASO 3: ZIP
+      else if (
+        item.ZipFileName &&
+        item.ZipFileName.endsWith('.zip')
+      ) {
+        acc[item.CompanyName].push({
+          type: 'zip',
+          url: item.ZipFileName
+        });
+      }
+
+      return acc;
+    }, {} as Record<string, { type: 'pdf' | 'zip', url: string }[]>);
+
+  // ✅ Download e organização
+  for (const [companyName, files] of Object.entries(grouped)) {
     const folder = mainZip.folder(companyName);
     if (!folder) continue;
 
-    for (const url of urls) {
+    for (const file of files) {
       try {
-        const response = await fetch(url);
+        const response = await fetch(file.url);
+
+        if (!response.ok) {
+          console.warn('Erro ao baixar:', file.url);
+          continue;
+        }
+
         const blob = await response.blob();
-        const filename = url.split('/').pop() || 'file.zip';
+
+        const filename =
+          file.url.split('/').pop() ||
+          (file.type === 'pdf' ? 'file.pdf' : 'file.zip');
+
         folder.file(filename, blob);
       } catch (error) {
-        console.error(`Erro ao baixar ${url}:`, error);
+        console.error(`Erro: ${file.url}`, error);
       }
     }
   }
 
-  // Gerar o ZIP final
+  // ✅ Gerar ZIP final
   const content = await mainZip.generateAsync({ type: 'blob' });
-    saveAs(content, 'Facturas.zip');
-  }
+  saveAs(content, 'files.zip');
+}
+
+  /*
+    Função criada por Ricardo Silva Ferreira
+    Inicio da criação 02/12/2025 14:54
+    Data Final da criação : 02/12/2025 14:54
+    Obs: Agrupa varios arquivos zipados por compania aerea, ou seja cria um arquivo fatcuras.zip e dentro outros zips
+        separados por companhia aérea
+    Antiga desabilitada para uma melhor acima
+  */
+// async downloadGroupedZip(items: any[]) {
+//   const mainZip = new JSZip();
+
+//   // Agrupar por CompanyName
+//   const grouped: Record<string, string[]> = items.reduce((acc, item) => {
+//     if (!acc[item.CompanyName]) acc[item.CompanyName] = [];
+//     acc[item.CompanyName].push(item.ZipFileName);
+//     return acc;
+//   }, {} as Record<string, string[]>);
+
+//   // Para cada empresa, criar uma pasta dentro do ZIP principal
+//   for (const [companyName, urls] of Object.entries(grouped) as [string, string[]][]) {
+//     const folder = mainZip.folder(companyName);
+//     if (!folder) continue;
+
+//     for (const url of urls) {
+//       try {
+//         const response = await fetch(url);
+//         const blob = await response.blob();
+//         const filename = url.split('/').pop() || 'file.zip';
+//         folder.file(filename, blob);
+//       } catch (error) {
+//         console.error(`Erro ao baixar ${url}:`, error);
+//       }
+//     }
+//   }
+
+//   // Gerar o ZIP final
+//   const content = await mainZip.generateAsync({ type: 'blob' });
+//     saveAs(content, 'Facturas.zip');
+//   }
 
   async downloadGroupedZipAndReturnTrue(items: any): Promise<boolean> {
     await this.downloadGroupedZip(items);

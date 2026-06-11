@@ -31,7 +31,7 @@ export class ConciliationListComponent {
 
   @ViewChild(ModalOkComponent) modalOk!: ModalOkComponent; 
   
-     @ViewChild(ModalConfirmationComponent) modalConfirm!: ModalConfirmationComponent; 
+  
     searchOriginLocator:string='';
     searchReturnLocator:string='';
     searchOriginETicket:string='';

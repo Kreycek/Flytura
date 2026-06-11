@@ -1,5 +1,6 @@
 <app-modal-ok></app-modal-ok>
 <app-modal-confirmation  #modal></app-modal-confirmation>
+<app-import-invoices [msgGravar]="gravou" (formDataOutput)="recieveFormData($event)"></app-import-invoices>
 <app-spinner [isLoading]="isLoading" ></app-spinner>
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
@@ -76,8 +77,12 @@
                     </select>
                 </div>
               </div>
-              <div class="col-lg-2 col-md-12 text-md-right" style="text-align: left; margin-top: 27px;;">
-                <button style="font-size: 12px" class="btn btn-primary" (click)="search(1)">{{ 'Ecra.search' | translate }}</button>
+              
+                  <div class="col-lg-10 col-md-5 col-sm-6 col-12" style="padding-top: 20px;" >
+                 <div class="actions-container">
+                <button style="font-size: 12px" class="action-btn-search action-btn add-btn" (click)="search(1)">{{ 'Ecra.search' | translate }}</button>
+                <button style="font-size: 12px" class="action-btn-search action-btn  excel-btn" (click)="importManual()">{{ 'Import Manual' | translate }}</button>
+                </div>
               </div>
          
             </div>
@@ -97,12 +102,12 @@
               <tr>
                 <th  class="fmtTableBorder"> {{ 'Ecra.Key' | translate }}</th>    
                 <th  class="fmtTableBorder"> {{ 'Ecra.fileName' | translate }}</th>    
-                <th  style="text-align: center;" class="fmtTableBorder">PDF</th>    
-                <th  style="text-align: center;" class="fmtTableBorder">XML</th>    
+                <th  style="text-align: center; ; display: none;" class="fmtTableBorder">PDF</th>    
+                <th  style="text-align: center; ; display: none;" class="fmtTableBorder">XML</th>    
                 <th  style="text-align: center;" class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th>                                    
                 <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.DtImport' | translate }} </th>   
                 <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.billedFlytura' | translate }}</th>   
-                <th  style="text-align: center;" class="fmtTableBorder">  </th>   
+                <th  style="text-align: center;" class="fmtTableBorder"> Download .ZIP  </th>   
                 <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.doDonwload' | translate }}  </th>  
                 <th class="fmtTableBorder" *ngIf="this.adm"></th>
               </tr>
@@ -110,20 +115,39 @@
             <tbody>
               <tr *ngFor="let item of dados">     
                  <td > {{item.Key}} </td>         
-                <td> {{item.PasteName}} </td>
-                 <td  style="text-align: center;"><a href="{{item.PDFFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'pdf')" target="_blank"> <img src="../../../../assets/images/PDFLogo.png"/></a> 
+                <td>          
+                  @if(setFiles(item.PasteName).length==1) {
+                      <a href="{{item.PDFFileName}}" 
+                        (click)="updateStatusDownloadPdfOrXml(item,'pdf')" 
+                        target="_blank"> {{getFileNameFromUrl(item.PDFFileName)}}
+                      </a> 
+                      @if(item.DownloadPDFDone) {
+                          <i class="mdi mdi-check"></i>
+                        }
+                  }
+                  @else {
+                    <a *ngFor="let file of setFiles(item.PasteName)"
+                        href="{{configService.bucketOnflyS3 + ensurePdfExtension(file)}}" 
+                        (click)="updateStatusDownloadPdfOrXml(item,'pdf')"
+                        target="_blank">
+                      {{ file }}<br/><br/>
+                    </a>
+                  }
+                  
+                </td>
+                 <td  style="text-align: center; display: none;"><a href="{{item.PDFFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'pdf')" target="_blank"> <img src="../../../../assets/images/PDFLogo.png"/></a> 
                    @if(item.DownloadPDFDone) {
                        <i class="mdi mdi-check"></i>
                     }
                 </td>                
                 @if(item.XMLFileName) {
-                     <td  style="text-align: center;"><a href="{{item.XMLFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'xml')" target="_blank"> <img src="../../../../assets/images/XMLLogo.png"></a>                    
+                     <td  style="text-align: center; display: none;"><a href="{{item.XMLFileName}}" (click)="updateStatusDownloadPdfOrXml(item,'xml')" target="_blank"> <img src="../../../../assets/images/XMLLogo.png"></a>                    
                       @if(item.DownloadXMLDone) {
                         <i class="mdi mdi-check"></i>
                       }                 
                     </td>
                 } @else {
-                    <td>
+                    <td style="display: none;">
                     </td>
                 }
                 <td  style="text-align: center;"> {{item.CompanyName}} </td>        
@@ -135,7 +159,10 @@
                       {{ 'Ecra.no' | translate }} 
                   } </td> 
                 <td style="text-align: center;"> 
-                   <a href="{{item.ZipFileName}}"  (click)="donwloadJustOne(item);">Download </a></td>  
+                  @if(getFileNameFromUrl(item.ZipFileName)) {
+                    <a href="{{item.ZipFileName}}"  (click)="donwloadJustOne(item);">Download </a>
+                  }
+                   </td>  
                  <td  style="text-align: center;"> 
                   @if (item.DownloadDone) {
                      {{ 'Ecra.yes' | translate }} 

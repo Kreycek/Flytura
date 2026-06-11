@@ -111,6 +111,7 @@ func UploadS3FilesHandler(w http.ResponseWriter, r *http.Request) {
 		DownloadXMLDone: false,
 		Key:             key,
 		ZipFileName:     "",
+		OriginData:      "RPA",
 	}
 
 	InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
@@ -270,6 +271,7 @@ func UploadS3FilesUnzipHandler(w http.ResponseWriter, r *http.Request) {
 		DownloadXMLDone: false,
 		Key:             key,
 		ZipFileName:     zipFileName,
+		OriginData:      "RPA",
 	}
 
 	InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
@@ -326,6 +328,7 @@ func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) 
 
 	var importedFiles []string
 	var filesNotZip []string
+	var filesName []string
 
 	for _, header := range files {
 		zipFile, err := header.Open()
@@ -402,6 +405,7 @@ func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) 
 				xmlFileName = file.Name
 			case ".pdf":
 				pdfFileName = file.Name
+				filesName = append(filesName, pdfFileName)
 			case ".zip":
 				zipFileName = file.Name
 			}
@@ -446,9 +450,9 @@ func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) 
 
 		image := models.ImagesDB{
 			ID:              primitive.NewObjectID(),
-			FileName:        header.Filename,
+			FileName:        strings.Join(filesName, ";"),
 			DtImport:        nowUTC.Add(-time.Duration(dh) * time.Hour),
-			PDFFileName:     pdfFileName,
+			PDFFileName:     strings.Join(filesName, ";"),
 			XMLFileName:     xmlFileName,
 			CompanyCode:     companyCode,
 			CompanyName:     companyName,
@@ -458,6 +462,7 @@ func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) 
 			Key:             key,
 			ZipFileName:     zipFileName,
 			BilledFlytura:   billedFlytura,
+			OriginData:      "RPA",
 		}
 
 		InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
@@ -476,6 +481,199 @@ func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 }
+
+/*
+Função criada por Ricardo Silva Ferreira
+Início da criação: 23/10/2025 13:14
+Data final da criação:  23/10/2025 13:17
+Última Data modificação:  19/11/2025 16:14, adicionado campo billedFlytura
+Última Data modificação:  03/12/2025 17:36, adicionado o workProcess com go routines
+OBS: Função recebe um arquivo .ZIP e que descompacta arquivos envia vários arquivos para o AWS S3
+*/
+
+// func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) {
+
+// 	if r.Method != http.MethodPost {
+// 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+// 		return
+// 	}
+
+// 	err := r.ParseMultipartForm(50 << 20) // até 50 MB
+// 	if err != nil {
+// 		http.Error(w, "Erro ao processar formulário", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	companyCode := r.FormValue("companyCode")
+
+// 	//O Parâmetro abaixo diz se foi processado pela flytura
+// 	billedFlytura, erroBF := strconv.ParseBool(r.FormValue("billedFlytura"))
+// 	if erroBF != nil {
+// 		http.Error(w, "Erro ao enviar parâmetro billedFlytura", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	key := r.FormValue("key")
+
+// 	files := r.MultipartForm.File["file"]
+// 	if len(files) == 0 {
+// 		http.Error(w, "Nenhum arquivo ZIP enviado", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	var importedFiles []string
+// 	var filesNotZip []string
+
+// 	for _, header := range files {
+// 		zipFile, err := header.Open()
+// 		if err != nil {
+// 			fmt.Printf("Erro ao abrir %s: %v\n", header.Filename, err)
+// 			continue
+// 		}
+// 		defer zipFile.Close()
+
+// 		// fmt.Println("Processando:", header.Filename)
+
+// 		buf := new(bytes.Buffer)
+// 		_, err = io.Copy(buf, zipFile)
+// 		if err != nil {
+// 			fmt.Printf("Erro ao copiar conteúdo de %s: %v\n", header.Filename, err)
+// 			continue
+// 		}
+
+// 		// err = UploadToS3Only(bytes.NewReader(buf.Bytes()), header.Filename, companyCode, key)
+
+// 		// if err != nil {
+// 		// 	fmt.Printf("Erro ao enviar ZIP %s para S3: %v\n", header.Filename, err)
+// 		// 	continue
+// 		// }
+
+// 		flytura.UploadChan <- flytura.UploadTask{
+// 			FileContent: buf.Bytes(),
+// 			FileName:    header.Filename,
+// 			CompanyCode: companyCode,
+// 			Key:         key,
+// 		}
+
+// 		//Aqui pega o arquivo zip
+// 		zipReader, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+// 		if err != nil {
+// 			fmt.Printf("Erro ao abrir ZIP %s: %v\n", header.Filename, err)
+// 			continue
+// 		}
+
+// 		pdfFileName := ""
+// 		xmlFileName := ""
+// 		zipFileName := ""
+
+// 		ext := strings.ToLower(filepath.Ext(header.Filename))
+
+// 		if ext == ".zip" {
+// 			zipFileName = header.Filename
+// 		} else {
+// 			filesNotZip = append(filesNotZip, "O Arquivo "+header.Filename+" não foi importado porque não é um arquivo .zip")
+// 			continue
+// 		}
+
+// 		for _, file := range zipReader.File {
+// 			if file.FileInfo().IsDir() {
+// 				continue
+// 			}
+
+// 			f, err := file.Open()
+// 			if err != nil {
+// 				fmt.Printf("Erro ao abrir %s: %v\n", file.Name, err)
+// 				continue
+// 			}
+
+// 			fileContent, err := io.ReadAll(f)
+// 			f.Close()
+// 			if err != nil {
+// 				fmt.Printf("Erro ao ler conteúdo de %s: %v\n", file.Name, err)
+// 				continue
+// 			}
+
+// 			ext := strings.ToLower(filepath.Ext(file.Name))
+// 			switch ext {
+// 			case ".xml":
+// 				xmlFileName = file.Name
+// 			case ".pdf":
+// 				pdfFileName = file.Name
+// 			case ".zip":
+// 				zipFileName = file.Name
+// 			}
+
+// 			// err = UploadToS3Only(bytes.NewReader(fileContent), file.Name, companyCode, key)
+// 			// if err != nil {
+// 			// 	fmt.Printf("Erro ao enviar %s para S3: %v\n", file.Name, err)
+// 			// 	continue
+// 			// }
+
+// 			//Aqui envia para o S3
+// 			flytura.UploadChan <- flytura.UploadTask{
+// 				FileContent: fileContent,
+// 				FileName:    file.Name,
+// 				CompanyCode: companyCode,
+// 				Key:         key,
+// 			}
+
+// 		}
+
+// 		// clientDb, err := db.ConnectMongoDB(flytura.ConectionString)
+// 		// if err != nil {
+// 		// 	fmt.Printf("Erro ao conectar ao MongoDB: %v\n", err)
+// 		// 	continue
+// 		// }
+// 		// defer clientDb.Disconnect(context.Background())
+
+// 		airLineData, errAirLineName := airLine.GetAirLineFileName(db.MongoClient, flytura.DBName, "airline", companyCode)
+// 		if errAirLineName != nil {
+// 			fmt.Printf("Erro ao obter nome da companhia: %v\n", errAirLineName)
+// 			continue
+// 		}
+
+// 		companyName := airLineData["Name"].(string)
+
+// 		nowUTC := time.Now().UTC()
+
+// 		dh, err := flytura.DiffHours(nowUTC, flytura.Fuso1, flytura.Fuso2)
+// 		if err != nil {
+// 			panic(err)
+// 		}
+
+// 		image := models.ImagesDB{
+// 			ID:              primitive.NewObjectID(),
+// 			FileName:        header.Filename,
+// 			DtImport:        nowUTC.Add(-time.Duration(dh) * time.Hour),
+// 			PDFFileName:     pdfFileName,
+// 			XMLFileName:     xmlFileName,
+// 			CompanyCode:     companyCode,
+// 			CompanyName:     companyName,
+// 			DownloadPDFDone: false,
+// 			DownloadXMLDone: false,
+// 			DownloadDone:    false,
+// 			Key:             key,
+// 			ZipFileName:     zipFileName,
+// 			BilledFlytura:   billedFlytura,
+// 			OriginData:      "RPA",
+// 		}
+
+// 		InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
+// 		importedFiles = append(importedFiles, header.Filename)
+// 	}
+
+// 	response := map[string]any{
+// 		"Result":           "Arquivos importados com sucesso",
+// 		"ImportedFiles":    importedFiles,
+// 		"NotImportedFiles": filesNotZip,
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.WriteHeader(http.StatusOK)
+// 	if err := json.NewEncoder(w).Encode(response); err != nil {
+// 		fmt.Printf("Erro ao codificar resposta JSON: %v\n", err)
+// 	}
+
+// }
 
 /*
 Função criada por Ricardo Silva Ferreira
@@ -1056,6 +1254,171 @@ func DeleteImagesDBByIDHandler(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{
 		"message": "registro excluído com sucesso",
 		"id":      id,
+	}
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("erro ao codificar resposta JSON: %v", err)
+	}
+}
+
+/*
+	Função criada por Ricardo Silva Ferreira
+	Inicio da criação 10/06/2026 21:28
+	Data Final da criação : 10/06/2026 22:25
+*/
+
+func UploadManualImportInvoicesRecordHandler(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("files teste")
+	err := r.ParseMultipartForm(10 << 20) // 10MB
+	if err != nil {
+		http.Error(w, "Erro ao processar formulário", http.StatusBadRequest)
+		return
+	}
+
+	files := r.MultipartForm.File["file"]
+
+	fmt.Println("files", files)
+
+	if len(files) == 0 {
+		http.Error(w, "Nenhum arquivo enviado", http.StatusBadRequest)
+		return
+	}
+
+	nameFiles := ""
+
+	for cont, fileHeader := range files {
+
+		fmt.Println("📄 Nome:", fileHeader.Filename)
+		fmt.Println("📄 Tipo:", fileHeader.Header.Get("Content-Type"))
+
+		if cont == len(files)-1 {
+			nameFiles += fileHeader.Filename
+
+		} else {
+			nameFiles += fileHeader.Filename + ";"
+		}
+
+		// ✅ validar extensão
+		if !strings.HasSuffix(strings.ToLower(fileHeader.Filename), ".pdf") {
+			http.Error(w, "Apenas arquivos PDF são permitidos", http.StatusBadRequest)
+			return
+		}
+
+		// ✅ validar content-type
+		contentType := fileHeader.Header.Get("Content-Type")
+		if contentType != "application/pdf" {
+			http.Error(w, "Arquivo não é PDF válido", http.StatusBadRequest)
+			return
+		}
+
+		file, err := fileHeader.Open()
+		if err != nil {
+			http.Error(w, "Erro ao ler arquivo", http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+
+		// file, err := fileHeader.Open()
+		// if err != nil {
+		// 	http.Error(w, "Erro ao abrir arquivo", http.StatusInternalServerError)
+		// 	return
+		// }
+
+		// ✅ exemplo: ler conteúdo (opcional)
+		// data, err := io.ReadAll(file)
+		// if err != nil {
+		// 	http.Error(w, "Erro ao ler PDF", http.StatusInternalServerError)
+		// 	file.Close()
+		// 	return
+		// }
+		// fmt.Println("✅ PDF carregado:", fileHeader.Filename, "| Tamanho:", len(data))
+
+		// Lê o conteúdo do ZIP para memória
+		buf := new(bytes.Buffer)
+		_, err = io.Copy(buf, file)
+		if err != nil {
+			http.Error(w, "Erro ao copiar conteúdo do ZIP", http.StatusInternalServerError)
+			return
+		}
+
+		// //MNADA PARA O PARALELISMO E ENVIA PARA O S3
+		// flytura.UploadChan <- flytura.UploadTask{
+		// 	FileContent: buf.Bytes(),
+		// 	FileName:    fileHeader.Filename,
+		// 	CompanyCode: "",
+		// 	Key:         "",
+		// }
+
+		// 👉 aqui você pode:
+		// salvar no disco
+		// enviar para S3
+		// processar conteúdo
+
+		// file.Close() // ✅ correto (não usar defer no loop)
+	}
+
+	// ✅ campos do formdata
+	userNameImport := r.FormValue("userName")
+	userInserted := r.FormValue("idUserInserted")
+	companyCode := r.FormValue("companyCode")
+	key := r.FormValue("key")
+	billedFlytura := r.FormValue("billedFlytura")
+
+	// fmt.Println("👤 Arquivos:", nameFiles)
+	// fmt.Println("👤 userName:", userNameImport)
+	// fmt.Println("👤 userInserted:", userInserted)
+	// fmt.Println("🏢 companyCode:", companyCode)
+	// fmt.Println("🔑 key:", key)
+	// fmt.Println("📊 billedFlytura:", billedFlytura)
+
+	airLineData, errAirLineName := airLine.GetAirLineFileName(db.MongoClient, flytura.DBName, "airline", companyCode)
+	if errAirLineName != nil {
+		log.Println("Erro ao obter nome do arquivo:", errAirLineName)
+	}
+
+	nowUTC := time.Now().UTC()
+	dh, err := flytura.DiffHours(nowUTC, flytura.Fuso1, flytura.Fuso2)
+	if err != nil {
+		panic(err)
+	}
+
+	var bf bool
+
+	if billedFlytura == "true" {
+		bf = true
+	} else {
+		bf = false
+	}
+
+	image := models.ImagesDB{
+		ID:              primitive.NewObjectID(),
+		FileName:        nameFiles,
+		DtImport:        nowUTC.Add(-time.Duration(dh) * time.Hour),
+		PDFFileName:     nameFiles,
+		XMLFileName:     "",
+		CompanyCode:     airLineData["Code"].(string),
+		CompanyName:     airLineData["Name"].(string),
+		DownloadDone:    false,
+		DownloadPDFDone: false,
+		DownloadXMLDone: false,
+		Key:             key,
+		ZipFileName:     "",
+		IdUserInserted:  userInserted,
+		UserNameImport:  userNameImport,
+		OriginData:      "Upload Manual",
+		ServerDate:      nowUTC,
+		BilledFlytura:   bf,
+	}
+
+	InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
+
+	// Retornar resposta JSON
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	response := map[string]string{
+		"message": "Upload feito com sucesso",
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {

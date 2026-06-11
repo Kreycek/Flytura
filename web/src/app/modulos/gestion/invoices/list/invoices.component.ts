@@ -16,6 +16,7 @@ import { ModalConfirmationComponent } from '../../../../modal/modal-confirmation
 import { ModuloService } from '../../../modulo.service';
 import { SpinnerComponent } from '../../../../components/spinner/spinner.component';
 import { AlertMoreColumnsComponent } from "../../../../components/alert-more-columns/alert-more-columns.component";
+import { ImportInvoicesComponent } from '../import-invoices/import-invoices.component';
 
 
 @Component({
@@ -30,7 +31,8 @@ import { AlertMoreColumnsComponent } from "../../../../components/alert-more-col
     PaginatorComponent,
     ModalConfirmationComponent,
     SpinnerComponent,
-    AlertMoreColumnsComponent
+    AlertMoreColumnsComponent,
+    ImportInvoicesComponent
 ],
   templateUrl: './invoices.component.html',
   styleUrl: './invoices.component.css',
@@ -40,6 +42,7 @@ export class InvoicesComponent {
 
   @ViewChild(ModalOkComponent) modalOk!: ModalOkComponent;  
   @ViewChild(ModalConfirmationComponent) modalConfirm!: ModalConfirmationComponent; 
+    @ViewChild(ImportInvoicesComponent) modalImportInvoicesComponent!: ImportInvoicesComponent;
     searchStatusDonwload:string='';
     searchBilledFlytura:string='';
     searchAirlineCode:string='';
@@ -60,6 +63,9 @@ export class InvoicesComponent {
     adm:boolean=true;
     isLoading:boolean=false;
     viewMsgMoreColumns=false;
+    FormData: FormData;
+    decoded:any
+    gravou:boolean=false;
 
     constructor(
             private airLineService: AirLineService,
@@ -69,7 +75,28 @@ export class InvoicesComponent {
             public moduloService:ModuloService,
           ) {}    
 
-     async invalidDate(date: string, msg:string, showAlert:boolean=false) : Promise<boolean> {              
+     
+
+    ngOnInit() {
+
+       const token = localStorage.getItem('token'); // ou onde você armazenou o JWT
+            
+        if (token) {
+         this.decoded = jwtDecode<any>(token);
+          if(this.decoded && this.decoded.perfis && this.decoded.perfis.length>0) {
+              this.adm=this.decoded.perfis.some((data:any)=> data===EnumPerfil.ADM)
+          }
+        }
+
+        this.limit=this.configService.limitPaginator;
+        this.airLineService.getAllAirLine().subscribe((response)=>{
+           this.airLInes=this.configService.sortByKey(response,'name');   
+        
+        });
+        this.search(this.currentPage);           
+    }
+
+    async invalidDate(date: string, msg:string, showAlert:boolean=false) : Promise<boolean> {              
               const value = moment(date); // inputDate pode ser string, Date, etc.
       
               if (!value.isValid()) {
@@ -88,25 +115,6 @@ export class InvoicesComponent {
                return false;
               }
     }    
-
-    ngOnInit() {
-
-       const token = localStorage.getItem('token'); // ou onde você armazenou o JWT
-            
-        if (token) {
-          const decoded = jwtDecode<any>(token);
-          if(decoded && decoded.perfis && decoded.perfis.length>0) {
-              this.adm=decoded.perfis.some((data:any)=> data===EnumPerfil.ADM)
-          }
-        }
-
-        this.limit=this.configService.limitPaginator;
-        this.airLineService.getAllAirLine().subscribe((response)=>{
-           this.airLInes=this.configService.sortByKey(response,'name');   
-        
-        });
-        this.search(this.currentPage);           
-    }
 
     async search(pageNumber:number) {       
           
@@ -157,8 +165,8 @@ export class InvoicesComponent {
       this.invoicesService.getAllS3ImagesDBDataPagination(
                     pageNumber,
                     this.limit,
-                     this.objPesquisar.billedFlytura,                     
-                     this.objPesquisar.doDonwload,
+                    this.objPesquisar.billedFlytura,                     
+                    this.objPesquisar.doDonwload,
                     this.objPesquisar.key,
                     this.objPesquisar.companyCode,
                     this.objPesquisar.startDate,
@@ -206,9 +214,9 @@ export class InvoicesComponent {
 
 
            if (response.imagesDB && response.imagesDB.length > 0) {
-            // console.log('response.imagesDB',response.imagesDB);
+            //  console.log('response.imagesDB',response.imagesDB);
 
-                  // this.imgsDownload = [];
+                  this.isLoading=true;                  
                   let ids:String[]=[]
 
                   interface ImageResponse {
@@ -217,62 +225,45 @@ export class InvoicesComponent {
                     DownloadDone:boolean
                     // outras propriedades, se houver
                   }
-
                   
-                      for (const item of response.imagesDB as ImageResponse[]) {
-                        // this.imgsDownload.push(item.ZipFileName);
-                        ids.push(item.ID)
-                      }
-                      // console.log('imgsDownload',this.imgsDownload);
-              
-                    
-                        // console.log('this.imgsDownload ',this.imgsDownload);
-                      // this.invoicesService.downloadGroupedZip(response.imagesDB);
-
-                      
-                  
-                        this.isLoading=true;
-                      try {
-                            const ok = await this.invoicesService.downloadGroupedZipAndReturnTrue(response.imagesDB);
-                            if (ok) {
-                                this.isLoading=false;
-                              // chegou ao fim com sucesso
-                              console.log('Concluído e retornou true');
-                              // opcional: mostrar toast/snackbar
-                            }
-                          } catch (e) {
-                            this.isLoading=false;
-                             const resultado = await this.modalOk.openModal(this.translate.instant('Ecra.downloadInvoicesError'), true);
-                              if (resultado) {                               
-                                
-                                return; // apenas interrompe a execução
-                              }
-                          }
-
-                
-
-                      this.invoicesService.updateMultipleStatusS3Images({
-                        ids:ids,
-                        DownloadDone:true
-                      }).subscribe((response:any)=>{
-                        for (const item of this.dados as ImageResponse[]) {
-                          item.DownloadDone=true;
-                        }
-                      })
-
+                  for (const item of response.imagesDB as ImageResponse[]) {
+                    // this.imgsDownload.push(item.ZipFileName);
+                    ids.push(item.ID)
                   }
-        
+                     
+                  try {
+                      const ok = await this.invoicesService.downloadGroupedZipAndReturnTrue(response.imagesDB);
+                      if (ok) {
+                          this.isLoading=false;
+                        // chegou ao fim com sucesso
+                        // console.log('Concluído e retornou true');
+                        // opcional: mostrar toast/snackbar
+                      }
+                    } catch (e) {
+                      this.isLoading=false;
+                        const resultado = await this.modalOk.openModal(this.translate.instant('Ecra.downloadInvoicesError'), true);
+                        if (resultado) {                               
+                          
+                          return; // apenas interrompe a execução
+                        }
+                    }
+
+                    this.invoicesService.updateMultipleStatusS3Images({
+                      ids:ids,
+                      DownloadDone:true
+                    }).subscribe((response:any)=>{
+                      for (const item of this.dados as ImageResponse[]) {
+                        item.DownloadDone=true;
+                      }
+                    })
+                  }        
             })
      }
 
     donwloadJustOne(linha:any) {
-
       const objUpdate={Id:linha.ID, DownloadDone:true}
-
       linha.DownloadDone=true;
-
       this.invoicesService.updateStatusS3Image(objUpdate).subscribe()
-
     }
 
 
@@ -283,11 +274,8 @@ export class InvoicesComponent {
       if(fileType=='xml')
          linha.DownloadXMLDone=true;
 
-      const objUpdate={id:linha.ID, fileType:fileType,downloadOk:true}   
-    
-      // linha.DownloadDone=true;
+      const objUpdate={id:linha.ID, fileType:fileType,downloadOk:true}
       this.invoicesService.UpdateStatusPdforXml(objUpdate).subscribe()
-
     }
 
     
@@ -301,7 +289,7 @@ export class InvoicesComponent {
                   this.translate.instant('Ecra.yes'),
                   this.translate.instant('Ecra.no')
                 ); 
-        if (resultado) {     
+        if (resultado) {    
           
               this.modalConfirm.isVisible=false;
               this.invoicesService.deleteS3Images(id,zipFileName,pdfFileName,xmlFileName).subscribe((trt)=>{
@@ -309,8 +297,74 @@ export class InvoicesComponent {
               });
                
         } else {
-          this.modalConfirm.isVisible=false;
-      
+          this.modalConfirm.isVisible=false;      
         }
     }     
+
+    async importManual() {
+      
+       const resultado = await this.modalImportInvoicesComponent.openModal(
+                  true,
+                  this.translate.instant('Ecra.deleteInformation')
+                  ,this.airLInes
+                ); 
+        if (resultado) {     
+          
+        }
+    }
+
+
+    recieveFormData(formData: FormData) {   
+
+      formData.append('idUserInserted', this.decoded.idUser);
+      formData.append('userName', this.decoded.name);
+
+      this.gravou=true;
+
+      // formData.forEach((value, key) => {
+      //   console.log('Componente pai ',key, value);
+      // });
+
+
+        this.moduloService.importFile(formData, "/UploadManualImportInvoicesRecord").subscribe({
+            next: async (returnSheet: any) => {
+              if (returnSheet.message) {
+               
+                 this.search(1); 
+              }
+            },
+            error: async (err: any) => {
+              console.error('Erro do servidor:', err);
+              if (err.error?.status === "500") {
+                
+              }
+              else if (err.status === 500) {
+                 
+                }
+              }
+            
+          });
+     
+    }
+
+        
+    setFiles(filesString: string) {
+      return filesString ? filesString.split(';') : [];
+    }
+
+
+    ensurePdfExtension(fileName: string): string {
+      if (!fileName) return '';
+
+      return fileName.toLowerCase().endsWith('.pdf')
+        ? fileName
+        : fileName + '.pdf';
+    }
+
+    getFileNameFromUrl(url: string): string {
+      if (!url) return '';
+
+      return url.split('/').pop() || '';
+    }
+     
 }

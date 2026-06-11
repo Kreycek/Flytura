@@ -131,7 +131,7 @@ func startWorkers(n int, dbConnection *mongo.Client) {
 func retryUpload(task flytura.UploadTask) error {
 	operation := func() error {
 		// log.Printf("[Retry] Tentando enviar arquivo: %s", task.FileName)
-		return awsS3.UploadToS3Only(bytes.NewReader(task.FileContent), task.FileName, task.CompanyCode, task.Key)
+		return awsS3.UploadToS3Only(bytes.NewReader(task.FileContent), task.FileName)
 	}
 
 	// Configura backoff exponencial
@@ -339,7 +339,7 @@ func main() {
 
 	http.HandleFunc("/api/SearchOutPutInvoices", outPutInvoices.SearchOutPutInvoicesHandler)
 
-	//Inserido em09/04/2026 23:38
+	//Inserido em 09/04/2026 23:38
 	http.HandleFunc("/api/SearchOutPutInvoicesInforme", outPutInvoices.SearchOutPutInvoicesInformeHandler)
 
 	http.HandleFunc("/api/GroupByCompanySumSection", outPutInvoices.GroupByCompanySumSectionHandler)
@@ -362,6 +362,8 @@ func main() {
 		Data Final da criação : 17/10/2025 13:15
 	*/
 
+	//Inserido em 10/06/2026 21:34
+	http.HandleFunc("/api/UploadManualImportInvoicesRecord", awsS3.UploadManualImportInvoicesRecordHandler)
 	http.HandleFunc("/api/SearchS3ImagesDBPagination", awsS3.SearchS3ImagesDBPaginationHandler)
 	http.HandleFunc("/api/SearchS3ImagesDBFull", awsS3.SearchS3ImagesDBFullHandler)
 	http.HandleFunc("/api/UpdateStatusS3Image", awsS3.UpdateStatusS3ImageHandler)

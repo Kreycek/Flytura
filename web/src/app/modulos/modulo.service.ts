@@ -424,7 +424,7 @@ import * as XLSX from 'xlsx';
   Inicio da criação 01/01/2026 09:09
   Data Final da criação :  01/01/2026 09:09
   */
-   importSheet(formData:FormData, apiName:string): Observable<any> {
+   importFile(formData:FormData, apiName:string): Observable<any> {
     return this.http.post(this.configService.apiUrl + apiName, formData);
 
   }

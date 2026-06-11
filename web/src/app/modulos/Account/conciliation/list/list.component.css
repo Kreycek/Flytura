@@ -58,7 +58,6 @@ table.table-bordered td {
 
 
 
-
 .actions-container {
   display: flex;
   flex-direction: row;
@@ -66,6 +65,7 @@ table.table-bordered td {
   padding: 10px 0;
   flex-wrap: wrap;
 }
+
 
 /* Botões */
 .action-btn {

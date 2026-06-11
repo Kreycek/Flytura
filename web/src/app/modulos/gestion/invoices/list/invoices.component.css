@@ -48,3 +48,66 @@ table.table-bordered td {
   padding: 4px 8px !important;
   font-size: 12px !important;
 }
+
+/* Registro manual */
+.add-btn {
+  background-color: #276E6E;
+  color: #fff;
+}
+
+.add-btn:hover {
+  background-color: #1f5959;
+}
+
+.action-btn-search {
+  flex: 0 0 auto;     /* <- ISSO É O QUE SALVA O TEXTO */
+  width: auto;        /* <- Evita esticar demais dentro da tabela */
+  padding: 8px 18px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap; /* <- NÃO deixa o texto quebrar/sumir */
+  
+}
+
+
+/* Botões */
+.action-btn {
+  flex: 0 0 auto;     /* <- ISSO É O QUE SALVA O TEXTO */
+  width: auto;        /* <- Evita esticar demais dentro da tabela */
+  padding: 8px 18px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap; /* <- NÃO deixa o texto quebrar/sumir */
+  
+}
+
+.actions-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+
+
+/* Excel */
+.excel-btn {
+  background-color: #164E8C;
+  color: #fff;
+}
+
+.excel-btn:hover {
+  background-color: #133f70;
+}

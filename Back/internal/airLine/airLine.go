@@ -182,3 +182,39 @@ func SearchAirlineByName(items []any, name string) (string, string) {
 
 	return "", ""
 }
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 10/06/2026 22:30
+Data Final da criação :10/06/2026 22:30
+*/
+func SearchAirlineBycode(items []any, code string) (string, string) {
+	target := flytura.Normalize(code)
+
+	for _, item := range items {
+
+		// cast para map
+		m, ok := item.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		// extrair name
+		code, ok := m["code"].(string)
+		if !ok {
+			continue
+		}
+
+		// fmt.Println("target ", target, " ", flytura.Normalize(nameVal))
+		// comparar normalizado
+		if flytura.Normalize(code) == target {
+
+			// extrair code
+			codeVal, _ := m["code"].(string)
+
+			return codeVal, code
+		}
+	}
+
+	return "", ""
+}

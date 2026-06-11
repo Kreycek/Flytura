@@ -39,6 +39,8 @@
                   db.statusImport.insertOne({name:'Concluído', code:'0003' }) 
                   db.statusImport.insertOne({name:'Reserva cancelada', code:'0004' })
                   db.statusImport.insertOne({name:'Fatura já emitida', code:'0005' })
+                  db.statusImport.insertOne({name:'Dados incorretos', code:'0006' })
+                  db.statusImport.insertOne({name:'Emitida manualmente', code:'0007' })
 
 14) Apagar uma tabela do mongo db db.nomeDaColecao.drop();
 

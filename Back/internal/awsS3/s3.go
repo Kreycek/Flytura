@@ -101,13 +101,12 @@ var (
 // }
 
 /*
-	Função criada por Ricardo Silva Ferreira
-	Inicio da criação 23/10/2025 00:50
-	Data Final da criação : 23/10/2025 01:15
-	Essa função apenas faz upload para o S3
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 23/10/2025 00:50
+Data Final da criação : 23/10/2025 01:15
+Essa função apenas faz upload para o S3
 */
-
-func UploadToS3Only(file io.Reader, filename, companyCode, key string) error {
+func UploadToS3Only(file io.Reader, filename string) error {
 	// --- Configurações ---
 	accessKey := flytura.AKA
 	secretKey := flytura.SKA

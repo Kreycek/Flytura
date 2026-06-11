@@ -166,6 +166,8 @@
      "DestinationCity":"Ciudad de destino",  
      "OriginAirlineCommercial":"Anuncio comercial de la aerolínea de origen",  
      "ReturnAirlineCommercial":"Comercial de aerolínea de regreso",  
-     "UserImport":"Importador"
+     "UserImport":"Importador",
+     "selectInvoicesUpload":"Seleccionar notas",
+     "manualImport":"Importación manual"
   }
 }

@@ -25,7 +25,7 @@
                 formControlName="companyCode" 
                 class="form-select"             
                 [ngClass]="{'is-invalid': formulario.get('companyCode')?.invalid && formulario.get('companyCode')?.touched}">              
-                    <option value="" style="font-size: 12px">{{ 'Ecra.selected' | translate }}</option>
+                  
                     <option *ngFor="let data of airLInes" [value]="data.code" style="font-size: 12px">{{data.name}}</option>
               </select>
             <div class="invalid-feedback" *ngIf="formulario.get('companyCode')?.invalid && formulario.get('companyCode')?.touched">

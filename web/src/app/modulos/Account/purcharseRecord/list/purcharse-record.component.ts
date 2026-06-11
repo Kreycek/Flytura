@@ -70,10 +70,7 @@ export class PurcharseRecordComponent {
       airLInes:any[]=[]
       adm:boolean=true;
       isLoading:boolean=false;
-      fillOneFilter=false;
-
-      
-   
+      fillOneFilter=false;   
 
     constructor(
       private router: Router, 
@@ -134,7 +131,7 @@ export class PurcharseRecordComponent {
               this.searchPurcharseRecord(this.currentPage);
           }
         }) 
-}
+  }
 
 
   loadDataAfterImport() {
@@ -155,7 +152,7 @@ export class PurcharseRecordComponent {
               formData.append('idUserInserted', this.decoded.idUser);
               this.isLoading=true;
 
-          this.moduloService.importSheet(formData, "/UploadExcelPurcharseRecord").subscribe({
+          this.moduloService.importFile(formData, "/UploadExcelPurcharseRecord").subscribe({
             next: async (returnSheet: any) => {
               if (returnSheet.message) {
                 // Caso 1: Planilha vazia
@@ -395,8 +392,6 @@ export class PurcharseRecordComponent {
       return null;  
     }
   
-
-    
     
     async searchPurcharseRecordByPeriod(currentPage:number) {    
   
@@ -460,8 +455,7 @@ export class PurcharseRecordComponent {
       
      
       this.purcharseRecordService.searchPurchaseRecordDataByPeriod(objPesquisar).subscribe((response:any)=>{
-        this.dados=response.purcharseRecord;    
-        console.log('searchPurcharseRecordByPeriod',this.dados)
+        this.dados=response.purcharseRecord;            
       })
 
       return null;
@@ -510,25 +504,25 @@ export class PurcharseRecordComponent {
     };
   }
 
-  hideCustomTooltip() {
-    this.tooltip.visible = false;
-  }
+    hideCustomTooltip() {
+      this.tooltip.visible = false;
+    }
 
 
-  async openModels() {
-     const resultado = await this.modalDocuments.openModal(
-       [],
-       "Lista de documentos da empresa <br\><br\>",
-        true); 
+    async openModels() {
+      const resultado = await this.modalDocuments.openModal(
+        [],
+        "Lista de documentos da empresa <br\><br\>",
+          true); 
 
-      if (resultado) {      
-      } else {
-        
-      }
-  }  
+        if (resultado) {      
+        } else {
+          
+        }
+    }  
 
     
-     async deleteItem(id:string) {
+    async deleteItem(id:string) {
 
         const resultado = await this.modalConfirm.openModal(
                   true,
@@ -558,8 +552,6 @@ export class PurcharseRecordComponent {
       this.searchAirlineDtFim= ''
       this.searchStatus= ''
     }
-
-
   
     async generateReportExcel() {
 
@@ -610,17 +602,14 @@ export class PurcharseRecordComponent {
         statusText:this.statusMessage
       };
         this.purcharseRecordService.searchPurchaseRecordDataByPeriod(objPesquisar).subscribe((response:any)=>{
-          this.dados=response.purcharseRecord;    
-          // console.log('searchPurcharseRecordByPeriod',this.dados)
+          this.dados=response.purcharseRecord;              
            this.moduloService.exportToExcelPurcharseRecord(this.dados,'teste')
         })
 
         return null
     }
 
-    verifyFieldsSearchFill() {
-
-      console.log(' this.searchAirlineDtInicio', this.searchAirlineDtInicio);
+    verifyFieldsSearchFill() {   
       
       const campos = [
         this.searchKey,
@@ -632,9 +621,7 @@ export class PurcharseRecordComponent {
         this.searchStatus
       ];
 
-      this.fillOneFilter = campos.some(v => v !== null && v != '');
-
-      console.log('this.existeAlgumPreenchido',this.fillOneFilter);
+      this.fillOneFilter = campos.some(v => v !== null && v != '');    
 
     }
 }

@@ -22,4 +22,8 @@ type ImagesDB struct {
 	UpdatedAt       time.Time          `json:"updatedAt" bson:"updatedAt,omitempty"`
 	DownloadDone    bool               `json:"downloadDone" bson:"downloadDone"`
 	BilledFlytura   bool               `json:"billedFlytura" bson:"billedFlytura,omitempty"`
+	IdUserInserted  string             `json:"idUserInserted" bson:"idUserInserted"`
+	UserNameImport  string             `json:"userNameImport" bson:"userNameImport"`
+	OriginData      string             `json:"originData" bson:"originData"`
+	ServerDate      time.Time          `json:"serverDate" bson:"serverDate"`
 }
