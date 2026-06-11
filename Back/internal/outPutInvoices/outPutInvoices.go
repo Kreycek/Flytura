@@ -260,7 +260,7 @@ func InsertOutPutInvoices(client *mongo.Client, dbName, collectionName string, d
 		}
 		v.CreatedAt = nowUTC.Add(-time.Duration(dh) * time.Hour) // Atualiza a data de criação
 		v.Active = true
-		v.OriginData = "RPA"
+		v.OriginData = "Manual"
 
 		docs[i] = v
 
@@ -505,7 +505,7 @@ func ProcessOutputInvoicesExcel(
 	case ".xlsx":
 		excelXlsx, err := excelize.OpenFile(filePath)
 
-		fmt.Println("Path ", filePath)
+		// fmt.Println("Path ", filePath)
 		if err != nil {
 			return noSheet, emptySheet, minTotalColuns, totalRecord, fmt.Errorf("Erro ao tentar abrir .xlsx")
 		}
@@ -565,7 +565,7 @@ func ProcessOutputInvoicesExcel(
 	// Verifica se a planilha possui apenas cabeçalho ou está vazia
 	if len(rows) <= 1 {
 		emptySheet = true
-		return noSheet, emptySheet, minTotalColuns, totalRecord, fmt.Errorf("Extensão do arquivo inválida")
+		return noSheet, emptySheet, minTotalColuns, totalRecord, fmt.Errorf("A Planilha está vazia")
 	}
 
 	collection := client.Database(dbName).Collection(collectionName)

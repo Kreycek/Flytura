@@ -111,7 +111,7 @@ func UploadS3FilesHandler(w http.ResponseWriter, r *http.Request) {
 		DownloadXMLDone: false,
 		Key:             key,
 		ZipFileName:     "",
-		OriginData:      "RPA",
+		OriginData:      "Automation",
 	}
 
 	InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
@@ -271,7 +271,7 @@ func UploadS3FilesUnzipHandler(w http.ResponseWriter, r *http.Request) {
 		DownloadXMLDone: false,
 		Key:             key,
 		ZipFileName:     zipFileName,
-		OriginData:      "RPA",
+		OriginData:      "Automation",
 	}
 
 	InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
@@ -462,7 +462,7 @@ func UploadS3MultiplesFilesUnzipHandler(w http.ResponseWriter, r *http.Request) 
 			Key:             key,
 			ZipFileName:     zipFileName,
 			BilledFlytura:   billedFlytura,
-			OriginData:      "RPA",
+			OriginData:      "Automation",
 		}
 
 		InsertIMGS3(db.MongoClient, flytura.DBName, "imagesDB", image)
@@ -1289,8 +1289,8 @@ func UploadManualImportInvoicesRecordHandler(w http.ResponseWriter, r *http.Requ
 
 	for cont, fileHeader := range files {
 
-		fmt.Println("📄 Nome:", fileHeader.Filename)
-		fmt.Println("📄 Tipo:", fileHeader.Header.Get("Content-Type"))
+		// fmt.Println("📄 Nome:", fileHeader.Filename)
+		// fmt.Println("📄 Tipo:", fileHeader.Header.Get("Content-Type"))
 
 		if cont == len(files)-1 {
 			nameFiles += fileHeader.Filename
@@ -1424,4 +1424,62 @@ func UploadManualImportInvoicesRecordHandler(w http.ResponseWriter, r *http.Requ
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		log.Printf("erro ao codificar resposta JSON: %v", err)
 	}
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 11/06/2026 13:03
+Data Final da criação : 11/06/2026 13:04
+*/
+type CheckDuplicatesRequest struct {
+	Files []string `json:"files"`
+}
+
+func CheckDuplicatePDFsHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Método deve ser POST", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// ✅ Validar token
+	status, msg := flytura.TokenValido(w, r)
+	if !status {
+		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
+		return
+	}
+
+	// ✅ Ler body JSON
+	var req CheckDuplicatesRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "JSON inválido", http.StatusBadRequest)
+		return
+	}
+
+	if len(req.Files) == 0 {
+		http.Error(w, "files é obrigatório", http.StatusBadRequest)
+		return
+	}
+
+	// ✅ Chamar função
+	duplicates, err := checkExistingPDFs(
+		db.MongoClient,
+		flytura.DBName,
+		flytura.ImagesDBTableName,
+		req.Files,
+	)
+	if err != nil {
+		http.Error(w, "Erro ao verificar duplicados", http.StatusInternalServerError)
+		return
+	}
+
+	// ✅ Resposta
+	response := map[string]any{
+		"duplicates": duplicates,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
 }

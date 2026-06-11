@@ -232,13 +232,13 @@ func ImportConciliationDataOnflys() {
 
 		// fmt.Println("data.OriginAirline ", data.OriginAirline)
 
-		originCodAirline, _ := airLine.SearchAirlineByName(airlines, data.OriginAirline)
-		returnCodAirline, _ := airLine.SearchAirlineByName(airlines, data.ReturnAirline)
-
-		processOriginAirline := (originCodAirline == "0001" || originCodAirline == "0002" || originCodAirline == "0003")
-		processReturnCodAirline := (returnCodAirline == "0001" || returnCodAirline == "0002" || returnCodAirline == "0003")
-
 		if flytura.Normalize(data.BookingStatus) == "emitted" {
+
+			originCodAirline, _ := airLine.SearchAirlineByName(airlines, data.OriginAirline)
+			returnCodAirline, _ := airLine.SearchAirlineByName(airlines, data.ReturnAirline)
+
+			processOriginAirline := (originCodAirline == "0001" || originCodAirline == "0002" || originCodAirline == "0003")
+			processReturnCodAirline := (returnCodAirline == "0001" || returnCodAirline == "0002" || returnCodAirline == "0003")
 
 			var pr models.PurcharseRecord
 
@@ -428,7 +428,14 @@ func insertRegister(key string, pr models.PurcharseRecord, airLineName string, a
 	pr.CompanyName = nameAirlineReturn
 	pr.Key = key
 	pr.DirectionOfDestination = direction
-	insertPurchardRecordByBigQuery(key, pr)
+
+	if pr.CompanyCode == "0001" && pr.Key != "" {
+		insertPurchardRecordByBigQuery(key, pr)
+	} else if pr.CompanyCode == "0002" && pr.Key != "" && pr.LastName != "" {
+		insertPurchardRecordByBigQuery(key, pr)
+	} else if pr.CompanyCode == "0003" && pr.Key != "" && pr.Name != "" && pr.LastName != "" {
+		insertPurchardRecordByBigQuery(key, pr)
+	}
 }
 
 /*

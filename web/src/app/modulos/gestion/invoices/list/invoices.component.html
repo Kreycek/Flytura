@@ -1,6 +1,7 @@
 <app-modal-ok></app-modal-ok>
 <app-modal-confirmation  #modal></app-modal-confirmation>
-<app-import-invoices [msgGravar]="gravou" (formDataOutput)="recieveFormData($event)"></app-import-invoices>
+<app-import-invoices [msgGravar]="isSave" [duplicateFiles]="duplicateFiles" (formDataOutput)="recieveFormData($event)"></app-import-invoices>
+
 <app-spinner [isLoading]="isLoading" ></app-spinner>
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
@@ -105,11 +106,12 @@
                 <th  style="text-align: center; ; display: none;" class="fmtTableBorder">PDF</th>    
                 <th  style="text-align: center; ; display: none;" class="fmtTableBorder">XML</th>    
                 <th  style="text-align: center;" class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th>                                    
-                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.DtImport' | translate }} </th>   
-                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.billedFlytura' | translate }}</th>   
-                <th  style="text-align: center;" class="fmtTableBorder"> Download .ZIP  </th>   
+                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.DtImport' | translate }} </th>      
+                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.billedFlytura' | translate }}</th>    
+                <th  style="text-align: center;" class="fmtTableBorder"> Download .ZIP  </th>                              
                 <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.doDonwload' | translate }}  </th>  
-                <th class="fmtTableBorder" *ngIf="this.adm"></th>
+                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.UserImport' | translate }}</th>  
+                <th  class="fmtTableBorder" *ngIf="this.adm"></th>
               </tr>
             </thead>
             <tbody>
@@ -171,7 +173,21 @@
                       {{ 'Ecra.no' | translate }} 
                   }
                   
-                </td>        
+                </td>   
+                
+                 <td  style="text-align: center;"> 
+                    
+
+                    @if(item.OriginData=="Automation" || !item.UserNameImport) {
+                       {{ 'Ecra.Automation' | translate }}                       
+                    } 
+                    @else {
+                      {{item.UserNameImport}}
+                    }
+
+                   
+                  
+                </td>   
                  <td *ngIf="this.adm"> <i (click)="deleteItem(
                                                                 item.ID,
                                                                 item.FileName,

@@ -334,7 +334,12 @@ export class OutPutInvoicesComponent {
         } 
     }
 
-
+downloadFile() {
+  const link = document.createElement('a');
+  link.href = '../../../../../assets/airLineSheetModel/SheetOutputInvoicesModel.xlsx';
+  link.download = 'SheetOutputInvoicesModel.xlsx';
+  link.click();
+}
    
     
 }

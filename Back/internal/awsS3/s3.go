@@ -292,6 +292,8 @@ func SearchImagesDBPagination(
 			"Key":             data.Key,
 			"DownloadDone":    data.DownloadDone,
 			"BilledFlytura":   data.BilledFlytura,
+			"UserNameImport":  data.UserNameImport,
+			"OriginData":      data.OriginData,
 		})
 	}
 
@@ -372,6 +374,8 @@ func SearchImagesDBFull(
 			"Active":          data.Active,
 			"Key":             data.Key,
 			"DownloadDone":    data.DownloadDone,
+			"UserNameImport":  data.UserNameImport,
+			"OriginData":      data.OriginData,
 		})
 	}
 
@@ -460,4 +464,63 @@ func DeleteFromS3(filename string) error {
 	}
 
 	return fmt.Errorf("não foi possível confirmar remoção do objeto")
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 11/06/2026 12:53
+Data Final da criação : 11/06/2026 13:00
+OBS ve na lista de arquivos enviados quais os nomes de pdf's existem na base
+*/
+
+func checkExistingPDFs(client *mongo.Client, dbName, collectionName string, files []string) ([]string, error) {
+	collection := client.Database(dbName).Collection(collectionName)
+	ctx := context.Background()
+
+	// 1. Criar filtro para procurar qualquer arquivo
+	var orConditions []bson.M
+	for _, f := range files {
+		orConditions = append(orConditions, bson.M{
+			"pdfFileName": bson.M{
+				"$regex": f,
+			},
+		})
+	}
+
+	filter := bson.M{
+		"$or": orConditions,
+	}
+
+	// 2. Buscar no banco
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao consultar: %v", err)
+	}
+	defer cursor.Close(ctx)
+
+	var results []bson.M
+	if err := cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	// 3. Map para evitar repetição
+	duplicatesMap := make(map[string]bool)
+
+	for _, doc := range results {
+		if val, ok := doc["pdfFileName"].(string); ok {
+			for _, f := range files {
+				if strings.Contains(val, f) {
+					duplicatesMap[f] = true
+				}
+			}
+		}
+	}
+
+	// 4. Converter para slice final
+	var duplicates []string
+	for k := range duplicatesMap {
+		duplicates = append(duplicates, k)
+	}
+
+	return duplicates, nil
 }

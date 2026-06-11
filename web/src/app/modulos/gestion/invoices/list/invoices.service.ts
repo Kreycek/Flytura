@@ -17,7 +17,7 @@ export class InvoicesService {
   ) {}
   
   getAllS3ImagesDBDataPagination(page:number, limit:number,billedFlytura:boolean,doDownload:boolean, key?:string | null, companyCode?:string | null, startDate?:string | null, endDate?:string | null): Observable<any> {
-     console.log('this.objPesquisar.endDate',endDate)
+    //  console.log('this.objPesquisar.endDate',endDate)
 
     return this.http.get(
         this.configService.apiUrl + "/SearchS3ImagesDBPagination?page="+page + 
@@ -103,17 +103,24 @@ export class InvoicesService {
           acc[item.CompanyName].push({ type: 'pdf', url });
         }
       }
-
-      // ✅ CASO 3: ZIP
-      else if (
-        item.ZipFileName &&
-        item.ZipFileName.endsWith('.zip')
-      ) {
-        acc[item.CompanyName].push({
-          type: 'zip',
-          url: item.ZipFileName
-        });
+       // ✅ CASO 2: PDFFileName único PDF
+       else if (item.PDFFileName && item.PDFFileName.toLowerCase().endsWith('.pdf')) {
+        const url = item.PDFFileName;
+        if (url) {
+          acc[item.CompanyName].push({ type: 'pdf', url });
+        }
       }
+
+      // ✅ CASO 3: se quiser fazer dowload do zip esse é código ZIP 
+      // else if (
+      //   item.ZipFileName &&
+      //   item.ZipFileName.endsWith('.zip')
+      // ) {
+      //   acc[item.CompanyName].push({
+      //     type: 'zip',
+      //     url: item.ZipFileName
+      //   });
+      // }
 
       return acc;
     }, {} as Record<string, { type: 'pdf' | 'zip', url: string }[]>);
@@ -216,6 +223,18 @@ export class InvoicesService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
+    });
+  }
+
+
+   /*
+    Função criada por Ricardo Silva Ferreira
+    Inicio da criação 10/06/2026 13:08
+    Data Final da criação : 10/06/2026 13:09
+  */
+  checkDuplicatePDFsHandler(files: string[], apiName: string): Observable<any> {
+    return this.http.post(this.configService.apiUrl + apiName, {
+      files: files
     });
   }
   

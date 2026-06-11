@@ -17,6 +17,7 @@ import { ModuloService } from '../../../modulo.service';
 import { SpinnerComponent } from '../../../../components/spinner/spinner.component';
 import { AlertMoreColumnsComponent } from "../../../../components/alert-more-columns/alert-more-columns.component";
 import { ImportInvoicesComponent } from '../import-invoices/import-invoices.component';
+import { ModalMsgsComponent } from "../../../../modal/modal-msgs/modal-msgs.component";
 
 
 @Component({
@@ -33,6 +34,7 @@ import { ImportInvoicesComponent } from '../import-invoices/import-invoices.comp
     SpinnerComponent,
     AlertMoreColumnsComponent,
     ImportInvoicesComponent
+    
 ],
   templateUrl: './invoices.component.html',
   styleUrl: './invoices.component.css',
@@ -65,7 +67,8 @@ export class InvoicesComponent {
     viewMsgMoreColumns=false;
     FormData: FormData;
     decoded:any
-    gravou:boolean=false;
+    isSave:boolean=false;
+    duplicateFiles:string[]=[];
 
     constructor(
             private airLineService: AirLineService,
@@ -319,16 +322,29 @@ export class InvoicesComponent {
       formData.append('idUserInserted', this.decoded.idUser);
       formData.append('userName', this.decoded.name);
 
-      this.gravou=true;
+      
 
-      // formData.forEach((value, key) => {
-      //   console.log('Componente pai ',key, value);
-      // });
+     const filesArray: string[] = [];
 
+    formData.forEach((value, key) => {
+      if (value instanceof File) {
+        filesArray.push(value.name); // ✅ pega o nome do arquivo
+      }
+    });
 
-        this.moduloService.importFile(formData, "/UploadManualImportInvoicesRecord").subscribe({
+    console.log(filesArray);
+
+      this.invoicesService.checkDuplicatePDFsHandler(filesArray,"/CheckDuplicatePDFs").subscribe((response:any)=>{
+        console.log('Result duplicados ' ,response)
+
+        if(response && response.duplicates && response.duplicates.length>0) {
+          this.duplicateFiles=response.duplicates;
+        } 
+        else {
+          this.moduloService.importFile(formData, "/UploadManualImportInvoicesRecord").subscribe({
             next: async (returnSheet: any) => {
               if (returnSheet.message) {
+                this.isSave=true;
                
                  this.search(1); 
               }
@@ -344,6 +360,10 @@ export class InvoicesComponent {
               }
             
           });
+        }
+      })
+
+        
      
     }
 

@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import {Component, ElementRef, input, output, SimpleChanges, ViewChild } from '@angular/core';
+import {Component, ElementRef, Input, input, output, signal, SimpleChanges, ViewChild } from '@angular/core';
 import {  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { AirLineService } from '../../airLine/airLIne.service';
 import { ConfigService } from '../../../../services/config.service';
 import { ModalOkComponent } from '../../../../modal/modal-ok/modal-ok.component';
+import { ModalMsgsComponent } from '../../../../modal/modal-msgs/modal-msgs.component';
 
 @Component({
   selector: 'app-import-invoices',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, TranslateModule, ModalOkComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule, TranslateModule, ModalOkComponent, ModalMsgsComponent],
   templateUrl: './import-invoices.component.html',
   styleUrl: './import-invoices.component.css'
 })
@@ -23,33 +24,52 @@ export class ImportInvoicesComponent {
   filesForImport: File[] = [];
   formData = new FormData();
   formDataOutput = output<FormData>();
-  msgGravar = input<boolean>(false);
+  @Input() msgGravar: boolean = false;
+  @Input() duplicateFiles: string[] = [];
+
   @ViewChild('fileInput') fileInput!: ElementRef;
   private responseSubject = new Subject<boolean>();  
   @ViewChild(ModalOkComponent) modal!: ModalOkComponent;   
+  @ViewChild(ModalMsgsComponent) modalMsgsComponent!: ModalMsgsComponent;
   
 
   constructor( private fb: FormBuilder, 
     private translate: TranslateService,
-     private airLineService: AirLineService,
      public configService:ConfigService,
   ) {}
 
   ngOnInit() {
-    this.createForm({CompanyCode:"",Active:true})     
+    this.createForm({CompanyCode:"",Active:true}) 
+   
   }  
 
   ngOnChanges(changes: SimpleChanges) {  
       if (changes['msgGravar']) {
           if(changes['msgGravar'].currentValue) {
             this.handleMsgGravar()
-              this.fileInput.nativeElement.value = ''
-              this.formData = new FormData();
-              this.filesForImport=[];
-               this.createForm({CompanyCode:"",Active:true}) ;
+            this.msgGravar=false
+          
+          }
+      }
+
+       if (changes['duplicateFiles']) {
+          if(changes['duplicateFiles'].currentValue && changes['duplicateFiles'].currentValue.length>0) {
+            console.log('changes[duplicateFiles]',changes['duplicateFiles']);
+
+            this.modalMessage(changes['duplicateFiles'].currentValue)
+          
           }
       }
   }
+
+  clearDataWindow() {
+    console.log('Limpar Janela');
+    this.fileInput.nativeElement.value = ''
+    this.formData = new FormData();
+    this.filesForImport=[];
+    this.createForm({CompanyCode:"",Active:true}) 
+    
+}
   // Método para abrir o modal e retornar um Observable
   openModal(
     isVisible:boolean,
@@ -60,6 +80,7 @@ export class ImportInvoicesComponent {
     this.isVisible = isVisible;
     this.message=message;   
     this.airLInes=airLInes
+   
     return new Promise(resolve => {
       this.responseSubject = new Subject<boolean>();
       this.responseSubject.subscribe(response => {
@@ -79,6 +100,7 @@ export class ImportInvoicesComponent {
     this.responseSubject.next(false);
     this.responseSubject.complete();
     this.isVisible =false;
+    this.clearDataWindow() ;
   }
 
    createForm(obj:any) {
@@ -119,6 +141,9 @@ export class ImportInvoicesComponent {
         
       this.filesForImport.splice(index, 1);
     
+  // ✅ recria o formData com a lista atualizada
+      this.formData = new FormData(); // 🔥 importante
+
       this.fillFormData(
               this.filesForImport,
               this.formulario?.controls["companyCode"].value,
@@ -141,17 +166,30 @@ export class ImportInvoicesComponent {
     }   
 
     async handleMsgGravar() {
-      if (this.msgGravar()) {
+      if (this.msgGravar) {
         const resultado = await this.modal.openModal(
           this.translate.instant('Ecra.purcharseRecordAddSuccess'),
           true
         );
 
         if (resultado) {
-          // lógica após confirmação
+            this.clearDataWindow() 
         } else {
           // lógica cancelamento (se houver)
         }
       }
   }
+
+  
+  async modalMessage(files:string[]) {
+
+      const resultado = await this.modalMsgsComponent.openModal(files, this.translate.instant('Ecra.alertDuplicateFiles'), true);
+                  if (resultado) {
+                   
+                    this.fileInput.nativeElement.value = '';
+                    
+                    return;
+                  }
+  }
+
 }

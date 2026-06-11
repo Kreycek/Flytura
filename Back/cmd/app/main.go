@@ -379,6 +379,9 @@ func main() {
 	//FUNÇÃO ABAIXO NÃO USADA
 	http.HandleFunc("/api/UploadS3FilesUnzip", awsS3.UploadS3FilesUnzipHandler)
 
+	//Inserido em 11/06/2026 13:06
+	http.HandleFunc("/api/CheckDuplicatePDFs", awsS3.CheckDuplicatePDFsHandler)
+
 	http.HandleFunc("/api/UploadS3MultiplesFilesUnzip", awsS3.UploadS3MultiplesFilesUnzipHandler)
 	http.HandleFunc("/api/InsertOutPutInvoices", outPutInvoices.InsertOutPutInvoicesHandler)
 
