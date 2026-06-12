@@ -213,18 +213,20 @@ export class InvoicesService {
   UpdateStatusPdforXml(formData:any): Observable<any> {
     return this.http.post(this.configService.apiUrl + "/UpdateStatusPdforXml", formData);
   }
-  
-  deleteS3Images(id:string,zipFile:string,pdfFile:string,xmlFile:string): Observable<any> {
-    return this.http.delete(this.configService.apiUrl + '/DeleteImagesDBByIDHandler?id='+ id + 
-      "&zipFile="+ zipFile+ 
-      "&pdfFile="+pdfFile+ 
-      "&xmlFile="+xmlFile, {
-     
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-      }),
-    });
-  }
+
+
+deleteS3Images(id: string, zipFile: string, pdfFile: string, xmlFile: string): Observable<any> {
+
+  const url =
+    this.configService.apiUrl +
+    '/DeleteImagesDBByIDHandler' +
+    '?id=' + encodeURIComponent(id) +
+    '&zipFile=' + encodeURIComponent(zipFile) +
+    '&pdfFile=' + encodeURIComponent(pdfFile) +
+    '&xmlFile=' + encodeURIComponent(xmlFile);
+
+  return this.http.delete(url);
+}
 
 
    /*

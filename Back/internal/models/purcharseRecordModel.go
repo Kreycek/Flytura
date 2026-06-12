@@ -22,6 +22,7 @@ type PurcharseRecord struct {
 	CreatedAt              time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt              time.Time          `json:"updatedAt" bson:"updatedAt"`
 	IdUserInserted         string             `json:"idUserInserted" bson:"idUserInserted"`
+	NameUserInserted       string             `json:"nameUserInserted" bson:"nameUserInserted"`
 	EmissionDate           time.Time          `json:"emissionDate" bson:"emissionDate"`
 	IdUserUpdate           string             `json:"idUserUpdate" bson:"idUserUpdate"`
 	DirectionOfDestination string             `json:"directionOfDestination" bson:"directionOfDestination"`

@@ -160,7 +160,8 @@
      "selectInvoicesUpload":"Select invoices",
      "manualImport":"Importación manual",
      "alertDuplicateFiles":"If you have duplicate files, please correct or rename those in the list below!",
-     "Automation":"Automation"
+     "Automation":"Automation",
+     "SelectOneFile":"Select a .pdf file to continue."
     
     }    
   }

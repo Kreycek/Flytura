@@ -155,7 +155,12 @@ Obs: 26/03/2026 19:22 -> Acrescentado NumberMaxColunsSheet para verificar o núm
 */
 
 func ProcessPurcharseRecordExcel(
-	filePath, fileName, companyName, companyCode, idUserInserted string,
+	filePath,
+	fileName,
+	companyName,
+	companyCode,
+	idUserInserted,
+	userNameInserted string,
 	importSheetOnlyVerifyNumber bool,
 	client *mongo.Client,
 	dbName, collectionName string,
@@ -290,16 +295,17 @@ func ProcessPurcharseRecordExcel(
 		}
 
 		obj := models.PurcharseRecord{
-			Key:            "",
-			Name:           "",
-			LastName:       "",
-			FileName:       fileName,
-			Status:         "Fila",
-			Active:         true,
-			CreatedAt:      nowUTC.Add(-time.Duration(dh) * time.Hour),
-			CompanyCode:    companyCode,
-			CompanyName:    companyName,
-			IdUserInserted: idUserInserted,
+			Key:              "",
+			Name:             "",
+			LastName:         "",
+			FileName:         fileName,
+			Status:           "Fila",
+			Active:           true,
+			CreatedAt:        nowUTC.Add(-time.Duration(dh) * time.Hour),
+			CompanyCode:      companyCode,
+			CompanyName:      companyName,
+			IdUserInserted:   idUserInserted,
+			NameUserInserted: userNameInserted,
 			//Abaixo como vem da planilha vamos considerar sempre como IDA
 			DirectionOfDestination: "GO",
 		}
@@ -503,6 +509,7 @@ func SearchPurcharseRecordPagination(
 			"DtImportacao":           data.CreatedAt,
 			"Active":                 data.Active,
 			"DirectionOfDestination": data.DirectionOfDestination,
+			"NameUserInserted":       data.NameUserInserted,
 		})
 	}
 
@@ -619,6 +626,7 @@ func SearchPurcharseRecordByPeriod(
 			"DtImportacao":           data.CreatedAt,
 			"Active":                 data.Active,
 			"DirectionOfDestination": data.DirectionOfDestination,
+			"NameUserInserted":       data.NameUserInserted,
 		})
 	}
 
@@ -714,6 +722,7 @@ func GetPurcharseRecordByID(client *mongo.Client, dbName, collectionName, excelI
 		"DtImportacao":           excelData.CreatedAt,
 		"Active":                 excelData.Active,
 		"DirectionOfDestination": excelData.DirectionOfDestination,
+		"NameUserInserted":       excelData.NameUserInserted,
 	}
 
 	return excelDatas, nil
@@ -772,6 +781,7 @@ func GetAllPurcharseRecord(client *mongo.Client, dbName, collectionName string, 
 			"DtImportacao":           cc.CreatedAt,
 			"Active":                 cc.Active,
 			"DirectionOfDestination": cc.DirectionOfDestination,
+			"NameUserInserted":       cc.NameUserInserted,
 		})
 	}
 
@@ -986,6 +996,7 @@ func GetPurcharseRecordByStatus(client *mongo.Client, dbName, collectionName, co
 			"DtImportacao":           cc.CreatedAt,
 			"Active":                 cc.Active,
 			"DirectionOfDestination": cc.DirectionOfDestination,
+			"NameUserInserted":       cc.NameUserInserted,
 		})
 
 	}

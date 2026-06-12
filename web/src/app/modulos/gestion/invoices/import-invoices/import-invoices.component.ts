@@ -44,12 +44,9 @@ export class ImportInvoicesComponent {
   }  
 
   ngOnChanges(changes: SimpleChanges) {  
-      if (changes['msgGravar']) {
-          if(changes['msgGravar'].currentValue) {
-            this.handleMsgGravar()
-            this.msgGravar=false
-          
-          }
+    // console.log('changes',this.msgGravar);
+      if (this.msgGravar) {         
+            this.handleMsgGravar()          
       }
 
        if (changes['duplicateFiles']) {
@@ -161,8 +158,21 @@ export class ImportInvoicesComponent {
         return;
       }
       
-      this.formDataOutput.emit(this.formData)     
-         
+      if (this.filesForImport.length === 0) {
+          const resultado = await this.modal.openModal(
+            this.translate.instant('Ecra.SelectOneFile'),
+            true
+          );
+
+          if (resultado) {
+          
+          } else {
+            // lógica cancelamento (se houver)
+          }
+        }
+        else {
+          this.formDataOutput.emit(this.formData)   
+        }
     }   
 
     async handleMsgGravar() {
@@ -173,6 +183,7 @@ export class ImportInvoicesComponent {
         );
 
         if (resultado) {
+          this.msgGravar=false
             this.clearDataWindow() 
         } else {
           // lógica cancelamento (se houver)

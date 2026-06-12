@@ -281,7 +281,7 @@ func ImportConciliationDataOnflys() {
 			case isOriginAM && !isReturnAM:
 				insertRegister(data.OriginETicket, pr, data.OriginAirline, airlines, "GO")
 				if processReturnCodAirline {
-					insertRegister(data.OriginLocator, pr, data.ReturnAirline, airlines, "BACK")
+					insertRegister(data.ReturnLocator, pr, data.ReturnAirline, airlines, "BACK")
 				}
 
 			case !isOriginAM && isReturnAM:

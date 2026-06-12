@@ -150,6 +150,7 @@ export class PurcharseRecordComponent {
               const formData = new FormData();
               formData.append('file', file);
               formData.append('idUserInserted', this.decoded.idUser);
+              formData.append('userNameInserted', this.decoded.name);
               this.isLoading=true;
 
           this.moduloService.importFile(formData, "/UploadExcelPurcharseRecord").subscribe({

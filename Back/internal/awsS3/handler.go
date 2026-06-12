@@ -13,6 +13,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -1189,7 +1190,9 @@ func UpdateStatusPdfOrXmlHandler(w http.ResponseWriter, r *http.Request) {
 Função criada por Ricardo Silva Ferreira
 Inicio da criação 25/11/2025 16:22
 Data Final da criação : 25/11/2025 16:22
+OBS : 11/06/2026 foi adicionado para excluir varios que são separados por ponto e virgula
 */
+
 func DeleteImagesDBByIDHandler(w http.ResponseWriter, r *http.Request) {
 	// Validar método HTTP
 	if r.Method != http.MethodDelete {
@@ -1209,7 +1212,7 @@ func DeleteImagesDBByIDHandler(w http.ResponseWriter, r *http.Request) {
 	pdfFile := r.URL.Query().Get("pdfFile")
 	zipFile := r.URL.Query().Get("zipFile")
 
-	// fmt.Println("pdfFile ", pdfFile)
+	fmt.Println("pdfFile params ", pdfFile)
 	// fmt.Println("xmlFile ", xmlFile)
 	// fmt.Println("zipFile ", zipFile)
 
@@ -1219,18 +1222,46 @@ func DeleteImagesDBByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if pdfFile != "" {
-		errorPdfFIle := DeleteFromS3(pdfFile)
-		if errorPdfFIle != nil {
-			http.Error(w, fmt.Sprintf("erro ao excluir arquivo PDF: %v", errorPdfFIle), http.StatusInternalServerError)
-			return
+
+		pdfFiles := strings.Split(pdfFile, ";")
+
+		// fmt.Println("pdf files ", pdfFiles)
+
+		for _, f := range pdfFiles {
+			f = strings.TrimSpace(f) // ✅ limpa espaços
+
+			if f == "" {
+				continue
+			}
+			f = path.Base(f)
+
+			// fmt.Println("PDF", f)
+
+			err := DeleteFromS3(f)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("erro ao excluir arquivo PDF: %v", err), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 
 	if xmlFile != "" {
-		errorXmlFile := DeleteFromS3(xmlFile)
-		if errorXmlFile != nil {
-			http.Error(w, fmt.Sprintf("erro ao excluir arquivo PDF: %v", errorXmlFile), http.StatusInternalServerError)
-			return
+
+		xmlFiles := strings.Split(xmlFile, ";")
+
+		for _, f := range xmlFiles {
+			f = strings.TrimSpace(f)
+
+			if f == "" {
+				continue
+			}
+
+			f = path.Base(f)
+			err := DeleteFromS3(f)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("erro ao excluir arquivo XML: %v", err), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 
@@ -1260,6 +1291,78 @@ func DeleteImagesDBByIDHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("erro ao codificar resposta JSON: %v", err)
 	}
 }
+
+// */
+// func DeleteImagesDBByIDHandler(w http.ResponseWriter, r *http.Request) {
+// 	// Validar método HTTP
+// 	if r.Method != http.MethodDelete {
+// 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+// 		return
+// 	}
+
+// 	// Validar token
+// 	status, msg := flytura.TokenValido(w, r)
+// 	if !status {
+// 		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
+// 		return
+// 	}
+
+// 	id := r.URL.Query().Get("id")
+// 	xmlFile := r.URL.Query().Get("xmlFile")
+// 	pdfFile := r.URL.Query().Get("pdfFile")
+// 	zipFile := r.URL.Query().Get("zipFile")
+
+// 	// fmt.Println("pdfFile ", pdfFile)
+// 	// fmt.Println("xmlFile ", xmlFile)
+// 	// fmt.Println("zipFile ", zipFile)
+
+// 	if id == "" {
+// 		http.Error(w, "ID não informado na rota", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	if pdfFile != "" {
+// 		errorPdfFIle := DeleteFromS3(pdfFile)
+// 		if errorPdfFIle != nil {
+// 			http.Error(w, fmt.Sprintf("erro ao excluir arquivo PDF: %v", errorPdfFIle), http.StatusInternalServerError)
+// 			return
+// 		}
+// 	}
+
+// 	if xmlFile != "" {
+// 		errorXmlFile := DeleteFromS3(xmlFile)
+// 		if errorXmlFile != nil {
+// 			http.Error(w, fmt.Sprintf("erro ao excluir arquivo PDF: %v", errorXmlFile), http.StatusInternalServerError)
+// 			return
+// 		}
+// 	}
+
+// 	errorZipFile := DeleteFromS3(zipFile)
+// 	if errorZipFile != nil {
+// 		http.Error(w, fmt.Sprintf("erro ao excluir arquivo ZIP: %v", errorZipFile), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	// Executar exclusão
+// 	err := DeleteImagesDBByID(db.MongoClient, flytura.DBName, flytura.ImagesDBTableName, id)
+// 	if err != nil {
+// 		http.Error(w, fmt.Sprintf("erro ao excluir registro: %v", err), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	// Retornar resposta JSON
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.WriteHeader(http.StatusOK)
+
+// 	response := map[string]string{
+// 		"message": "registro excluído com sucesso",
+// 		"id":      id,
+// 	}
+
+// 	if err := json.NewEncoder(w).Encode(response); err != nil {
+// 		log.Printf("erro ao codificar resposta JSON: %v", err)
+// 	}
+// }
 
 /*
 	Função criada por Ricardo Silva Ferreira
@@ -1337,25 +1440,26 @@ func UploadManualImportInvoicesRecordHandler(w http.ResponseWriter, r *http.Requ
 		// Lê o conteúdo do ZIP para memória
 		buf := new(bytes.Buffer)
 		_, err = io.Copy(buf, file)
+
 		if err != nil {
 			http.Error(w, "Erro ao copiar conteúdo do ZIP", http.StatusInternalServerError)
 			return
 		}
 
 		// //MNADA PARA O PARALELISMO E ENVIA PARA O S3
-		// flytura.UploadChan <- flytura.UploadTask{
-		// 	FileContent: buf.Bytes(),
-		// 	FileName:    fileHeader.Filename,
-		// 	CompanyCode: "",
-		// 	Key:         "",
-		// }
+		flytura.UploadChan <- flytura.UploadTask{
+			FileContent: buf.Bytes(),
+			FileName:    fileHeader.Filename,
+			CompanyCode: "",
+			Key:         "",
+		}
 
 		// 👉 aqui você pode:
 		// salvar no disco
 		// enviar para S3
 		// processar conteúdo
 
-		// file.Close() // ✅ correto (não usar defer no loop)
+		file.Close() // ✅ correto (não usar defer no loop)
 	}
 
 	// ✅ campos do formdata

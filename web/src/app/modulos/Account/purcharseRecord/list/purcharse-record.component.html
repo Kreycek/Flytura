@@ -137,7 +137,7 @@
           <table class="table table-bordered">
             <thead>                          
               <tr>
-                <th colspan="10" style="text-align: left;" >    
+                <th colspan="11" style="text-align: left;" >    
                 
                   <div class="actions-container">
                       <!-- Botão de selecionar Excel -->
@@ -175,7 +175,7 @@
                </th>                         
               </tr> 
               <tr>
-                <td colspan="10" style="font-weight: bold; font-size: 14px; color: #ff0000;">{{ 'Ecra.recordFound' | translate }}: {{totalRegistros}}</td>
+                <td colspan="11" style="font-weight: bold; font-size: 14px; color: #ff0000;">{{ 'Ecra.recordFound' | translate }}: {{totalRegistros}}</td>
               </tr>             
               <tr>
                 <th class="fmtTableBorder"> {{ 'Ecra.Key' | translate }} </th>              
@@ -184,10 +184,11 @@
                 <th class="fmtTableBorder"> {{ 'Ecra.lastName' | translate }}</th>   
                 <th class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th> 
                 <th class="fmtTableBorder"> {{ 'Ecra.DtImport' | translate }} </th>   
-                  <th class="fmtTableBorder"> {{ 'Ecra.GO' | translate }} /  {{ 'Ecra.BACK' | translate }}</th>   
-                 <th class="fmtTableBorder" style="text-align: center;"> {{ 'Ecra.Status' | translate }}</th>      
+                <th class="fmtTableBorder"> {{ 'Ecra.GO' | translate }} /  {{ 'Ecra.BACK' | translate }}</th>
+                <th class="fmtTableBorder"> {{ 'Ecra.UserImport' | translate }}</th>     
+                <th class="fmtTableBorder" style="text-align: center;"> {{ 'Ecra.Status' | translate }}</th>      
                 <th class="fmtTableBorder" style="text-align: center;"> {{ 'Ecra.edit' | translate }} </th> 
-                 <th class="fmtTableBorder" *ngIf="adm" style="text-align: center;"> {{ 'Ecra.delete' | translate }} </th>
+                <th class="fmtTableBorder" *ngIf="adm" style="text-align: center;"> {{ 'Ecra.delete' | translate }} </th>
                 
               </tr>
             </thead>
@@ -207,7 +208,8 @@
                   @if(item.DirectionOfDestination) {
                      {{ ('Ecra.' +   item.DirectionOfDestination) | translate }} 
                   }
-                  </td>       
+                  </td>      
+                  <td>{{item.NameUserInserted}}</td> 
                 <td style="position: relative; z-index: 100; text-align: center;" 
                       (mousemove)="mousemoveHandler($event, item, item.Status=='Erro', item.MessageReturn)" 
                       (mouseleave)="hideCustomTooltip()">    
@@ -250,7 +252,9 @@
                     item.Status=='Fila' || 
                     item.Status.toLowerCase()=='reserva cancelada'|| 
                     item.Status.toLowerCase()=='fatura já emitida'|| 
-                    item.Status.toLowerCase()=='dados incorretos'" 
+                    item.Status.toLowerCase()=='dados incorretos' ||
+                     item.Status.toLowerCase()=='emitida manualmente'"
+                    
                     (click)="deleteItem(item.ID)" 
                     style="font-size: 20px; cursor: pointer; " 
                   title="{{ 'Ecra.delete' | translate }}" 

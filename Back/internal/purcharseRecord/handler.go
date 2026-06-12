@@ -42,6 +42,7 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	idUserInserted := r.FormValue("idUserInserted")
+	userNameInserted := r.FormValue("userNameInserted")
 
 	// client, errConnectDB1 := db.ConnectMongoDB(flytura.ConectionString)
 	// if errConnectDB1 != nil {
@@ -154,7 +155,16 @@ func UploadPurcharseRecordHandler(w http.ResponseWriter, r *http.Request) {
 		cientificError,
 		ivalidFormatError,
 		ivalidNumberColuns,
-		errProcessExcel := ProcessPurcharseRecordExcel(tempFile.Name(), fileHeader.Filename, companyName, companyCode, idUserInserted, importSheetOnlyVerifyNumber, db.MongoClient, flytura.DBName, flytura.PurcharseRecordTableName)
+		errProcessExcel := ProcessPurcharseRecordExcel(tempFile.Name(),
+		fileHeader.Filename,
+		companyName,
+		companyCode,
+		idUserInserted,
+		userNameInserted,
+		importSheetOnlyVerifyNumber,
+		db.MongoClient,
+		flytura.DBName,
+		flytura.PurcharseRecordTableName)
 
 	if errProcessExcel != nil {
 		http.Error(w, "Erro ao processar planilha", http.StatusInternalServerError)

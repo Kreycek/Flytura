@@ -417,14 +417,24 @@ Função criada por Ricardo Silva Ferreira
 Inicio da criação 25/11/2025 17:15
 Data Final da criação : 25/11/2025 17:20
 */
-
 func DeleteFromS3(filename string) error {
 	accessKey := flytura.AKA
 	secretKey := flytura.SKA
 
+	// ✅ limpeza do filename
+	filename = strings.TrimSpace(filename)
+	filename = strings.ReplaceAll(filename, "\\", "/")
+	filename = path.Base(filename)
+
+	if filename == "" {
+		return nil
+	}
+
 	region := region
 	bucketName := bucketName
 	objectKey := path.Join(flytura.ImagesInvoices, filename)
+
+	// fmt.Println("Deleting S3 key:", objectKey)
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(region),
@@ -438,7 +448,7 @@ func DeleteFromS3(filename string) error {
 
 	client := s3.NewFromConfig(cfg)
 
-	// --- Apaga objeto ---
+	// ✅ delete
 	_, err = client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
 		Bucket: aws.String(bucketName),
 		Key:    aws.String(objectKey),
@@ -447,20 +457,25 @@ func DeleteFromS3(filename string) error {
 		return fmt.Errorf("erro ao apagar do S3: %w", err)
 	}
 
-	// --- Confirma remoção (polling com HeadObject) ---
-	for i := 0; i < 5; i++ { // tenta 5 vezes
+	// ✅ confirmação
+	for i := 0; i < 5; i++ {
+
 		_, err = client.HeadObject(context.TODO(), &s3.HeadObjectInput{
 			Bucket: aws.String(bucketName),
 			Key:    aws.String(objectKey),
 		})
+
 		if err != nil {
 			var notFound *types.NotFound
 			if errors.As(err, &notFound) {
-				// Objeto não existe mais
-				return nil
+				return nil // ✅ já apagado
 			}
+
+			// ⚠️ importante: se erro não for NotFound
+			return fmt.Errorf("erro ao verificar remoção: %w", err)
 		}
-		time.Sleep(2 * time.Second) // espera antes de tentar novamente
+
+		time.Sleep(2 * time.Second)
 	}
 
 	return fmt.Errorf("não foi possível confirmar remoção do objeto")

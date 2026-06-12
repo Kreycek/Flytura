@@ -170,6 +170,7 @@
      "selectInvoicesUpload":"Seleccionar notas",
      "manualImport":"Importación manual",
      "alertDuplicateFiles":"Si tiene archivos duplicados, corríjalos o cámbieles el nombre en la lista a continuación.",
-     "Automation":"Automatización"
+     "Automation":"Automatización",
+     "SelectOneFile":"Seleccione un archivo .pdf para continuar."
   }
 }

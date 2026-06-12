@@ -212,6 +212,7 @@ export class AddPurchaseRecordComponent {
           fileName:string,
           status:string,
           idUserInserted:string,
+          nameUserInserted:string,
           idUserUpdate:string
           
         } ={
@@ -225,12 +226,16 @@ export class AddPurchaseRecordComponent {
           fileName:this.fileName ? this.fileName : !this.id ? 'Criado Manualmente' : 'Alterado Manualmente',
           status:si.name,
           idUserInserted: '',
+          nameUserInserted:'',
           idUserUpdate:''
           
         }     
    
+        objGravar.idUserUpdate= this.decoded.idUser
+           objGravar.nameUserInserted= this.decoded.name
         if(this.id) {   
-          objGravar.idUserUpdate= this.decoded.idUser
+          
+
           if(this.keyOrigin!=formValues.key) {                         
                 this.purcharseRecordService.verifyExistPurchaseRecordData({key:objGravar.key}).subscribe((async (response:any)=>{
                 if(response.message) {              
@@ -248,7 +253,7 @@ export class AddPurchaseRecordComponent {
           }           
         }  
         else {
-           objGravar.idUserInserted= this.decoded.idUser
+         
           this.purcharseRecordService.verifyExistPurchaseRecordData({key:objGravar.key}).subscribe((async (response:any)=>{
             if(response.message) {              
                 const resultado = await this.modal.openModal( this.translate.instant('Ecra.existValueFieldKey'),true); 

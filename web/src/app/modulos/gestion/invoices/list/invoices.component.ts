@@ -335,7 +335,8 @@ export class InvoicesComponent {
     console.log(filesArray);
 
       this.invoicesService.checkDuplicatePDFsHandler(filesArray,"/CheckDuplicatePDFs").subscribe((response:any)=>{
-        console.log('Result duplicados ' ,response)
+        //Para poder ativar o ngOnChange dentro do componente de modal faz isso abaixo
+        this.isSave=false;
 
         if(response && response.duplicates && response.duplicates.length>0) {
           this.duplicateFiles=response.duplicates;
@@ -344,7 +345,7 @@ export class InvoicesComponent {
           this.moduloService.importFile(formData, "/UploadManualImportInvoicesRecord").subscribe({
             next: async (returnSheet: any) => {
               if (returnSheet.message) {
-                this.isSave=true;
+                 this.isSave=true;
                
                  this.search(1); 
               }
