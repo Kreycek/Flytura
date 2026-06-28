@@ -8,7 +8,7 @@ import { ConfigService } from '../../../../services/config.service';
 import moment from 'moment';
 import { ModalOkComponent } from '../../../../modal/modal-ok/modal-ok.component';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
-import { InvoicesService } from './invoices.service';
+import { InvoicesService } from '../invoices.service';
 import { PaginatorComponent } from '../../../../paginator/paginator.component';
 import { jwtDecode } from 'jwt-decode';
 import { EnumPerfil } from '../../../Enum/perfil';

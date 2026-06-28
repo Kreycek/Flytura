@@ -1,6 +1,7 @@
 package awsS3
 
 import (
+	"Flytura/internal/db"
 	"Flytura/internal/models"
 	"bytes"
 	"context"
@@ -538,4 +539,205 @@ func checkExistingPDFs(client *mongo.Client, dbName, collectionName string, file
 	}
 
 	return duplicates, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 12/06/2026 14:13
+Data Final da criação : 12/06/2026 14:13
+*/
+func CountLast30DaysByDtImport(
+	client *mongo.Client,
+	dbName, collectionName string,
+) (int64, error) {
+
+	collection := db.GetCollection(client, dbName, collectionName)
+
+	// 🔹 Define o intervalo: hoje - 30 dias
+	endDate := time.Now()
+	startDate := endDate.AddDate(0, 0, -30)
+
+	// 🔹 Pipeline
+	pipeline := mongo.Pipeline{
+		{
+			{Key: "$match", Value: bson.M{
+				"dtImport": bson.M{
+					"$gte": startDate,
+					"$lt":  endDate,
+				},
+			}},
+		},
+		{
+			{Key: "$count", Value: "total"},
+		},
+	}
+
+	cursor, err := collection.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		return 0, fmt.Errorf("erro ao agregar: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	// Estrutura para receber resultado
+	var result []struct {
+		Total int64 `bson:"total"`
+	}
+
+	if err := cursor.All(context.Background(), &result); err != nil {
+		return 0, fmt.Errorf("erro ao ler resultado: %v", err)
+	}
+
+	// 🔹 Se não houver registros
+	if len(result) == 0 {
+		return 0, nil
+	}
+
+	return result[0].Total, nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 12/06/2026 14:30
+Data Final da criação : 12/06/2026 14:36
+*/func CountLast30DaysByAmountRange(
+	client *mongo.Client,
+	dbName, collectionName string,
+) (bson.M, error) {
+
+	collection := db.GetCollection(client, dbName, collectionName)
+
+	endDate := time.Now()
+	startDate := endDate.AddDate(0, 0, -30)
+
+	pipeline := mongo.Pipeline{
+
+		// ✅ Filtro
+		{
+			{Key: "$match", Value: bson.M{
+				"createdAtContractedCountry": bson.M{
+					"$gte": startDate,
+					"$lt":  endDate,
+				},
+			}},
+		},
+
+		// ✅ Null safety
+		{
+			{Key: "$addFields", Value: bson.M{
+				"amountOrigin": bson.M{
+					"$ifNull": []interface{}{"$amountOrigin", 0},
+				},
+			}},
+		},
+
+		// ✅ Agrupamento por faixa
+		{
+			{Key: "$group", Value: bson.M{
+				"_id": bson.M{
+					"$switch": bson.M{
+						"branches": []bson.M{
+							{"case": bson.M{"$lte": []interface{}{"$amountOrigin", 1999}}, "then": "até 1999€"},
+							{"case": bson.M{
+								"$and": []interface{}{
+									bson.M{"$gte": []interface{}{"$amountOrigin", 2000}},
+									bson.M{"$lte": []interface{}{"$amountOrigin", 5000}},
+								},
+							}, "then": "2000€ - 5000€"},
+							{"case": bson.M{"$gt": []interface{}{"$amountOrigin", 5000}}, "then": "> 5000€"},
+						},
+						"default": "Sem valor",
+					},
+				},
+				"total": bson.M{"$sum": 1},
+				"sum":   bson.M{"$sum": "$amountOrigin"},
+			}},
+		},
+
+		// ✅ Formato base
+		{
+			{Key: "$project", Value: bson.M{
+				"_id":   0,
+				"range": "$_id",
+				"total": 1,
+				"sum":   1,
+			}},
+		},
+
+		// ✅ ADD ORDER (IMPORTANTE)
+		{
+			{Key: "$addFields", Value: bson.M{
+				"order": bson.M{
+					"$switch": bson.M{
+						"branches": []bson.M{
+							{"case": bson.M{"$eq": []interface{}{"$range", "até 1999€"}}, "then": 1},
+							{"case": bson.M{"$eq": []interface{}{"$range", "2000€ - 5000€"}}, "then": 2},
+							{"case": bson.M{"$eq": []interface{}{"$range", "> 5000€"}}, "then": 3},
+							{"case": bson.M{"$eq": []interface{}{"$range", "Sem valor"}}, "then": 4},
+						},
+						"default": 99,
+					},
+				},
+			}},
+		},
+
+		// ✅ Ordena antes de agrupar
+		{
+			{Key: "$sort", Value: bson.M{
+				"order": 1,
+			}},
+		},
+
+		// ✅ Agrupamento final (AGORA levando order junto)
+		{
+			{Key: "$group", Value: bson.M{
+				"_id": nil,
+				"data": bson.M{
+					"$push": bson.M{
+						"range": "$range",
+						"total": "$total",
+						"sum":   "$sum",
+						"order": "$order", // ✅ aqui!!
+					},
+				},
+				"totalGeral": bson.M{"$sum": "$total"},
+				"sumGeral":   bson.M{"$sum": "$sum"},
+			}},
+		},
+
+		{
+			{Key: "$project", Value: bson.M{
+				"_id":        0,
+				"data":       1,
+				"totalGeral": 1,
+				"sumGeral":   1,
+			}},
+		},
+	}
+
+	cursor, err := collection.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao agregar: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var result []bson.M
+	if err := cursor.All(context.Background(), &result); err != nil {
+		return nil, fmt.Errorf("erro ao ler resultado: %v", err)
+	}
+
+	// ✅ fallback
+	if len(result) == 0 {
+		return bson.M{
+			"data": []bson.M{
+				{"range": "até 1999€", "total": 0, "sum": 0, "order": 1},
+				{"range": "2000€ - 5000€", "total": 0, "sum": 0, "order": 2},
+				{"range": "> 5000€", "total": 0, "sum": 0, "order": 3},
+				{"range": "Sem valor", "total": 0, "sum": 0, "order": 4},
+			},
+			"totalGeral": 0,
+			"sumGeral":   0,
+		}, nil
+	}
+
+	return result[0], nil
 }

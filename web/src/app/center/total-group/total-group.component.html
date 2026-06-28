@@ -1,0 +1,50 @@
+
+  <div class="search-container" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+    
+  <div class="container">
+
+    <!-- Canada -->
+    <div class="country-block">
+     
+      <div class="cards">
+        <div class="card">
+          <div class="value">{{this.TotalLast30Days}}</div>
+          <div class="label">Quantidade de notas emitidas nos últimos 30 dias</div>
+          <div class="sub" style="display: none;">Sum of Units Sold <strong>247.43K</strong></div>
+        </div>
+
+        <div class="card">
+          <div class="value">{{TotalGeral}}</div>
+          <div class="label">
+            <div class="sub">Quantidade de passagens por range de valores, foi usado o valor origem da conciliação, nos últimos 30 dias </div>
+            <div *ngFor="let item of dataRangeValues" style="font-size: 14px;;">
+    
+                    {{ item.range + " = " + item.total }}
+
+   
+             </div>
+
+          </div>
+          <div class="sub" style="display: none;">Sum of Sale Price <strong>17K</strong></div>
+        </div>
+         <div class="card" style="display: none;">
+          <div class="value">24.89M</div>
+          <div class="label">Sum of Sales</div>
+          <div class="sub">Sum of Sale Price <strong>17K</strong></div>
+        </div>
+         <div class="card" style="display: none;">
+          <div class="value">24.89M</div>
+          <div class="label">Sum of Sales</div>
+          <div class="sub">Sum of Sale Price <strong>17K</strong></div>
+        </div>
+      </div>
+    </div>
+
+   
+
+  </div>
+
+        </div>
+
+
+

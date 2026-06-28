@@ -40,4 +40,6 @@ type Conciliation struct {
 	DestinationCity            string             `json:"destinationCity" bson:"destinationCity"`
 	OriginAirlineCommercial    string             `json:"originAirlineCommercial" bson:"originAirlineCommercial"`
 	ReturnAirlineCommercial    string             `json:"returnAirlineCommercial" bson:"returnAirlineCommercial"`
+	MxnOnflyAmountOrigin       float64            `json:"mxnOnflyAmountOrigin" bson:"mxnOnflyAmountOrigin"`
+	MxnOnflyAmountReturn       float64            `json:"mxnOnflyAmountReturn" bson:"mxnOnflyAmountReturn"`
 }

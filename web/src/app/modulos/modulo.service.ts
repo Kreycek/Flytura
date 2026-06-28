@@ -356,7 +356,10 @@ import * as XLSX from 'xlsx';
             "DestinationCountryCode":item.DestinationCountryCode,
             "DestinationCity":item.DestinationCity,
             "OriginAirlineCommercial":item.OriginAirlineCommercial,
-            "ReturnAirlineCommercial":item.ReturnAirlineCommercial
+            "ReturnAirlineCommercial":item.ReturnAirlineCommercial,
+            "MxnOnflyAmountOrigin":item.MxnOnflyAmountOrigin,
+            "MxnOnflyAmountReturn":item.MxnOnflyAmountReturn,
+
           }));
 
           const colunas = [
@@ -389,7 +392,9 @@ import * as XLSX from 'xlsx';
             "DestinationCountryCode",
             "DestinationCity",
             "OriginAirlineCommercial",
-            "ReturnAirlineCommercial"
+            "ReturnAirlineCommercial",
+            "MxnOnflyAmountOrigin",
+            "MxnOnflyAmountReturn"
           ];
           // Converte JSON para uma worksheet Excel
           const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dados, { header: colunas });

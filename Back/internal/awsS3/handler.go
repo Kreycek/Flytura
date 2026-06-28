@@ -748,7 +748,7 @@ func SearchS3ImagesDBPaginationHandler(w http.ResponseWriter, r *http.Request) {
 			startDate = &t
 		} else {
 			// lidar com erro de parsing, se necessário
-			fmt.Println("Erro ao converter startDate:", err)
+			fmt.Println("Erro ao converter startDate SearchS3ImagesDBPaginationHandler:", err)
 		}
 	}
 
@@ -761,7 +761,7 @@ func SearchS3ImagesDBPaginationHandler(w http.ResponseWriter, r *http.Request) {
 			endDate = &t
 		} else {
 			// lidar com erro de parsing, se necessário
-			fmt.Println("Erro ao converter startDate:", err)
+			fmt.Println("Erro ao converter startDate SearchS3ImagesDBPaginationHandler 2:", err)
 		}
 	}
 
@@ -869,7 +869,7 @@ func SearchS3ImagesDBFullHandler(w http.ResponseWriter, r *http.Request) {
 			startDate = &t
 		} else {
 			// lidar com erro de parsing, se necessário
-			fmt.Println("Erro ao converter startDate:", err)
+			fmt.Println("Erro ao converter startDat :", err)
 		}
 	}
 
@@ -882,7 +882,7 @@ func SearchS3ImagesDBFullHandler(w http.ResponseWriter, r *http.Request) {
 			endDate = &t
 		} else {
 			// lidar com erro de parsing, se necessário
-			fmt.Println("Erro ao converter startDate:", err)
+			fmt.Println("Erro ao converter startDate SearchS3ImagesDBFullHandler:", err)
 		}
 	}
 
@@ -1586,4 +1586,77 @@ func CheckDuplicatePDFsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 12/06/2026 14:13
+Data Final da criação : 12/06/2026 14:15
+*/
+func CountLast30DaysByDtImportsHandler(w http.ResponseWriter, r *http.Request) {
+
+	// 🔐 Validação do token
+	status, msg := flytura.TokenValido(w, r)
+	if !status {
+		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
+		return
+	}
+
+	// 🔹 Chamada da nova função (sem filtros)
+	total, err := CountLast30DaysByDtImport(
+		db.MongoClient,
+		flytura.DBName,
+		flytura.ImagesDBTableName,
+	)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("erro ao contar registros: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// 🔹 Estrutura de resposta
+	response := map[string]interface{}{
+		"totalLast30Days": total,
+	}
+
+	// 🔹 Retorno JSON
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("erro ao codificar JSON: %v", err)
+	}
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 12/06/2026 14:40
+Data Final da criação : 12/06/2026 14:45
+*/
+func CountLast30DaysByAmountRangeHandler(w http.ResponseWriter, r *http.Request) {
+
+	// 🔐 Validação do token
+	status, msg := flytura.TokenValido(w, r)
+	if !status {
+		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
+		return
+	}
+
+	// 🔹 Chamada da função (agora retorna slice)
+	data, err := CountLast30DaysByAmountRange(
+		db.MongoClient,
+		flytura.DBName,
+		flytura.ConciliationTableName,
+	)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("erro ao buscar dados: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// 🔹 Retorno direto (já no formato correto)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		log.Printf("erro ao codificar JSON: %v", err)
+	}
 }

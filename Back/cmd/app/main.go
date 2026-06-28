@@ -364,11 +364,22 @@ func main() {
 
 	//Inserido em 10/06/2026 21:34
 	http.HandleFunc("/api/UploadManualImportInvoicesRecord", awsS3.UploadManualImportInvoicesRecordHandler)
+
 	http.HandleFunc("/api/SearchS3ImagesDBPagination", awsS3.SearchS3ImagesDBPaginationHandler)
 	http.HandleFunc("/api/SearchS3ImagesDBFull", awsS3.SearchS3ImagesDBFullHandler)
 	http.HandleFunc("/api/UpdateStatusS3Image", awsS3.UpdateStatusS3ImageHandler)
 	http.HandleFunc("/api/UpdateMultipleStatusS3Images", awsS3.UpdateMultipleStatusS3ImagesHandler)
 	http.HandleFunc("/api/UpdateStatusPdforXml", awsS3.UpdateStatusPdfOrXmlHandler)
+
+	//Inserido em 11/06/2026 13:06
+	http.HandleFunc("/api/CheckDuplicatePDFs", awsS3.CheckDuplicatePDFsHandler)
+
+	//Inserido em 12/06/2026 14:16
+	http.HandleFunc("/api/CountLast30DaysByDtImports", awsS3.CountLast30DaysByDtImportsHandler)
+
+	//Inserido em 12/06/2026 14:38
+	http.HandleFunc("/api/CountLast30DaysByAmountRange", awsS3.CountLast30DaysByAmountRangeHandler)
+
 	//Inserido em 25/11/2025 16:24
 	s := mux.NewRouter()
 	s.HandleFunc("/api/DeleteImagesDBByIDHandler", awsS3.DeleteImagesDBByIDHandler).Methods("DELETE")
@@ -378,9 +389,6 @@ func main() {
 	http.HandleFunc("/api/UploadS3Files", awsS3.UploadS3FilesHandler)
 	//FUNÇÃO ABAIXO NÃO USADA
 	http.HandleFunc("/api/UploadS3FilesUnzip", awsS3.UploadS3FilesUnzipHandler)
-
-	//Inserido em 11/06/2026 13:06
-	http.HandleFunc("/api/CheckDuplicatePDFs", awsS3.CheckDuplicatePDFsHandler)
 
 	http.HandleFunc("/api/UploadS3MultiplesFilesUnzip", awsS3.UploadS3MultiplesFilesUnzipHandler)
 	http.HandleFunc("/api/InsertOutPutInvoices", outPutInvoices.InsertOutPutInvoicesHandler)

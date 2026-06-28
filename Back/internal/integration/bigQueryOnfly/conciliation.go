@@ -95,12 +95,15 @@ func ImportConciliationDataOnflys() {
 			destination_country_code,
 			destination_city,
 			origin_airline_commercial,
-			return_airline_commercial
+			return_airline_commercial,
+			mxn_onfly_amount_origin,
+			mxn_onfly_amount_return
+
         FROM 
 			conciliation.gold_flytura 
 			--where emission_date='2026-06-01'
 			--where (emission_date>='2026-04-01' and emission_date<='2026-05-26') 
-			where (emission_date>='2026-04-30' and emission_date<=@today) 
+			where (emission_date>='2026-01-01' and emission_date<=@today) 
 			--where emission_date=@today
 			--AND origin_airline IN UNNEST(@companies)
         
@@ -184,6 +187,17 @@ func ImportConciliationDataOnflys() {
 		data.DestinationCity = flytura.ConvertToString(row, "destination_city")
 		data.OriginAirlineCommercial = flytura.ConvertToString(row, "origin_airline_commercial")
 		data.ReturnAirlineCommercial = flytura.ConvertToString(row, "return_airline_commercial")
+		data.MxnOnflyAmountOrigin = flytura.ConvertToFloat64(row, "mxn_onfly_amount_origin")
+		data.MxnOnflyAmountReturn = flytura.ConvertToFloat64(row, "mxn_onfly_amount_return")
+
+		// if data.MxnOnflyAmountOrigin != 0 {
+		// 	fmt.Println("Erro de calculo ",
+		// 		data.OriginLocator,
+		// 		data.ReturnLocator,
+		// 		data.OriginETicket,
+		// 		data.ReturnETicket,
+		// 		data.MxnOnflyAmountOrigin)
+		// }
 
 		nowUTC := time.Now().UTC()
 		dh, err := flytura.DiffHours(nowUTC, flytura.Fuso1, flytura.Fuso2)
@@ -645,6 +659,8 @@ func SearchConciliationPagination(
 			"DestinationCity":            data.DestinationCity,
 			"OriginAirlineCommercial":    data.OriginAirlineCommercial,
 			"ReturnAirlineCommercial":    data.ReturnAirlineCommercial,
+			"MxnOnflyAmountOrigin":       data.MxnOnflyAmountOrigin,
+			"MxnOnflyAmountReturn":       data.MxnOnflyAmountReturn,
 		})
 	}
 
@@ -765,6 +781,8 @@ func SearchConciliationExcel(
 			"DestinationCity":            data.DestinationCity,
 			"OriginAirlineCommercial":    data.OriginAirlineCommercial,
 			"ReturnAirlineCommercial":    data.ReturnAirlineCommercial,
+			"MxnOnflyAmountOrigin":       data.MxnOnflyAmountOrigin,
+			"MxnOnflyAmountReturn":       data.MxnOnflyAmountReturn,
 		})
 	}
 

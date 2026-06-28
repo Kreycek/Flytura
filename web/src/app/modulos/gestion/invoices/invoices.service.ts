@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ConfigService } from '../../../../services/config.service';
+import { ConfigService } from '../../../services/config.service';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver'
 
@@ -238,7 +238,27 @@ deleteS3Images(id: string, zipFile: string, pdfFile: string, xmlFile: string): O
     return this.http.post(this.configService.apiUrl + apiName, {
       files: files
     });
-  }
+  } 
+
+
   
+  getCountLast30DaysByDtImports(): Observable<any> {
+    return this.http.get(
+        this.configService.apiUrl + "/CountLast30DaysByDtImports" , {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    });
+  }
+
+  
+  getCountLast30DaysByAmountRange(): Observable<any> {
+    return this.http.get(
+        this.configService.apiUrl + "/CountLast30DaysByAmountRange" , {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    });
+  }
   
 }

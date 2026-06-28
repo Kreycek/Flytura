@@ -76,6 +76,7 @@
 
              <div class="col-lg-6 col-md-12 text-md-right" style="text-align: left; margin-top: 20px;;">
               <div class="actions-container">
+                
               <button style="font-size: 12px" class="action-btn-search add-btn" (click)="search(1)">{{ 'Ecra.search' | translate }}</button>
 
                    <!-- GErar relatório excel -->
@@ -132,6 +133,8 @@
                 <th class="fmtTableBorder">{{ 'Ecra.DestinationCity' | translate }}</th>  
                 <th class="fmtTableBorder">{{ 'Ecra.OriginAirlineCommercial' | translate }}</th>  
                 <th class="fmtTableBorder">{{ 'Ecra.ReturnAirlineCommercial' | translate }}</th>        
+                <th class="fmtTableBorder">Mxn Onfly Amount Origin</th>    
+                <th class="fmtTableBorder">Mxn Onfly Amount Return</th>  
                 <th class="CustomerImportDate">{{ 'Ecra.CustomerImportDate' | translate }}</th>
                 <th class="CustomerImportDate">{{ 'Ecra.ServerImportDate' | translate }}</th>
               
@@ -176,6 +179,8 @@
                 <td style="text-align: center;"> {{item.DestinationCity}} </td>
                 <td style="text-align: center;"> {{item.OriginAirlineCommercial}} </td>
                 <td style="text-align: center;"> {{item.ReturnAirlineCommercial}} </td>             
+                <td style="text-align: center;"> {{item.MxnOnflyAmountOrigin  | number:'1.2-2':'pt' }} </td> 
+                <td style="text-align: center;"> {{item.MxnOnflyAmountReturn  | number:'1.2-2':'pt' }} </td> 
                   <td style="text-align: center;"> 
                     @if( moduloService.isValidDate(item.CreatedAtContractedCountry)) {
                         {{item.CreatedAtContractedCountry  | date:'dd/MM/YYYY HH:mm':'UTC'}}

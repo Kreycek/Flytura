@@ -4,20 +4,26 @@
     <div class="card-body">
       <h4 class="card-title">Dashboard</h4>
 
-      <div id="geral">
-        <div class="grafProcessed">
-          <button class="btn btn-primary mb-2" (click)="toggleProcessed()">
+        <div class="col-lg-10 col-md-12 text-md-right" style="text-align: left; margin-top: 20px;;">
+              <div class="actions-container">
+
+                <button class="btn btn-primary mb-2" (click)="toggleImportaTotal()">
+        Total
+      </button>
+
+   <button class="btn btn-primary mb-2" (click)="toggleProcessed()">
         {{ 'Ecra.graficProcessed' | translate }}
       </button>
-      </div>
-        <div class="grafImportStatusData">
-      <button class="btn btn-primary mb-2" (click)="toggleImportaStatus()">
+
+       <button class="btn btn-primary mb-2" (click)="toggleImportaStatus()">
        {{ 'Ecra.importedDataAndStatus' | translate }}
       </button>
-      </div>
-      </div>
+              </div>
+        </div>
 
-    
+   
+
+    <app-total-group *ngIf="totals"></app-total-group>
 
       <app-processed *ngIf="showProcessed"></app-processed>
       <app-grafic-import-and-status *ngIf="showGraficDateImport"></app-grafic-import-and-status>
