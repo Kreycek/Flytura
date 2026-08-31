@@ -1,0 +1,2 @@
+ID,CompanyCode,CompanyName,Key,FileName,PDFFileName,XMLFileName,OriginData,BilledFlytura,DownloadDone,DownloadPDFDone,DownloadXMLDone,DtImport,UpdatedAt,ServerDate
+6a2c051deccbdb997b2df996,0001,Aeroméxico,ASS,consultaCertidaoMaira.pdf;consultaCertidaoValentina.pdf,consultaCertidaoMaira.pdf;consultaCertidaoValentina.pdf,,Upload Manual,false,false,false,false,2026-06-12 06:09:49,0001-01-01 00:00:00,2026-06-12 13:09:49

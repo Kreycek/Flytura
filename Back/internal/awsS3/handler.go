@@ -1660,3 +1660,106 @@ func CountLast30DaysByAmountRangeHandler(w http.ResponseWriter, r *http.Request)
 		log.Printf("erro ao codificar JSON: %v", err)
 	}
 }
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 29/07/2026 15:45
+Data Final da criação : 29/07/2026 15:45
+*/
+func ExportImagesJunhoJulhoPendentesHandler() {
+
+	// 🔹 Chamada da função (agora retorna slice)
+	err := ExportImagesJunhoJulhoPendentesTXT(
+		db.MongoClient,
+		flytura.DBName,
+		flytura.ImagesDBTableName)
+
+	if err != nil {
+
+		return
+	}
+
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 31/08/2026 10:43
+Data Final da criação : 31/08/2026 10:43
+*/
+func SearchInvoicesHandler(w http.ResponseWriter, r *http.Request) {
+	// Verificar se a requisição é do tipo POST
+	if r.Method != http.MethodGet {
+		http.Error(w, "Método não permitido dever ser um get", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Validar Token
+	status, msg := flytura.TokenValido(w, r)
+	if !status {
+		http.Error(w, fmt.Sprintf("erro ao validar token: %v", msg), http.StatusUnauthorized)
+		return
+	}
+
+	query := r.URL.Query()
+
+	keyCode := query.Get("key")
+
+	companyCode := query.Get("companyCode")
+
+	startDate := query.Get("startDate")
+
+	endDate := query.Get("endDate")
+
+	var _startDate *time.Time = nil
+	var _endDate *time.Time = nil
+
+	// fmt.Println("Data 2", startDate)
+
+	if startDate != "" && endDate != "" {
+
+		var stIniError error
+
+		parsedStart, stIniError := time.Parse("2006-01-02T15:04:05Z", startDate)
+		if stIniError != nil {
+			http.Error(w, "Formato de data inválido", http.StatusInternalServerError)
+			return
+		}
+		_startDate = &parsedStart
+
+		parsedEnd, stIniError := time.Parse("2006-01-02T15:04:05Z", endDate)
+		if stIniError != nil {
+			http.Error(w, "Formato de data inválido", http.StatusInternalServerError)
+			return
+		}
+		_endDate = &parsedEnd
+	}
+
+	// Buscar usuários com paginação
+	outPutInvoices, total, err := SearchInvoices(
+		db.MongoClient,
+		flytura.DBName,
+		flytura.ImagesDBTableName,
+		&keyCode,
+		&companyCode,
+		_startDate,
+		_endDate)
+
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Erro ao buscar faturas", http.StatusInternalServerError)
+		return
+	}
+
+	// Criar resposta JSON com paginação
+	response := map[string]any{
+		"total":    total,
+		"invoices": outPutInvoices,
+	}
+
+	// Retornar resposta JSON
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("erro ao codificar resposta JSON: %v", err)
+	}
+}

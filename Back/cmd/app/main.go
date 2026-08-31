@@ -371,6 +371,9 @@ func main() {
 	http.HandleFunc("/api/UpdateMultipleStatusS3Images", awsS3.UpdateMultipleStatusS3ImagesHandler)
 	http.HandleFunc("/api/UpdateStatusPdforXml", awsS3.UpdateStatusPdfOrXmlHandler)
 
+	//Inserido em 30/08/2026 10:45 -> Para gerar o excel da tela de faturas
+	http.HandleFunc("/api/SearchInvoices", awsS3.SearchInvoicesHandler)
+
 	//Inserido em 11/06/2026 13:06
 	http.HandleFunc("/api/CheckDuplicatePDFs", awsS3.CheckDuplicatePDFsHandler)
 
@@ -411,6 +414,8 @@ func main() {
 
 	// token, _ := flytura.GerarTokenSemExpiracao()
 	// fmt.Println("Token para o cliente ", token)
+
+	//awsS3.ExportImagesJunhoJulhoPendentesHandler()
 
 	// Inicia o servidor na porta 8080
 	go func() {

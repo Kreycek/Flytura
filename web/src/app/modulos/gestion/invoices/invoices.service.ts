@@ -260,5 +260,22 @@ deleteS3Images(id: string, zipFile: string, pdfFile: string, xmlFile: string): O
       }),
     });
   }
+
+
+  
+  
+  getAllInvoicesData(key?:string | null, companyCode?:string | null, startDate?:string | null, endDate?:string | null): Observable<any> {
+    return this.http.get(
+        this.configService.apiUrl + "/SearchInvoices?key="+key+ 
+        "&companyCode="+companyCode+ 
+        "&startDate="+startDate+ 
+        "&endDate="+endDate , {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    });
+  }
+
+  
   
 }

@@ -69,6 +69,7 @@ export class InvoicesComponent {
     decoded:any
     isSave:boolean=false;
     duplicateFiles:string[]=[];
+    fillOneFilter=false;
 
     constructor(
             private airLineService: AirLineService,
@@ -386,6 +387,55 @@ export class InvoicesComponent {
       if (!url) return '';
 
       return url.split('/').pop() || '';
+    }
+
+
+    generateReportExcel() {    
+
+             this.objPesquisar= {
+                keyCode:this.searchKey,
+                companyCode:this.searchAirlineCode,
+                startDate:this.searchAirlineDtInicio  ? moment(this.searchAirlineDtInicio).format('YYYY-MM-DDTHH:mm:ss[Z]') : '',                               
+                endDate: this.searchAirlineDtFim ? moment(this.searchAirlineDtFim).set({ hour: 23, minute: 59, second: 59 }).format('YYYY-MM-DDTHH:mm:ss[Z]')  : ''     
+            };
+
+            var excel=[]
+            this.invoicesService.getAllInvoicesData(                  
+                          this.objPesquisar.keyCode,
+                          this.objPesquisar.companyCode,
+                          this.objPesquisar.startDate,
+                          this.objPesquisar.endDate
+                    ).subscribe((response:any)=>{               
+                        if(response.invoices) {
+                          excel=response.invoices;  
+                          this.moduloService.exportToExcelInvoices(excel,'informes')
+                        
+                        } else {
+                          excel=[];
+                        }                 
+                    })
+
+
+        
+        }
+
+        
+    verifyFieldsSearchFill() {
+
+   
+      
+      const campos = [
+        this.searchKey,
+        this.searchAirlineDtInicio,
+        this.searchAirlineDtFim,
+        this.searchAirlineCode,
+      
+      ];
+
+      this.fillOneFilter = campos.some(v => v !== null && v != '');
+
+
+
     }
      
 }

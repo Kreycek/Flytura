@@ -103,7 +103,7 @@ func ImportConciliationDataOnflys() {
 			conciliation.gold_flytura 
 			--where emission_date='2026-06-01'
 			--where (emission_date>='2026-04-01' and emission_date<='2026-05-26') 
-			where (emission_date>='2026-01-01' and emission_date<=@today) 
+			where (emission_date>='2026-05-01' and emission_date<=@today) 
 			--where emission_date=@today
 			--AND origin_airline IN UNNEST(@companies)
         

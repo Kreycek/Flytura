@@ -3,12 +3,14 @@ package awsS3
 import (
 	"Flytura/internal/db"
 	"Flytura/internal/models"
+	"bufio"
 	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 	"time"
@@ -599,7 +601,8 @@ func CountLast30DaysByDtImport(
 Função criada por Ricardo Silva Ferreira
 Inicio da criação 12/06/2026 14:30
 Data Final da criação : 12/06/2026 14:36
-*/func CountLast30DaysByAmountRange(
+*/
+func CountLast30DaysByAmountRange(
 	client *mongo.Client,
 	dbName, collectionName string,
 ) (bson.M, error) {
@@ -740,4 +743,196 @@ Data Final da criação : 12/06/2026 14:36
 	}
 
 	return result[0], nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 29/07/2026 16:07
+Data Final da criação : 29/07/2026 16:07
+*/
+func ExportImagesJunhoJulhoPendentesTXT(
+	client *mongo.Client,
+	dbName string,
+	collectionName string,
+) error {
+
+	fmt.Println("Iniciando geração do arquivo CSV...")
+
+	collection := db.GetCollection(client, dbName, collectionName)
+
+	anoAtual := time.Now().Year()
+
+	filter := bson.M{
+		"dtImport": bson.M{
+			"$gte": time.Date(anoAtual, time.June, 1, 0, 0, 0, 0, time.UTC),
+			"$lt":  time.Date(anoAtual, time.August, 1, 0, 0, 0, 0, time.UTC),
+		},
+		"$or": []bson.M{
+			{"billedFlytura": false},
+			{"billedFlytura": bson.M{"$exists": false}},
+		},
+	}
+
+	total, err := collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return fmt.Errorf("erro ao contar documentos: %v", err)
+	}
+
+	fmt.Printf("Encontrados %d registros\n", total)
+
+	fileName := fmt.Sprintf(
+		"/home/ec2-user/pendentes_junho_julho_%s.csv",
+		time.Now().Format("20060102_150405"),
+	)
+
+	file, err := os.Create(fileName)
+	if err != nil {
+		return fmt.Errorf("erro ao criar arquivo: %v", err)
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+
+	// Cabeçalho
+	_, err = writer.WriteString(
+		"ID,CompanyCode,CompanyName,Key,FileName,PDFFileName,XMLFileName,OriginData,BilledFlytura,DownloadDone,DownloadPDFDone,DownloadXMLDone,DtImport,UpdatedAt,ServerDate\n",
+	)
+	if err != nil {
+		return err
+	}
+
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return fmt.Errorf("erro ao buscar registros: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+
+		var data models.ImagesDB
+
+		if err := cursor.Decode(&data); err != nil {
+			return fmt.Errorf("erro ao decodificar documento: %v", err)
+		}
+
+		linha := fmt.Sprintf(
+			"%s,%s,%s,%s,%s,%s,%s,%s,%t,%t,%t,%t,%s,%s,%s\n",
+			data.ID.Hex(),
+			strings.ReplaceAll(data.CompanyCode, ",", " "),
+			strings.ReplaceAll(data.CompanyName, ",", " "),
+			strings.ReplaceAll(data.Key, ",", " "),
+			strings.ReplaceAll(data.FileName, ",", " "),
+			strings.ReplaceAll(data.PDFFileName, ",", " "),
+			strings.ReplaceAll(data.XMLFileName, ",", " "),
+			strings.ReplaceAll(data.OriginData, ",", " "),
+			data.BilledFlytura,
+			data.DownloadDone,
+			data.DownloadPDFDone,
+			data.DownloadXMLDone,
+			data.DtImport.Format("2006-01-02 15:04:05"),
+			data.UpdatedAt.Format("2006-01-02 15:04:05"),
+			data.ServerDate.Format("2006-01-02 15:04:05"),
+		)
+
+		_, err = writer.WriteString(linha)
+		if err != nil {
+			return err
+		}
+	}
+
+	if err := cursor.Err(); err != nil {
+		return fmt.Errorf("erro ao percorrer cursor: %v", err)
+	}
+
+	if err := writer.Flush(); err != nil {
+		return err
+	}
+
+	fmt.Printf("Arquivo gerado com sucesso: %s\n", fileName)
+
+	return nil
+}
+
+/*
+Função criada por Ricardo Silva Ferreira
+Inicio da criação 31/08/2026 10:40
+Data Final da criação :  31/08/2026 10:40
+*/
+func SearchInvoices(
+	client *mongo.Client,
+	dbName, collectionName string,
+	key *string,
+	companyCode *string,
+	startDate *time.Time,
+	endDate *time.Time) ([]any, int64, error) {
+
+	collection := client.Database(dbName).Collection(collectionName)
+
+	// Criando o filtro dinâmico
+	filter := bson.M{}
+
+	if key != nil && *key != "" {
+		filter["key"] = bson.M{"$regex": *key, "$options": "i"}
+	}
+
+	if companyCode != nil && *companyCode != "" {
+		filter["companyCode"] = *companyCode
+	}
+
+	if startDate != nil || endDate != nil {
+		dateFilter := bson.M{}
+
+		if startDate != nil {
+			// Zera a hora de startDate (00:00:00)
+			start := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
+			dateFilter["$gte"] = start
+		}
+
+		if endDate != nil {
+			// Ajusta endDate para o final do dia (23:59:59.999999999)
+			end := time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, int(time.Second-time.Nanosecond), endDate.Location())
+			dateFilter["$lte"] = end
+		}
+
+		filter["dtImport"] = dateFilter
+	}
+
+	// Contar total de usuários antes da paginação
+	total, err := collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Executa a consulta com paginação
+	cursor, err := collection.Find(
+		context.Background(),
+		filter,
+		options.Find().
+			SetSort(bson.D{{Key: "dtImport", Value: -1}}),
+	)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(context.Background())
+
+	// Processa os resultados
+	var excelData []any
+	for cursor.Next(context.Background()) {
+		var data models.ImagesDB
+		if err := cursor.Decode(&data); err != nil {
+			return nil, 0, fmt.Errorf("erro ao decodificar OutPutInvoices: %v", err)
+		}
+
+		excelData = append(excelData, map[string]any{
+			"ID":             data.ID.Hex(), // Convertendo para string
+			"Key":            data.Key,
+			"FileName":       data.FileName,
+			"CompanyName":    data.CompanyName,
+			"DtImport":       data.DtImport,
+			"UserNameImport": data.UserNameImport,
+		})
+	}
+
+	// Retorna usuários e total de registros
+	return excelData, total, nil
 }

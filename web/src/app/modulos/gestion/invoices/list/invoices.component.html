@@ -15,7 +15,7 @@
                <div class="col-lg-2 col-md-4 col-sm-6 col-12">
                 <div class="form-group">
                   <label for="searchKey" style="font-size: 12px">{{ 'Ecra.Key' | translate }}:</label>
-                  <input type="text" id="key" style="font-size: 12px" (keydown.space)="$event.preventDefault()" [(ngModel)]="searchKey" 
+                  <input type="text" id="key" (input)="verifyFieldsSearchFill()" style="font-size: 12px" (keydown.space)="$event.preventDefault()" [(ngModel)]="searchKey" 
                   class="form-control" placeholder="{{ 'Ecra.putKey' | translate }}">
                 </div>
               </div>            
@@ -24,7 +24,7 @@
                 <div class="form-group">
                  
                    <label for="searchRole" style="font-size: 12px">{{ 'Ecra.AirLineCompany' | translate }}:</label>
-                <select id="searchRole" [(ngModel)]="searchAirlineCode" class="form-select">
+                <select id="searchRole" (change)="verifyFieldsSearchFill()" [(ngModel)]="searchAirlineCode" class="form-select">
                   <option value="" style="font-size: 12px">{{ 'Ecra.all' | translate }}</option>
               
                   <option *ngFor="let data of airLInes" [value]="data.code" style="font-size: 12px">{{data.name}}</option>
@@ -36,6 +36,7 @@
                 <div class="form-group">
                      <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtStart' | translate }}:</label>
                         <input 
+                        (dateChange)="verifyFieldsSearchFill()"
                               matInput [matDatepicker]="picker1" 
                               placeholder="{{ 'Ecra.selectDate' | translate }}"
                                class="form-control w-100"
@@ -49,6 +50,7 @@
                   <div class="form-group">
                       <label for="searchRole" style="font-size: 12px">{{ 'Ecra.DtEnd' | translate }}:</label>
                           <input 
+                          (dateChange)="verifyFieldsSearchFill()"
                                 matInput [matDatepicker]="picker2" 
                                 placeholder="{{ 'Ecra.selectDate' | translate }}"
                                 class="form-control w-100" [(ngModel)]="searchAirlineDtFim"
@@ -56,7 +58,7 @@
                                 <mat-datepicker #picker2></mat-datepicker>
                   </div>
               </div>
-              <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div class="col-lg-2 col-md-4 col-sm-6 col-12" style="display: none;">
                 <div class="form-group">                    
                    <label for="searchRole" style="font-size: 12px">{{ 'Ecra.billedFlytura' | translate }}:</label>
                   
@@ -83,6 +85,14 @@
                  <div class="actions-container">
                 <button style="font-size: 12px" class="action-btn-search action-btn add-btn" (click)="search(1)">{{ 'Ecra.search' | translate }}</button>
                 <button style="font-size: 12px" class="action-btn-search action-btn  excel-btn" (click)="importManual()">{{ 'Import Manual' | translate }}</button>
+                   <button 
+                          class="action-btn-search add-btn" 
+                          title="{{!fillOneFilter ? ('Ecra.fillOneFilter' | translate) : ''}}" 
+                          [disabled]="!fillOneFilter" 
+                          (click)="generateReportExcel()">
+                          <span class="icon">📊</span>
+                          {{ 'Ecra.generateReport' | translate }}
+                    </button>
                 </div>
               </div>
          
@@ -107,7 +117,7 @@
                 <th  style="text-align: center; ; display: none;" class="fmtTableBorder">XML</th>    
                 <th  style="text-align: center;" class="fmtTableBorder"> {{ 'Ecra.AirLineCompany' | translate }}</th>                                    
                 <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.DtImport' | translate }} </th>      
-                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.billedFlytura' | translate }}</th>    
+                <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center; display: none;"> {{ 'Ecra.billedFlytura' | translate }}</th>    
                 <th  style="text-align: center;" class="fmtTableBorder"> Download .ZIP  </th>                              
                 <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.doDonwload' | translate }}  </th>  
                 <th  style="text-align: center;" class="fmtTableBorder"  style="text-align: center;"> {{ 'Ecra.UserImport' | translate }}</th>  
@@ -154,7 +164,7 @@
                 }
                 <td  style="text-align: center;"> {{item.CompanyName}} </td>        
                 <td  style="text-align: center;"> {{item.DtImport | date:'dd/MM/YYYY HH:mm'}} </td>   
-                    <td  style="text-align: center;">  @if (item.BilledFlytura) {
+                    <td  style="text-align: center; display: none;">  @if (item.BilledFlytura) {
                      {{ 'Ecra.yes' | translate }} 
                   }
                   @else {

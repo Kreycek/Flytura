@@ -301,6 +301,54 @@ import * as XLSX from 'xlsx';
 
     saveAs(blob, `${fileName}.xlsx`);
   }
+  
+  /*
+  Função criada por Ricardo Silva Ferreira
+  Inicio da criação 30/08/2026 10:52
+  Data Final da criação :  30/08/2026 10:52
+  */
+  exportToExcelInvoices(apiData: any[], fileName: string): void {
+  
+    const dados = apiData.map(item => ({
+            "Key": item.Key,
+            "FileName": item.FileName,
+            "CompanyName": item.CompanyName,
+            "DtImport": item.DtImport,            
+            "UserNameImport":item.UserNameImport,
+          }));
+
+          const colunas = [
+            "Key", 
+            "FileName", 
+            "CompanyName", 
+            "DtImport", 
+            "UserNameImport"];
+          // Converte JSON para uma worksheet Excel
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dados, { header: colunas });
+
+          // Transformamos a data em número Excel de forma segura
+          this.handleExcelData('D',worksheet,dados)             
+          
+
+        // Cria a workbook
+        const workbook: XLSX.WorkBook = {
+          Sheets: { 'Dados': worksheet },
+          SheetNames: ['Dados']
+        };
+
+        // Converte workbook para buffer
+        const excelBuffer: any = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array'
+        });
+
+        // Salva arquivo
+        const blob: Blob = new Blob([excelBuffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+        });
+
+    saveAs(blob, `${fileName}.xlsx`);
+  }
 
   
    /*

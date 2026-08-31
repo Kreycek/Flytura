@@ -111,3 +111,11 @@ table.table-bordered td {
 .excel-btn:hover {
   background-color: #133f70;
 }
+
+.action-btn-search:disabled,
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #b5b5b5 !important;
+  color: #fff !important;
+}

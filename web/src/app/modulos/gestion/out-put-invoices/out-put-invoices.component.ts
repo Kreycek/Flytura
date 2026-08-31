@@ -81,9 +81,7 @@ export class OutPutInvoicesComponent {
           ) {}
 
           
-    verifyFieldsSearchFill() {
-
-   
+    verifyFieldsSearchFill() {   
       
       const campos = [
         this.searchKeyCode,
@@ -94,8 +92,6 @@ export class OutPutInvoicesComponent {
       ];
 
       this.fillOneFilter = campos.some(v => v !== null && v != '');
-
-
 
     }
 
