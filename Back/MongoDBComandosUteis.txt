@@ -34,6 +34,8 @@
                   db.airline.insertOne({name:'United Airlines', code:'0009',fileName:'UnitedAirlines-0009', active:false, importSheetOnlyVerifyNumber: false,codeClient: "UA",qtdMinCharKey:0  }) 
                   db.airline.insertOne({name:'Latam', code:'0010',fileName:'Latam-0010', active:true, importSheetOnlyVerifyNumber: false,codeClient: "LT",qtdMinCharKey:0  }) 
                   db.airline.insertOne({name:'Iberia Airlines', code:'0011',fileName:'Iberia-0011', active:true, importSheetOnlyVerifyNumber: false,codeClient: "IA",qtdMinCharKey:0  }) 
+                  db.airline.insertOne({name:'Air France', code:'0012',fileName:'AirFrance-0012', active:true, importSheetOnlyVerifyNumber: false,codeClient: "AF",qtdMinCharKey:0  }) 
+                  db.airline.insertOne({name:'Aerolines Argentinas', code:'0013',fileName:'AerolineasArgentinas-0013', active:true, importSheetOnlyVerifyNumber: false,codeClient: "AA",qtdMinCharKey:0  }) 
 
 13) Inserir import status
                   db.statusImport.insertOne({name:'Fila', code:'0001' }) 
